@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -32,12 +34,13 @@ class HlsRepository {
   final Ref ref;
 
   Future<MasterPlaylistModel> fetchDataFromMasterPlaylist(
-      String masterPlaylistUrl) async {
+    String masterPlaylistUrl,
+  ) async {
     try {
       HlsSegmentsPlaylistKey? segmentPlaylistKey;
-      final response = await dio.get(masterPlaylistUrl);
+      final response = await dio.get<String>(masterPlaylistUrl);
       final parser = HlsParser(
-        playlist: response.data,
+        playlist: response.data!,
         playlistUrl: masterPlaylistUrl,
       );
       return MasterPlaylistModel.fromParsedPlaylist(
@@ -50,11 +53,13 @@ class HlsRepository {
   }
 
   Future<SegmentPlaylistParsedModel> fetchDataFromResolutionPlaylist(
-      MasterPlaylistModel masterPlaylist, HlsResolution resolution) async {
+    MasterPlaylistModel masterPlaylist,
+    HlsResolution resolution,
+  ) async {
     try {
-      final response = await dio.get(resolution.videoPlaylistUrl);
+      final response = await dio.get<String>(resolution.videoPlaylistUrl);
       final parser = HlsParser(
-        playlist: response.data,
+        playlist: response.data!,
         playlistUrl: resolution.videoPlaylistUrl,
         key: masterPlaylist.segmentPlaylistKey,
       );
@@ -70,11 +75,12 @@ class HlsRepository {
   }
 
   Future<SegmentPlaylistParsedModel> fetchAudioPlaylist(
-      MasterPlaylistModel masterPlaylist) async {
+    MasterPlaylistModel masterPlaylist,
+  ) async {
     try {
-      final response = await dio.get(masterPlaylist.audioPlaylistUrl);
+      final response = await dio.get<String>(masterPlaylist.audioPlaylistUrl);
       final parser = HlsParser(
-        playlist: response.data,
+        playlist: response.data!,
         playlistUrl: masterPlaylist.audioPlaylistUrl,
         key: masterPlaylist.segmentPlaylistKey,
       );
@@ -90,7 +96,7 @@ class HlsRepository {
   }
 
   Future<void> downloadMustHaveData(List<DownloadItem> downloadTasks) async {
-    for (var task in downloadTasks) {
+    for (final task in downloadTasks) {
       await dio.download(
         task.url,
         task.absolutePath,
@@ -105,7 +111,7 @@ class HlsRepository {
   }) {
     final segments = [...audioPlaylist.segments, ...videoPlaylist.segments];
     final downloadItems = <DownloadItem>[];
-    for (var segment in segments) {
+    for (final segment in segments) {
       downloadItems.add(
         DownloadItem(
           url: segment.downloadLink,
@@ -123,11 +129,11 @@ class HlsRepository {
   }
 
   Future<DownloadTask?> prepareDataForDownload({
-    HlsSegmentsPlaylistKey? key,
     required LocalHlsDetailsModel hlsDetails,
     required MasterPlaylistModel masterPlaylist,
-    String? posterLink,
+    HlsSegmentsPlaylistKey? key,
     bool isDownloading = false,
+    String? posterLink,
   }) async {
     try {
       final baseDir = await HlsPathConstants.baseDir;
@@ -143,24 +149,26 @@ class HlsRepository {
 
       final videoDir = hlsPathManager.videoDir..createIfNotExist();
 
-      downloadMustHaveData(
-        [
-          if (key != null &&
-              !hlsPathManager.masterFileFrom(key.encKeyUrl).existsSync())
-            DownloadItem(
-              groupId: hlsDetails.id.toStringId(),
-              url: key.encKeyUrl,
-              saveDir: hlsPathManager.masterDir,
-              fileName: hlsPathManager.masterFileFrom(key.encKeyUrl).fileName,
-            ),
-          if (posterLink != null && !hlsPathManager.posterFile.existsSync())
-            DownloadItem(
-              groupId: hlsDetails.id.toStringId(),
-              url: posterLink,
-              saveDir: hlsPathManager.masterDir,
-              fileName: hlsPathManager.posterFile.fileName,
-            ),
-        ],
+      unawaited(
+        downloadMustHaveData(
+          [
+            if (key != null &&
+                !hlsPathManager.masterFileFrom(key.encKeyUrl).existsSync())
+              DownloadItem(
+                groupId: hlsDetails.id.toStringId(),
+                url: key.encKeyUrl,
+                saveDir: hlsPathManager.masterDir,
+                fileName: hlsPathManager.masterFileFrom(key.encKeyUrl).fileName,
+              ),
+            if (posterLink != null && !hlsPathManager.posterFile.existsSync())
+              DownloadItem(
+                groupId: hlsDetails.id.toStringId(),
+                url: posterLink,
+                saveDir: hlsPathManager.masterDir,
+                fileName: hlsPathManager.posterFile.fileName,
+              ),
+          ],
+        ),
       );
 
       final videoPlaylist = await fetchDataFromResolutionPlaylist(

@@ -1,5 +1,9 @@
-library download_manager;
-
+export './src/models/download_task_model/download_item_model.dart';
+export './src/models/download_task_model/download_task_model.dart';
+export './src/models/local_hls_model/local_hls_details_model.dart';
+export './src/models/local_hls_model/local_hls_group_model.dart';
+export './src/models/local_hls_model/local_hls_id.dart';
+export './src/models/local_hls_model/local_hls_status.dart';
 export './src/providers/hls_downloader_provider.dart';
 export './src/providers/local_hls_movie_provider.dart';
 export './src/providers/local_hls_movies_provider.dart';

@@ -31,7 +31,11 @@ class DownloadTask extends Equatable {
     return DownloadTask(
       items: List<DownloadItem>.from(
         (map['items'] as List<dynamic>).map<DownloadItem>(
-          (item) => DownloadItem.fromMap(Map.from(item)),
+          (item) => DownloadItem.fromMap(
+            Map.from(
+              item as Map<String, dynamic>,
+            ),
+          ),
         ),
       ),
     );
