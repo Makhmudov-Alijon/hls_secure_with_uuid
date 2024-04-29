@@ -10,6 +10,7 @@ export 'package:download_manager/src/models/master_playlist_model/master_playlis
 export 'package:download_manager/src/models/segment_playlist_model/hls_segment.dart';
 export 'package:download_manager/src/models/segment_playlist_model/hls_segment_playlist_key.dart';
 export 'package:download_manager/src/models/segment_playlist_model/segment_playlist_parsed_model.dart';
+export 'package:download_manager/src/providers/client_provider.dart';
 export 'package:download_manager/src/providers/hls_downloader_provider.dart';
 export 'package:download_manager/src/providers/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/local_hls_movies_provider.dart';
