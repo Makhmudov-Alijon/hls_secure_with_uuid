@@ -156,7 +156,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   state is LocalHlsDeletedState) {
                 cancelToken.cancel();
               }
-              // print("${item.fileName}, progress: $progress");
             },
           );
         } catch (e) {

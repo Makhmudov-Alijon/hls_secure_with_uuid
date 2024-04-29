@@ -141,8 +141,6 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         ignoreSegments: true,
       );
 
-      print(toLocalDataVideo);
-
       await File('${hlsPathManager.videoDir.path}playlist.m3u8').writeAsString(
         toLocalDataVideo,
       );
