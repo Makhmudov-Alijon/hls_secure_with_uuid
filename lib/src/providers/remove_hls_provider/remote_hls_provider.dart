@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
@@ -28,6 +27,8 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
   RemoteHlsState build() {
     return const RemoteHlsInitialState();
   }
+
+  final int id = 513434130863754;
 
   Future<void> fetchVideoData({
     required String url,
@@ -68,10 +69,20 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       final hlsPathManager = HlsPathManager(
         resolutionType: HlsResolutionType.v1080p,
         baseDir: await getApplicationDocumentsDirectory(),
-        localHlsId: const LocalHlsId(movieId: 1),
+        localHlsId: LocalHlsId(movieId: id),
       );
 
       hlsPathManager.masterDir.createIfNotExist();
+
+      final enc = json['enc'];
+
+      if (enc != null && enc is String) {
+        final baseDir = await getApplicationDocumentsDirectory();
+
+        final encFile = File('${baseDir.path}/media/$id/enc.key');
+
+        await encFile.writeAsString(enc);
+      }
 
       final toLocalData = await hlsMaster.toLocalPlaylist(
         pathManager: hlsPathManager,
@@ -103,7 +114,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
           ),
         ),
         baseDir: await getApplicationDocumentsDirectory(),
-        localHlsId: const LocalHlsId(movieId: 1),
+        localHlsId: LocalHlsId(movieId: id),
       );
 
       hlsPathManager.videoDir.createIfNotExist();
@@ -128,7 +139,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     final hlsPathManager = HlsPathManager(
       resolutionType: HlsResolutionType.v1080p,
       baseDir: await getApplicationDocumentsDirectory(),
-      localHlsId: const LocalHlsId(movieId: 1),
+      localHlsId: LocalHlsId(movieId: id),
     );
 
     hlsPathManager.audioDir.createIfNotExist();
@@ -138,13 +149,9 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       ignoreSegments: true,
     );
 
-    final audioMasterFile =
-        await File('${hlsPathManager.audioDir.path}playlist.m3u8')
-            .writeAsString(
+    await File('${hlsPathManager.audioDir.path}playlist.m3u8').writeAsString(
       toLocalDataAudio,
     );
-
-    log(audioMasterFile.path);
   }
 }
 
