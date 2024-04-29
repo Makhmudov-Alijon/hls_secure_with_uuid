@@ -96,11 +96,18 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         toLocalData,
       );
 
-      await parseVideo(
-        res.videoPlaylists,
-        encFile?.path,
+      await Future.wait(
+        [
+          parseVideo(
+            res.videoPlaylists,
+            encFile?.path,
+          ),
+          parseAudio(
+            res.audioPlaylists.first,
+            encFile?.path,
+          ),
+        ],
       );
-      await parseAudio(res.audioPlaylists.first);
     } catch (err) {
       rethrow;
     }
@@ -142,10 +149,14 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     }
   }
 
-  Future<void> parseAudio(String audioPlaylist) async {
+  Future<void> parseAudio(String audioPlaylist, [String? encUrl]) async {
     final hlsAudio = HlsParser(
       playlist: audioPlaylist,
       playlistUrl: 'playlist',
+      key: HlsSegmentsPlaylistKey(
+        encKeyUrl: 'file:///$encUrl',
+        salt: '',
+      ),
     ).parseData(HlsPlaylistType.audioSegmentPlaylist);
 
     final hlsPathManager = HlsPathManager(
