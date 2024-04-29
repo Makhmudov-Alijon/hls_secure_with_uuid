@@ -53,7 +53,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       final json = await SecurityService().getDTD(
         data: response.data!,
         token: kDebugMode
-            ? "ffffffffffffffffffffffffffffffffffff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fffffffffffffffffffffffffffffffffffffffffff"
+            ? "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM1MjM4OTUsInNpZCI6bnVsbCwidXNlcl9pZCI6bnVsbCwicHJvZmlsZV9pZCI6bnVsbCwiYXBwX3R5cGUiOm51bGwsImRsIjpmYWxzZSwic2ltcGxlIjpmYWxzZX0.IwtFBqgsxsRg_qDc8hR8MtvRc0FwqToHz1kHrCCc2fk"
             : token as String,
         key: key,
       );

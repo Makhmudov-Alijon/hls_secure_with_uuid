@@ -10,10 +10,10 @@ _$RemoteHlsDataModelImpl _$$RemoteHlsDataModelImplFromJson(
         Map<String, dynamic> json) =>
     _$RemoteHlsDataModelImpl(
       master: json['master'] as String,
-      videoPlaylists: (json['videoPlaylists'] as List<dynamic>)
+      videoPlaylists: (json['video_playlists'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      audioPlaylists: (json['audioPlaylists'] as List<dynamic>)
+      audioPlaylists: (json['audio_playlists'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
     );
@@ -22,6 +22,6 @@ Map<String, dynamic> _$$RemoteHlsDataModelImplToJson(
         _$RemoteHlsDataModelImpl instance) =>
     <String, dynamic>{
       'master': instance.master,
-      'videoPlaylists': instance.videoPlaylists,
-      'audioPlaylists': instance.audioPlaylists,
+      'video_playlists': instance.videoPlaylists,
+      'audio_playlists': instance.audioPlaylists,
     };
