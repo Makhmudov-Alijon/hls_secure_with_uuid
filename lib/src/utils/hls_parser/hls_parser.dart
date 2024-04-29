@@ -263,6 +263,8 @@ class HlsParser {
   HlsPlaylistData parseData(HlsPlaylistType playlistType) {
     final playlistLines = playlist.split('\n');
     final playlistItems = <HlsPlaylistItem>[];
+    String? iv;
+
     for (var i = 0; i < playlistLines.length; i++) {
       var line = playlistLines[i];
       if (line.endsWith(',')) {
@@ -336,6 +338,12 @@ class HlsParser {
           i += 1;
         }
       }
+
+      final ivValue = valueParameters[HlsParamConstants.iv];
+
+      if (ivValue != null) {
+        iv = ivValue.value;
+      }
     }
 
     if (key != null) {
@@ -351,8 +359,10 @@ class HlsParser {
                   HlsParamConstants.method: HlsParamValueConstants.aes128,
                   HlsParamConstants.uri:
                       HlsParamValue(value: '"${key!.encKeyUrl}"'),
-                  HlsParamConstants.iv:
-                      HlsParamValue(value: HlsUtils.asciiToHex(key!.salt)),
+                  if (iv != null)
+                    HlsParamConstants.iv: HlsParamValue(
+                      value: iv,
+                    ),
                 },
               ),
             );

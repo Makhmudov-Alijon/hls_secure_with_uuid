@@ -75,13 +75,16 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       hlsPathManager.masterDir.createIfNotExist();
 
       final enc = json['enc'];
+      File? encFile;
 
       if (enc != null && enc is String) {
         final baseDir = await getApplicationDocumentsDirectory();
 
-        final encFile = File('${baseDir.path}/media/$id/enc.key');
+        final file = File('${baseDir.path}/media/$id/enc.key');
 
-        await encFile.writeAsString(enc);
+        await file.writeAsString(enc);
+
+        encFile = file;
       }
 
       final toLocalData = await hlsMaster.toLocalPlaylist(
@@ -93,18 +96,25 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         toLocalData,
       );
 
-      await parseVideo(res.videoPlaylists);
+      await parseVideo(
+        res.videoPlaylists,
+        encFile?.path,
+      );
       await parseAudio(res.audioPlaylists.first);
     } catch (err) {
       rethrow;
     }
   }
 
-  Future<void> parseVideo(List<String> videoPlaylists) async {
+  Future<void> parseVideo(List<String> videoPlaylists, [String? encUrl]) async {
     for (final item in videoPlaylists) {
       final hlsVideo = HlsParser(
         playlist: item,
         playlistUrl: 'playlist',
+        key: HlsSegmentsPlaylistKey(
+          encKeyUrl: 'file:///$encUrl',
+          salt: '',
+        ),
       ).parseData(HlsPlaylistType.videoSegmentPlaylist);
 
       final hlsPathManager = HlsPathManager(
@@ -123,6 +133,8 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         pathManager: hlsPathManager,
         ignoreSegments: true,
       );
+
+      print(toLocalDataVideo);
 
       await File('${hlsPathManager.videoDir.path}playlist.m3u8').writeAsString(
         toLocalDataVideo,
