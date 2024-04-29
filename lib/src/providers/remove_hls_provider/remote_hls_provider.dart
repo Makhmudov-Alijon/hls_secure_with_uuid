@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/utils/security/security.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-
-import 'models/remote_hls_data_model.dart';
 
 class RemoteHlsState extends Equatable {
   const RemoteHlsState();
@@ -30,40 +29,64 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     return const RemoteHlsInitialState();
   }
 
-  Future<void> fetchVideoData() async {
-    final data = await rootBundle.loadString('assets/hls/master.json');
+  Future<void> fetchVideoData({
+    required String url,
+    required String key,
+  }) async {
+    final client = ref.read(managerClientProvider);
 
-    final json = jsonDecode(data) as Map<String, dynamic>;
+    try {
+      final response = await client.get<String>(
+        url,
+      );
 
-    final res = RemoteHlsDataModel.fromJson(json);
+      if (response.data == null) {
+        throw PlatformException(
+          code: '404',
+          message: 'Data not found',
+        );
+      }
 
-    final hlsMaster = HlsParser(
-      playlist: res.master,
-      playlistUrl: 'playlist',
-    ).parseData(HlsPlaylistType.masterPlaylist);
+      final token =
+          response.requestOptions.headers[HttpHeaders.authorizationHeader];
 
-    final hlsPathManager = HlsPathManager(
-      resolutionType: HlsResolutionType.v1080p,
-      baseDir: await getApplicationDocumentsDirectory(),
-      localHlsId: const LocalHlsId(movieId: 1),
-    );
+      final json = await SecurityService().getDTD(
+        data: response.data!,
+        token: kDebugMode
+            ? "ffffffffffffffffffffffffffffffffffff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fffffffffffffffffffffffffffffffffffffffffff"
+            : token as String,
+        key: key,
+      );
 
-    hlsPathManager.masterDir.createIfNotExist();
+      final res = RemoteHlsDataModel.fromJson(json);
 
-    final toLocalData = await hlsMaster.toLocalPlaylist(
-      pathManager: hlsPathManager,
-      ignoreOtherResolutions: false,
-    );
+      final hlsMaster = HlsParser(
+        playlist: res.master,
+        playlistUrl: 'playlist',
+      ).parseData(HlsPlaylistType.masterPlaylist);
 
-    final masterFile =
-        await File('${hlsPathManager.masterDir.path}master.m3u8').writeAsString(
-      toLocalData,
-    );
+      final hlsPathManager = HlsPathManager(
+        resolutionType: HlsResolutionType.v1080p,
+        baseDir: await getApplicationDocumentsDirectory(),
+        localHlsId: const LocalHlsId(movieId: 1),
+      );
 
-    log(masterFile.path);
+      hlsPathManager.masterDir.createIfNotExist();
 
-    await parseVideo(res.videoPlaylists);
-    await parseAudio(res.audioPlaylists.first);
+      final toLocalData = await hlsMaster.toLocalPlaylist(
+        pathManager: hlsPathManager,
+        ignoreOtherResolutions: false,
+      );
+
+      await File('${hlsPathManager.masterDir.path}master.m3u8').writeAsString(
+        toLocalData,
+      );
+
+      await parseVideo(res.videoPlaylists);
+      await parseAudio(res.audioPlaylists.first);
+    } catch (err) {
+      rethrow;
+    }
   }
 
   Future<void> parseVideo(List<String> videoPlaylists) async {
@@ -90,13 +113,9 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         ignoreSegments: true,
       );
 
-      final videoMasterFile =
-          await File('${hlsPathManager.videoDir.path}playlist.m3u8')
-              .writeAsString(
+      await File('${hlsPathManager.videoDir.path}playlist.m3u8').writeAsString(
         toLocalDataVideo,
       );
-
-      log(videoMasterFile.path);
     }
   }
 
