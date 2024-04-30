@@ -30,7 +30,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
 
   final int id = 513434130863754;
 
-  Future<void> fetchVideoData({
+  Future<String> fetchVideoData({
     required String url,
     required String key,
   }) async {
@@ -108,6 +108,8 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
           ),
         ],
       );
+
+      return 'file:///${hlsPathManager.masterDir.path}';
     } catch (err) {
       rethrow;
     }
