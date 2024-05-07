@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
@@ -33,6 +34,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
   Future<String> fetchVideoData({
     required String url,
     required String key,
+    bool isEnc = true,
   }) async {
     final client = ref.read(managerClientProvider);
 
@@ -50,14 +52,19 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
 
       final token =
           response.requestOptions.headers[HttpHeaders.authorizationHeader];
+      var json = <String, dynamic>{};
 
-      final json = await SecurityService().getDTD(
-        data: response.data!,
-        token: kDebugMode
-            ? "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM1MjM4OTUsInNpZCI6bnVsbCwidXNlcl9pZCI6bnVsbCwicHJvZmlsZV9pZCI6bnVsbCwiYXBwX3R5cGUiOm51bGwsImRsIjpmYWxzZSwic2ltcGxlIjpmYWxzZX0.IwtFBqgsxsRg_qDc8hR8MtvRc0FwqToHz1kHrCCc2fk"
-            : token as String,
-        key: key,
-      );
+      if (isEnc) {
+        json = await SecurityService().getDTD(
+          data: response.data!,
+          token: kDebugMode
+              ? "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM1MjM4OTUsInNpZCI6bnVsbCwidXNlcl9pZCI6bnVsbCwicHJvZmlsZV9pZCI6bnVsbCwiYXBwX3R5cGUiOm51bGwsImRsIjpmYWxzZSwic2ltcGxlIjpmYWxzZX0.IwtFBqgsxsRg_qDc8hR8MtvRc0FwqToHz1kHrCCc2fk"
+              : token as String,
+          key: key,
+        );
+      } else {
+        json = jsonDecode(response.data!) as Map<String, dynamic>;
+      }
 
       final res = RemoteHlsDataModel.fromJson(json);
 
