@@ -26,6 +26,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       playerHls.fetchVideoData(
         url: 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/47813/',
         key: 'API_DT_KY',
+        token: 'asdas'
       );
     });
     super.initState();

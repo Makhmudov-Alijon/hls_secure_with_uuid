@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/utils/security/security.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,6 +34,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
   Future<String> fetchVideoData({
     required String url,
     required String key,
+    required String token,
     bool isEnc = true,
   }) async {
     final client = ref.read(managerClientProvider);
@@ -41,6 +42,11 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     try {
       final response = await client.get<String>(
         url,
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: 'Bearer $token',
+          },
+        ),
       );
 
       if (response.data == null) {
@@ -50,16 +56,12 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         );
       }
 
-      final token =
-          response.requestOptions.headers[HttpHeaders.authorizationHeader];
       var json = <String, dynamic>{};
 
       if (isEnc) {
         json = await SecurityService().getDTD(
           data: response.data!,
-          token: kDebugMode
-              ? "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM1MjM4OTUsInNpZCI6bnVsbCwidXNlcl9pZCI6bnVsbCwicHJvZmlsZV9pZCI6bnVsbCwiYXBwX3R5cGUiOm51bGwsImRsIjpmYWxzZSwic2ltcGxlIjpmYWxzZX0.IwtFBqgsxsRg_qDc8hR8MtvRc0FwqToHz1kHrCCc2fk"
-              : token as String,
+          token: token,
           key: key,
         );
       } else {
