@@ -29,13 +29,12 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     return const RemoteHlsInitialState();
   }
 
-  final int id = 513434130863754;
-
   Future<String> fetchVideoData({
     required String url,
     required String key,
     required String token,
     bool isEnc = true,
+    int id = 345754,
   }) async {
     final client = ref.read(managerClientProvider);
 
@@ -109,11 +108,13 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
         [
           parseVideo(
             res.videoPlaylists,
-            encFile?.path,
+            encUrl: encFile?.path,
+            id: id,
           ),
           parseAudio(
             res.audioPlaylists.first,
-            encFile?.path,
+            encUrl: encFile?.path,
+            id: id,
           ),
         ],
       );
@@ -124,7 +125,11 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     }
   }
 
-  Future<void> parseVideo(List<String> videoPlaylists, [String? encUrl]) async {
+  Future<void> parseVideo(
+    List<String> videoPlaylists, {
+    required int id,
+    String? encUrl,
+  }) async {
     for (final item in videoPlaylists) {
       final hlsVideo = HlsParser(
         playlist: item,
@@ -160,7 +165,11 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     }
   }
 
-  Future<void> parseAudio(String audioPlaylist, [String? encUrl]) async {
+  Future<void> parseAudio(
+    String audioPlaylist, {
+    required int id,
+    String? encUrl,
+  }) async {
     final hlsAudio = HlsParser(
       playlist: audioPlaylist,
       playlistUrl: 'playlist',
