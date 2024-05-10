@@ -31,6 +31,16 @@ class SecurityService extends Security {
     return result;
   }
 
+  String obscure(String key, String token) {
+    String f(String s, int a, int b) => s.substring(a, a + b);
+
+    String g(List<String> t) => t[2].split('').reversed.join().substring(0, 27);
+
+    final p = token.split('.');
+
+    return f(key, 0, 8) + g(p) + f(key, key.length - 9, 9);
+  }
+
   @override
   Future<Map<String, dynamic>> getDTD({
     required String data,
@@ -40,18 +50,7 @@ class SecurityService extends Security {
     try {
       final dTk = await getDTK(key);
 
-      final thumbnail = dTk.split('').take(8).join();
-      final salt = token
-          .split('.')[1]
-          .split('')
-          .asMap()
-          .entries
-          .where((entry) => entry.key % 3 == 0)
-          .map((entry) => entry.value)
-          .take(35)
-          .join();
-
-      final fullKey = Key.fromBase64('$thumbnail$salt=');
+      final fullKey = Key.fromBase64(obscure(dTk, token));
 
       final encrypter = Encrypter(
         Fernet(fullKey),
