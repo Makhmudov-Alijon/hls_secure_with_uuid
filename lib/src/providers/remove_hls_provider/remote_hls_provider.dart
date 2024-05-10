@@ -129,10 +129,12 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       final hlsVideo = HlsParser(
         playlist: item,
         playlistUrl: 'playlist',
-        key: HlsSegmentsPlaylistKey(
-          encKeyUrl: 'file:///$encUrl',
-          salt: '',
-        ),
+        key: encUrl != null
+            ? HlsSegmentsPlaylistKey(
+                encKeyUrl: 'file:///$encUrl',
+                salt: '',
+              )
+            : null,
       ).parseData(HlsPlaylistType.videoSegmentPlaylist);
 
       final hlsPathManager = HlsPathManager(
@@ -162,10 +164,12 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     final hlsAudio = HlsParser(
       playlist: audioPlaylist,
       playlistUrl: 'playlist',
-      key: HlsSegmentsPlaylistKey(
-        encKeyUrl: 'file:///$encUrl',
-        salt: '',
-      ),
+      key: encUrl != null
+          ? HlsSegmentsPlaylistKey(
+              encKeyUrl: 'file:///$encUrl',
+              salt: '',
+            )
+          : null,
     ).parseData(HlsPlaylistType.audioSegmentPlaylist);
 
     final hlsPathManager = HlsPathManager(
