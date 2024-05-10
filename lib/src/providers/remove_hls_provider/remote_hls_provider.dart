@@ -39,7 +39,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     final client = ref.read(managerClientProvider);
 
     try {
-      final response = await client.post<String>(
+      final response = await client.get<String>(
         url,
         options: Options(
           headers: {
