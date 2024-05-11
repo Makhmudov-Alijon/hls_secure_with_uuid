@@ -1,4 +1,10 @@
+import 'dart:developer' as developerLog;
+
 extension StringExtension on String {
+  void log() {
+    developerLog.log(this);
+  }
+
   List<String> splitWithExclude(
       {required String pattern, required String excludePattern}) {
     var result = <String>[];

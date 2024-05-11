@@ -5,9 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/utils/security/security.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../../utils/hls_parser/entities/hls_playlist_type.dart';
 
 class RemoteHlsState extends Equatable {
   const RemoteHlsState();
@@ -27,6 +30,24 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
   @override
   RemoteHlsState build() {
     return const RemoteHlsInitialState();
+  }
+
+  Future<void> parse({required String url, required String token}) async {
+    final client = ref.read(managerClientProvider);
+    try {
+      final response = await client.get<String>(url);
+
+      if (response.data is String) {
+        final parsedMaster = HlsParser(
+          playlist: response.data!,
+          playlistUrl: '/master',
+        );
+
+        debugPrint(parsedMaster.playlist);
+      }
+    } catch (e) {
+      'Error $e'.log();
+    }
   }
 
   Future<String> fetchVideoData({

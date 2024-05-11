@@ -7,9 +7,9 @@ import 'package:equatable/equatable.dart';
 class DownloadItem extends Equatable {
   const DownloadItem({
     required this.url,
-    this.groupId,
     required this.saveDir,
     required this.fileName,
+    this.groupId,
   });
 
   final String url;

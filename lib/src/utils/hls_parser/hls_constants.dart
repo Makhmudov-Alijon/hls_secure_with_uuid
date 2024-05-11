@@ -1,4 +1,4 @@
-import 'hls_parser.dart';
+import 'entities/hls_playlist_item.dart';
 
 class HlsParamConstants {
   static const resolution = HlsParam(parameter: "RESOLUTION");

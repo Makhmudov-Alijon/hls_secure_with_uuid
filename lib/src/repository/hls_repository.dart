@@ -13,6 +13,7 @@ import '../models/master_playlist_model/master_playlist_model.dart';
 import '../models/segment_playlist_model/hls_segment_playlist_key.dart';
 import '../models/segment_playlist_model/segment_playlist_parsed_model.dart';
 import '../providers/client_provider.dart';
+import '../utils/hls_parser/entities/hls_playlist_type.dart';
 import '../utils/hls_parser/hls_parser.dart';
 import '../utils/hls_parser/hls_path_constants.dart';
 import '../utils/hls_parser/hls_path_manager.dart';
@@ -65,9 +66,9 @@ class HlsRepository {
       );
       final parsed = parser.parseData(HlsPlaylistType.videoSegmentPlaylist);
       return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        parsed,
-        true,
-        masterPlaylist.segmentPlaylistKey,
+        playlistData: parsed,
+        playlistKey: masterPlaylist.segmentPlaylistKey,
+        isVideo: true,
       );
     } catch (e) {
       rethrow;
@@ -86,9 +87,9 @@ class HlsRepository {
       );
       final parsed = parser.parseData(HlsPlaylistType.audioSegmentPlaylist);
       return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        parsed,
-        false,
-        masterPlaylist.segmentPlaylistKey,
+        playlistData: parsed,
+        isVideo: false,
+        playlistKey: masterPlaylist.segmentPlaylistKey,
       );
     } catch (e) {
       rethrow;

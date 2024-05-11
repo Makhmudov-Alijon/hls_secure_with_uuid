@@ -27,7 +27,7 @@ class LocalHlsDetailsModel extends Equatable {
 
   String get fullTitle {
     if (isSerial) {
-      return "$title, $seasonNum, $episodeNum";
+      return '$title, $seasonNum, $episodeNum';
     } else {
       return title;
     }

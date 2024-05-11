@@ -31,10 +31,15 @@ class _MyAppState extends ConsumerState<MyApp> {
 
       // final data = response.data as Map<String, dynamic>;
 
-      playerHls.fetchVideoData(
-        url: 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/47813/',
-        key: 'API_DT_KY',
-        isEnc: false,
+      // playerHls.fetchVideoData(
+      //   url: 'https://vod02.splay.uz/bare_bottle/master.m3u8',
+      //   key: 'API_DT_KY',
+      //   isEnc: false,
+      //   token: token,
+      // );
+
+      playerHls.parse(
+        url: 'https://vod02.splay.uz/bare_bottle/master.m3u8',
         token: token,
       );
     });

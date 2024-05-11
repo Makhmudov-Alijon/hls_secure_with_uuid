@@ -7,8 +7,8 @@ import 'package:equatable/equatable.dart';
 import '../../providers/local_hls_movie_provider.dart';
 import '../../utils/app_constants.dart';
 import 'local_hls_details_model.dart';
-import 'local_hls_status.dart';
 import 'local_hls_id.dart';
+import 'local_hls_status.dart';
 
 class LocalHlsModel extends Equatable {
   final Directory masterDir;
@@ -50,7 +50,7 @@ class LocalHlsModel extends Equatable {
     ];
     var temp = 0;
 
-    for (var item in list) {
+    for (final item in list) {
       if (item is File) {
         temp += item.statSync().size;
       }

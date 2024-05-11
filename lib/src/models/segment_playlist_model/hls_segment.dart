@@ -9,6 +9,17 @@ class HlsSegment extends Equatable {
     required this.duration,
   });
 
+  factory HlsSegment.fromMap(Map<String, dynamic> map) {
+    return HlsSegment(
+      link: map['link'] as String,
+      isVideo: map['isVideo'] as bool,
+      duration: double.parse(map['duration'] as String),
+    );
+  }
+
+  factory HlsSegment.fromJson(String source) =>
+      HlsSegment.fromMap(json.decode(source) as Map<String, dynamic>);
+
   final String link;
 
   final bool isVideo;
@@ -22,9 +33,9 @@ class HlsSegment extends Equatable {
     final queries = <String, String>{};
     if (temp.length > 1) {
       final queryParams = temp[1];
-      final splittedParams = queryParams.split("&");
-      for (var param in splittedParams) {
-        final temp = param.split("=");
+      final splittedParams = queryParams.split('&');
+      for (final param in splittedParams) {
+        final temp = param.split('=');
         final paramKey = temp.first;
         final paramValue = temp.last;
         queries[paramKey] = paramValue;
@@ -44,16 +55,5 @@ class HlsSegment extends Equatable {
     };
   }
 
-  factory HlsSegment.fromMap(Map<String, dynamic> map) {
-    return HlsSegment(
-      link: map['link'] as String,
-      isVideo: map['isVideo'] as bool,
-      duration: double.parse(map['duration'] as String),
-    );
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory HlsSegment.fromJson(String source) =>
-      HlsSegment.fromMap(json.decode(source) as Map<String, dynamic>);
 }

@@ -62,11 +62,11 @@ class HlsPathManager {
   }
 
   String _checkForPrefix(String url, bool enablePrefix) {
-    return enablePrefix ? "file://$url" : url;
+    return enablePrefix ? 'file://$url' : url;
   }
 
   String _checkForBase(String url, bool enableBase) {
-    return enableBase ? "${baseDir.path}/$url" : url;
+    return enableBase ? '${baseDir.path}/$url' : url;
   }
 
   String _checkLink(String url, bool enablePrefix, bool enableBase) {
