@@ -5,13 +5,11 @@ import 'hls_playlist_type.dart';
 class HlsPlaylistData {
   const HlsPlaylistData({
     required this.playlistItems,
-    required this.playlistUrl,
     required this.playlistType,
   });
 
   final List<HlsPlaylistItem> playlistItems;
   final HlsPlaylistType playlistType;
-  final String playlistUrl;
 
   @override
   String toString() {

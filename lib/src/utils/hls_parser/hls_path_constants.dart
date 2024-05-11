@@ -6,7 +6,7 @@ class HlsPathConstants {
   static Future<Directory> get baseDir => getApplicationDocumentsDirectory();
 
   static Future<Directory> get mediaDir async {
-    return Directory("${(await baseDir).path}/${HlsFolders.media}");
+    return Directory('${(await baseDir).path}/${HlsFolders.media}');
   }
 }
 
@@ -24,4 +24,6 @@ class HlsFilenames {
   static const hlsPoster = 'poster.png';
 
   static const downloadTask = 'download_task.json';
+
+  static const master = 'master.m3u8';
 }

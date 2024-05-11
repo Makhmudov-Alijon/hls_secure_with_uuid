@@ -1,12 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/utils/security/security.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -38,12 +32,31 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
       final response = await client.get<String>(url);
 
       if (response.data is String) {
-        final parsedMaster = HlsParser(
+        final parser = HlsParser(
           playlist: response.data!,
-          playlistUrl: '/master',
+          useAbsoluteLinks: false,
         );
+        final parsedMaster = parser.parseData(HlsPlaylistType.masterPlaylist);
+        final master = MasterPlaylistModel.fromParsedPlaylist(parsedMaster);
 
-        debugPrint(parsedMaster.playlist);
+        final selectedResolution = master.resolutions.first;
+
+        final selectedAudioGroup = master.audioTrackGroups.first;
+
+        final hlsPathManager = HlsPathManager(
+          resolutionType: selectedResolution.resolution,
+          audioTrack: selectedAudioGroup.tracks.firstWhere(
+              (element) => element.trackType == selectedResolution.trackType),
+          baseDir: await getApplicationDocumentsDirectory(),
+          localHlsId: const LocalHlsId(movieId: 1),
+        );
+        debugPrint('playlist:\n${master.masterPlaylistData}');
+        debugPrint('local playlist:');
+        debugPrint(
+          await master.masterPlaylistData.toLocalPlaylist(
+            pathManager: hlsPathManager,
+          ),
+        );
       }
     } catch (e) {
       'Error $e'.log();
@@ -57,93 +70,94 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     bool isEnc = true,
     int id = 345754,
   }) async {
-    final client = ref.read(managerClientProvider);
+    // final client = ref.read(managerClientProvider);
 
-    try {
-      final response = await client.get<String>(
-        url,
-        options: Options(
-          headers: {
-            HttpHeaders.authorizationHeader: 'Bearer $token',
-          },
-        ),
-      );
+    // try {
+    //   final response = await client.get<String>(
+    //     url,
+    //     options: Options(
+    //       headers: {
+    //         HttpHeaders.authorizationHeader: 'Bearer $token',
+    //       },
+    //     ),
+    //   );
 
-      if (response.data == null) {
-        throw PlatformException(
-          code: '404',
-          message: 'Data not found',
-        );
-      }
+    //   if (response.data == null) {
+    //     throw PlatformException(
+    //       code: '404',
+    //       message: 'Data not found',
+    //     );
+    //   }
 
-      var json = <String, dynamic>{};
+    //   var json = <String, dynamic>{};
 
-      if (isEnc) {
-        json = await SecurityService().getDTD(
-          data: response.data!,
-          token: token,
-          key: key,
-        );
-      } else {
-        json = jsonDecode(response.data!) as Map<String, dynamic>;
-      }
+    //   if (isEnc) {
+    //     json = await SecurityService().getDTD(
+    //       data: response.data!,
+    //       token: token,
+    //       key: key,
+    //     );
+    //   } else {
+    //     json = jsonDecode(response.data!) as Map<String, dynamic>;
+    //   }
 
-      final res = RemoteHlsDataModel.fromJson(json);
+    //   final res = RemoteHlsDataModel.fromJson(json);
 
-      final hlsMaster = HlsParser(
-        playlist: res.master,
-        playlistUrl: 'playlist',
-      ).parseData(HlsPlaylistType.masterPlaylist);
+    //   final hlsMaster = HlsParser(
+    //     playlist: res.master,
+    //   ).parseData(HlsPlaylistType.masterPlaylist);
 
-      final hlsPathManager = HlsPathManager(
-        resolutionType: HlsResolutionType.v1080p,
-        baseDir: await getApplicationDocumentsDirectory(),
-        localHlsId: LocalHlsId(movieId: id),
-      );
+    //   final hlsPathManager = HlsPathManager(
+    //     audioTrack: ,
+    //     resolutionType: HlsResolutionType.v1080p,
+    //     baseDir: await getApplicationDocumentsDirectory(),
+    //     localHlsId: LocalHlsId(movieId: id),
+    //   );
 
-      hlsPathManager.masterDir.createIfNotExist();
+    //   hlsPathManager.masterDir.createIfNotExist();
 
-      final enc = json['enc'];
-      File? encFile;
+    //   final enc = json['enc'];
+    //   File? encFile;
 
-      if (enc != null && enc is String) {
-        final baseDir = await getApplicationDocumentsDirectory();
+    //   if (enc != null && enc is String) {
+    //     final baseDir = await getApplicationDocumentsDirectory();
 
-        final file = File('${baseDir.path}/media/$id/enc.key');
+    //     final file = File('${baseDir.path}/media/$id/enc.key');
 
-        await file.writeAsString(enc);
+    //     await file.writeAsString(enc);
 
-        encFile = file;
-      }
+    //     encFile = file;
+    //   }
 
-      final toLocalData = await hlsMaster.toLocalPlaylist(
-        pathManager: hlsPathManager,
-        ignoreOtherResolutions: false,
-      );
+    //   final toLocalData = await hlsMaster.toLocalPlaylist(
+    //     pathManager: hlsPathManager,
+    //     ignoreOtherResolutions: false,
+    //   );
 
-      await File('${hlsPathManager.masterDir.path}master.m3u8').writeAsString(
-        toLocalData,
-      );
+    //   await File('${hlsPathManager.masterDir.path}master.m3u8').writeAsString(
+    //     toLocalData,
+    //   );
 
-      await Future.wait(
-        [
-          parseVideo(
-            res.videoPlaylists,
-            encUrl: encFile?.path,
-            id: id,
-          ),
-          parseAudio(
-            res.audioPlaylists.first,
-            encUrl: encFile?.path,
-            id: id,
-          ),
-        ],
-      );
+    //   await Future.wait(
+    //     [
+    //       parseVideo(
+    //         res.videoPlaylists,
+    //         encUrl: encFile?.path,
+    //         id: id,
+    //       ),
+    //       parseAudio(
+    //         res.audioPlaylists.first,
+    //         encUrl: encFile?.path,
+    //         id: id,
+    //       ),
+    //     ],
+    //   );
 
-      return 'file:///${hlsPathManager.masterDir.path}';
-    } catch (err) {
-      rethrow;
-    }
+    //   return 'file:///${hlsPathManager.masterDir.path}';
+    // } catch (err) {
+    //   rethrow;
+    // }
+    throw UnimplementedError();
   }
 
   Future<void> parseVideo(
@@ -151,39 +165,39 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     required int id,
     String? encUrl,
   }) async {
-    for (final item in videoPlaylists) {
-      final hlsVideo = HlsParser(
-        playlist: item,
-        playlistUrl: 'playlist',
-        key: encUrl != null
-            ? HlsSegmentsPlaylistKey(
-                encKeyUrl: 'file:///$encUrl',
-                salt: '',
-              )
-            : null,
-      ).parseData(HlsPlaylistType.videoSegmentPlaylist);
+    // for (final item in videoPlaylists) {
+    //   final hlsVideo = HlsParser(
+    //     playlist: item,
+    //     key: encUrl != null
+    //         ? HlsSegmentsPlaylistKey(
+    //             encKeyUrl: 'file:///$encUrl',
+    //             salt: '',
+    //           )
+    //         : null,
+    //   ).parseData(HlsPlaylistType.videoSegmentPlaylist);
 
-      final hlsPathManager = HlsPathManager(
-        resolutionType: HlsResolutionType.values.firstWhere(
-          (element) => item.contains(
-            element.title,
-          ),
-        ),
-        baseDir: await getApplicationDocumentsDirectory(),
-        localHlsId: LocalHlsId(movieId: id),
-      );
+    //   final hlsPathManager = HlsPathManager(
+    //     resolutionType: HlsResolutionType.values.firstWhere(
+    //       (element) => item.contains(
+    //         element.title,
+    //       ),
+    //     ),
+    //     baseDir: await getApplicationDocumentsDirectory(),
+    //     localHlsId: LocalHlsId(movieId: id),
+    //   );
 
-      hlsPathManager.videoDir.createIfNotExist();
+    //   hlsPathManager.videoDir.createIfNotExist();
 
-      final toLocalDataVideo = await hlsVideo.toLocalPlaylist(
-        pathManager: hlsPathManager,
-        ignoreSegments: true,
-      );
+    //   final toLocalDataVideo = await hlsVideo.toLocalPlaylist(
+    //     pathManager: hlsPathManager,
+    //     ignoreSegments: true,
+    //   );
 
-      await File('${hlsPathManager.videoDir.path}playlist.m3u8').writeAsString(
-        toLocalDataVideo,
-      );
-    }
+    //   await File('${hlsPathManager.videoDir.path}playlist.m3u8').writeAsString(
+    //     toLocalDataVideo,
+    //   );
+    // }
+    throw UnimplementedError();
   }
 
   Future<void> parseAudio(
@@ -191,33 +205,33 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     required int id,
     String? encUrl,
   }) async {
-    final hlsAudio = HlsParser(
-      playlist: audioPlaylist,
-      playlistUrl: 'playlist',
-      key: encUrl != null
-          ? HlsSegmentsPlaylistKey(
-              encKeyUrl: 'file:///$encUrl',
-              salt: '',
-            )
-          : null,
-    ).parseData(HlsPlaylistType.audioSegmentPlaylist);
+    // final hlsAudio = HlsParser(
+    //   playlist: audioPlaylist,
+    //   key: encUrl != null
+    //       ? HlsSegmentsPlaylistKey(
+    //           encKeyUrl: 'file:///$encUrl',
+    //           salt: '',
+    //         )
+    //       : null,
+    // ).parseData(HlsPlaylistType.audioSegmentPlaylist);
 
-    final hlsPathManager = HlsPathManager(
-      resolutionType: HlsResolutionType.v1080p,
-      baseDir: await getApplicationDocumentsDirectory(),
-      localHlsId: LocalHlsId(movieId: id),
-    );
+    // final hlsPathManager = HlsPathManager(
+    //   resolutionType: HlsResolutionType.v1080p,
+    //   baseDir: await getApplicationDocumentsDirectory(),
+    //   localHlsId: LocalHlsId(movieId: id),
+    // );
 
-    hlsPathManager.audioDir.createIfNotExist();
+    // hlsPathManager.audioDir.createIfNotExist();
 
-    final toLocalDataAudio = await hlsAudio.toLocalPlaylist(
-      pathManager: hlsPathManager,
-      ignoreSegments: true,
-    );
+    // final toLocalDataAudio = await hlsAudio.toLocalPlaylist(
+    //   pathManager: hlsPathManager,
+    //   ignoreSegments: true,
+    // );
 
-    await File('${hlsPathManager.audioDir.path}playlist.m3u8').writeAsString(
-      toLocalDataAudio,
-    );
+    // await File('${hlsPathManager.audioDir.path}playlist.m3u8').writeAsString(
+    //   toLocalDataAudio,
+    // );
+    throw UnimplementedError();
   }
 }
 

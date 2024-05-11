@@ -1,87 +1,105 @@
-import 'package:download_manager/src/utils/hls_parser/hls_path_manager.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 import '../../utils/hls_parser/entities/hls_playlist_data.dart';
-import '../../utils/hls_parser/hls_constants.dart';
-import '../segment_playlist_model/hls_segment_playlist_key.dart';
-import 'hls_resolution.dart';
+import 'hls_audio.dart';
 
 class MasterPlaylistModel extends Equatable {
   const MasterPlaylistModel({
     required this.resolutions,
+    required this.audioTrackGroups,
     required this.masterPlaylistData,
-    required this.audioPlaylistUrl,
-    required this.playlistLocale,
     this.segmentPlaylistKey,
   });
-  
+
   factory MasterPlaylistModel.fromParsedPlaylist(
     HlsPlaylistData parsedMasterPlaylist, [
     HlsSegmentsPlaylistKey? segmentPlaylistKey,
   ]) {
     final resolutions = <HlsResolution>{};
-    String? audioUrl;
-    Locale? locale;
+    final trackMap = <String, Set<HlsAudioTrack>>{};
 
+    // Fetching hls resolutions
     for (var i = 0; i < parsedMasterPlaylist.playlistItems.length; i++) {
       final item = parsedMasterPlaylist.playlistItems[i];
-      final videoUrl = item.url;
-      if (videoUrl != null) {
+      final itemUrl = item.url;
+      if (itemUrl != null) {
         for (final resolution in HlsResolutionType.values) {
-          if (videoUrl.contains(resolution.title)) {
-            resolutions.add(
-              HlsResolution(
-                resolution: resolution,
-                videoPlaylistUrl: videoUrl,
-              ),
-            );
+          if (itemUrl.contains(resolution.title)) {
+            final trackType = item.hlsValueParameters[HlsParamConstants.audio]
+                ?.value.escapeQuotes;
+            if (trackType != null) {
+              resolutions.add(
+                HlsResolution(
+                  resolution: resolution,
+                  videoPlaylistUrl: itemUrl,
+                  trackType:
+                      HlsAudioTrackType.values.first.fromString(trackType),
+                ),
+              );
+            }
           }
         }
       }
 
-      if (item.hlsValueParameters[HlsParamConstants.type] ==
-              HlsParamValueConstants.audio &&
-          item.hlsValueParameters[HlsParamConstants.uri] != null) {
-        audioUrl =
-            item.hlsValueParameters[HlsParamConstants.uri]!.value.escapeQuotes;
-      }
-
-      final language =
-          item.hlsValueParameters[HlsParamConstants.language]?.value;
-
-      if (locale == null && language != null) {
-        locale = Locale(language.replaceAll('"', ''));
+      // Fetching hls audio tracks
+      final typeParam = item.hlsValueParameters[HlsParamConstants.type];
+      if (item.hlsKey == HlsKeyConstants.extXMedia &&
+          typeParam != null &&
+          typeParam == HlsParamValueConstants.audio) {
+        final trackType = item
+            .hlsValueParameters[HlsParamConstants.groupId]?.value.escapeQuotes;
+        final trackUrl =
+            item.hlsValueParameters[HlsParamConstants.uri]?.value.escapeQuotes;
+        final trackName =
+            item.hlsValueParameters[HlsParamConstants.name]?.value.escapeQuotes;
+        if (trackType != null && trackUrl != null && trackName != null) {
+          final track = HlsAudioTrack(
+            trackType: HlsAudioTrackType.values.first.fromString(trackType),
+            trackUrl: trackUrl,
+            trackName: trackName,
+          );
+          if (trackMap[trackName] != null) {
+            trackMap[trackName] = {
+              ...trackMap[trackName]!,
+              track,
+            };
+          } else {
+            trackMap[trackName] = {track};
+          }
+        }
       }
     }
 
-    if (audioUrl == null) {
-      throw UnimplementedError('Make sure your playlist contains AUDIO URI');
-    } else if (locale == null) {
-      throw UnimplementedError('Make sure your playlist contains LANGUAGE');
+    final audioTrackGroups = <HlsAudioTrackGroup>{};
+
+    for (final entry in trackMap.entries) {
+      audioTrackGroups.add(
+        HlsAudioTrackGroup(
+          language: entry.key,
+          tracks: entry.value,
+        ),
+      );
     }
 
     return MasterPlaylistModel(
+      audioTrackGroups: audioTrackGroups,
       resolutions: resolutions,
       masterPlaylistData: parsedMasterPlaylist,
-      audioPlaylistUrl: audioUrl,
-      playlistLocale: locale,
       segmentPlaylistKey: segmentPlaylistKey,
     );
   }
 
-  final String audioPlaylistUrl;
   final Set<HlsResolution> resolutions;
+  final Set<HlsAudioTrackGroup> audioTrackGroups;
   final HlsPlaylistData masterPlaylistData;
-  final Locale playlistLocale;
   final HlsSegmentsPlaylistKey? segmentPlaylistKey;
 
   @override
   List<Object?> get props => [
-        audioPlaylistUrl,
         resolutions,
+        audioTrackGroups,
         masterPlaylistData,
-        audioPlaylistUrl,
         segmentPlaylistKey,
       ];
 }

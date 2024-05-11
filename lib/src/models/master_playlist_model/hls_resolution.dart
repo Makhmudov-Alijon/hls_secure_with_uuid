@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:download_manager/src/models/master_playlist_model/hls_audio.dart';
 import 'package:equatable/equatable.dart';
 
 enum HlsResolutionType {
@@ -35,23 +36,28 @@ class HlsResolution extends Equatable {
   const HlsResolution({
     required this.resolution,
     required this.videoPlaylistUrl,
+    required this.trackType,
   });
 
   final HlsResolutionType resolution;
   final String videoPlaylistUrl;
+  final HlsAudioTrackType trackType;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'resolution': resolution.name,
       'videoPlaylistUrl': videoPlaylistUrl,
+      'track_type': trackType.name,
     };
   }
 
   factory HlsResolution.fromMap(Map<String, dynamic> map) {
     return HlsResolution(
-      resolution: HlsResolutionType.values
-          .firstWhere((element) => element.name == map['resolution'] as String),
+      resolution: HlsResolutionType.values.first
+          .fromString(map['resolution'] as String),
       videoPlaylistUrl: map['videoPlaylistUrl'] as String,
+      trackType: HlsAudioTrackType.values.first
+          .fromString(map['track_type'] as String),
     );
   }
 

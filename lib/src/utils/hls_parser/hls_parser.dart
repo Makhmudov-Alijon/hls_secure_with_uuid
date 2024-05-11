@@ -7,24 +7,21 @@ import 'entities/hls_playlist_data.dart';
 import 'entities/hls_playlist_item.dart';
 import 'entities/hls_playlist_type.dart';
 import 'hls_constants.dart';
-import 'hls_path_manager.dart';
-import 'hls_utils.dart';
 
 class HlsParser {
   const HlsParser({
     required this.playlist,
-    required this.playlistUrl,
     this.key,
+    this.useAbsoluteLinks = true,
   });
 
   /// Playlist data that came in response
   final String playlist;
 
-  /// URL form where the playlist was requested
-  final String playlistUrl;
-
   /// Auth key
   final HlsSegmentsPlaylistKey? key;
+
+  final bool useAbsoluteLinks;
 
   HlsPlaylistData parseData(HlsPlaylistType playlistType) {
     final playlistLines = playlist.split('\n');
@@ -66,9 +63,7 @@ class HlsParser {
 
               if (key == HlsParamConstants.uri) {
                 value = value.copyWith(
-                  value:
-                      HlsUtils.checkLinks(temp.last.escapeQuotes, playlistUrl)
-                          .inQuotes,
+                  value: temp.last,
                 );
               }
 
@@ -93,7 +88,7 @@ class HlsParser {
               HlsPlaylistItem(
                 hlsKey: HlsKey(key: key),
                 hlsValueParameters: valueParameters,
-                url: HlsUtils.checkLinks(nextLine, playlistUrl),
+                url: nextLine,
               ),
             );
           } else {
@@ -143,7 +138,6 @@ class HlsParser {
 
     return HlsPlaylistData(
       playlistItems: playlistItems,
-      playlistUrl: playlistUrl,
       playlistType: playlistType,
     );
   }

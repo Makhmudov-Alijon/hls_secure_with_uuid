@@ -42,7 +42,6 @@ class HlsRepository {
       final response = await dio.get<String>(masterPlaylistUrl);
       final parser = HlsParser(
         playlist: response.data!,
-        playlistUrl: masterPlaylistUrl,
       );
       return MasterPlaylistModel.fromParsedPlaylist(
         parser.parseData(HlsPlaylistType.masterPlaylist),
@@ -61,7 +60,6 @@ class HlsRepository {
       final response = await dio.get<String>(resolution.videoPlaylistUrl);
       final parser = HlsParser(
         playlist: response.data!,
-        playlistUrl: resolution.videoPlaylistUrl,
         key: masterPlaylist.segmentPlaylistKey,
       );
       final parsed = parser.parseData(HlsPlaylistType.videoSegmentPlaylist);
@@ -78,22 +76,23 @@ class HlsRepository {
   Future<SegmentPlaylistParsedModel> fetchAudioPlaylist(
     MasterPlaylistModel masterPlaylist,
   ) async {
-    try {
-      final response = await dio.get<String>(masterPlaylist.audioPlaylistUrl);
-      final parser = HlsParser(
-        playlist: response.data!,
-        playlistUrl: masterPlaylist.audioPlaylistUrl,
-        key: masterPlaylist.segmentPlaylistKey,
-      );
-      final parsed = parser.parseData(HlsPlaylistType.audioSegmentPlaylist);
-      return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        playlistData: parsed,
-        isVideo: false,
-        playlistKey: masterPlaylist.segmentPlaylistKey,
-      );
-    } catch (e) {
-      rethrow;
-    }
+    // try {
+    //   final response = await dio.get<String>(masterPlaylist.audioPlaylistUrl);
+    //   final parser = HlsParser(
+    //     playlist: response.data!,
+    //     playlistUrl: masterPlaylist.audioPlaylistUrl,
+    //     key: masterPlaylist.segmentPlaylistKey,
+    //   );
+    //   final parsed = parser.parseData(HlsPlaylistType.audioSegmentPlaylist);
+    //   return SegmentPlaylistParsedModel.fromParsedPlaylist(
+    //     playlistData: parsed,
+    //     isVideo: false,
+    //     playlistKey: masterPlaylist.segmentPlaylistKey,
+    //   );
+    // } catch (e) {
+    //   rethrow;
+    // }
+    throw UnimplementedError();
   }
 
   Future<void> downloadMustHaveData(List<DownloadItem> downloadTasks) async {
@@ -139,6 +138,7 @@ class HlsRepository {
     try {
       final baseDir = await HlsPathConstants.baseDir;
       final hlsPathManager = HlsPathManager(
+        audioTrack: hlsDetails.audioTrack,
         baseDir: baseDir,
         localHlsId: hlsDetails.id,
         resolutionType: hlsDetails.videoResolution.resolution,
@@ -150,26 +150,24 @@ class HlsRepository {
 
       final videoDir = hlsPathManager.videoDir..createIfNotExist();
 
-      unawaited(
-        downloadMustHaveData(
-          [
-            if (key != null &&
-                !hlsPathManager.masterFileFrom(key.encKeyUrl).existsSync())
-              DownloadItem(
-                groupId: hlsDetails.id.toStringId(),
-                url: key.encKeyUrl,
-                saveDir: hlsPathManager.masterDir,
-                fileName: hlsPathManager.masterFileFrom(key.encKeyUrl).fileName,
-              ),
-            if (posterLink != null && !hlsPathManager.posterFile.existsSync())
-              DownloadItem(
-                groupId: hlsDetails.id.toStringId(),
-                url: posterLink,
-                saveDir: hlsPathManager.masterDir,
-                fileName: hlsPathManager.posterFile.fileName,
-              ),
-          ],
-        ),
+      await downloadMustHaveData(
+        [
+          if (key != null &&
+              !hlsPathManager.masterFileFrom(key.encKeyUrl).existsSync())
+            DownloadItem(
+              groupId: hlsDetails.id.toStringId(),
+              url: key.encKeyUrl,
+              saveDir: hlsPathManager.masterDir,
+              fileName: hlsPathManager.masterFileFrom(key.encKeyUrl).fileName,
+            ),
+          if (posterLink != null && !hlsPathManager.posterFile.existsSync())
+            DownloadItem(
+              groupId: hlsDetails.id.toStringId(),
+              url: posterLink,
+              saveDir: hlsPathManager.masterDir,
+              fileName: hlsPathManager.posterFile.fileName,
+            ),
+        ],
       );
 
       final videoPlaylist = await fetchDataFromResolutionPlaylist(
@@ -181,29 +179,25 @@ class HlsRepository {
         masterPlaylist,
       );
 
-      final masterFile = await hlsPathManager
-          .masterFileFrom(masterPlaylist.masterPlaylistData.playlistUrl)
-          .writeAsString(
+      final masterFile = await hlsPathManager.masterFile().writeAsString(
             await masterPlaylist.masterPlaylistData.toLocalPlaylist(
               pathManager: hlsPathManager,
             ),
           );
 
-      final videoMasterFile = await hlsPathManager
-          .videoFileFrom(videoPlaylist.playlistData.playlistUrl)
-          .writeAsString(
-            await videoPlaylist.playlistData.toLocalPlaylist(
-              pathManager: hlsPathManager,
-            ),
-          );
+      final videoMasterFile =
+          await hlsPathManager.videoMasterFile().writeAsString(
+                await videoPlaylist.playlistData.toLocalPlaylist(
+                  pathManager: hlsPathManager,
+                ),
+              );
 
-      final audioMasterFile = await hlsPathManager
-          .audioFileFrom(audioPlaylist.playlistData.playlistUrl)
-          .writeAsString(
-            await audioPlaylist.playlistData.toLocalPlaylist(
-              pathManager: hlsPathManager,
-            ),
-          );
+      final audioMasterFile =
+          await hlsPathManager.audioMasterFile().writeAsString(
+                await audioPlaylist.playlistData.toLocalPlaylist(
+                  pathManager: hlsPathManager,
+                ),
+              );
 
       final localHls = LocalHlsModel(
         hlsDetails: hlsDetails,

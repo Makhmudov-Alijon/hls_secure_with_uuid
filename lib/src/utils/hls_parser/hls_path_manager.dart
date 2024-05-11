@@ -1,4 +1,7 @@
+// ignore_for_file: lines_longer_than_80_chars
 import 'dart:io';
+
+import 'package:download_manager/src/models/master_playlist_model/hls_audio.dart';
 
 import '../../models/local_hls_model/local_hls_id.dart';
 import '../../models/master_playlist_model/hls_resolution.dart';
@@ -41,17 +44,20 @@ class HlsPathManager {
     required this.resolutionType,
     required this.baseDir,
     required this.localHlsId,
+    required this.audioTrack,
   });
 
   final LocalHlsId localHlsId;
 
   final HlsResolutionType resolutionType;
 
-  bool get isSerial =>
-      localHlsId.seasonId != null && localHlsId.episodeId != null;
+  final HlsAudioTrack audioTrack;
 
   /// Base directory where files will be saved
   final Directory baseDir;
+
+  bool get isSerial =>
+      localHlsId.seasonId != null && localHlsId.episodeId != null;
 
   String get movieIdFolder {
     return "${localHlsId.movieId}${isSerial ? "/${localHlsId.seasonId}/${localHlsId.episodeId}" : ""}";
@@ -65,48 +71,59 @@ class HlsPathManager {
     return enablePrefix ? 'file://$url' : url;
   }
 
-  String _checkForBase(String url, bool enableBase) {
-    return enableBase ? '${baseDir.path}/$url' : url;
+  String _checkForBase(String url, bool useAbsolute) {
+    return useAbsolute ? '${baseDir.path}/$url' : url;
   }
 
-  String _checkLink(String url, bool enablePrefix, bool enableBase) {
+  String _checkLink(String url, bool enablePrefix, bool useAbsolute) {
     return _checkForPrefix(
       _checkForBase(
         url,
-        enableBase,
+        useAbsolute,
       ),
       enablePrefix,
     );
   }
 
-  String _masterPath(
-      [String? url, bool enablePrefix = false, bool enableBase = true]) {
+  String _masterPath([
+    String? url,
+    String? fileName,
+    bool enablePrefix = false,
+    bool useAbsolute = true,
+  ]) {
     return _checkLink(
-      'media/$movieIdFolder/${_getFileName(url)}',
+      'media/$movieIdFolder/${fileName ?? _getFileName(url)}',
       enablePrefix,
-      enableBase,
+      useAbsolute,
     );
   }
 
   String _videoPath([
     String? url,
+    String? fileName,
     bool enablePrefix = false,
-    bool enableBase = true,
+    bool useAbsolute = true,
     HlsResolutionType? resolutionType,
   ]) {
     return _checkLink(
-      'media/$movieIdFolder/video/${(resolutionType ?? this.resolutionType).quality}p/${_getFileName(url)}',
+      'media/$movieIdFolder/video/${(resolutionType ?? this.resolutionType).quality}p/${fileName ?? _getFileName(url)}',
       enablePrefix,
-      enableBase,
+      useAbsolute,
     );
   }
 
-  String _audioPath(
-      [String? url, bool enablePrefix = false, bool enableBase = true]) {
+  String _audioPath([
+    String? url,
+    String? fileName,
+    bool enablePrefix = false,
+    bool useAbsolute = true,
+    HlsAudioTrack? audioTrack,
+  ]) {
+    final track = audioTrack ?? this.audioTrack;
     return _checkLink(
-      'media/$movieIdFolder/audio/${_getFileName(url)}',
+      'media/$movieIdFolder/audio/${track.trackName}/${track.trackType.shortName}/${fileName ?? _getFileName(url)}',
       enablePrefix,
-      enableBase,
+      useAbsolute,
     );
   }
 
@@ -116,22 +133,37 @@ class HlsPathManager {
 
   Directory get videoDir => Directory(_videoPath());
 
-  Directory get relativeMasterDir => Directory(_masterPath(null, false, false));
+  Directory get relativeMasterDir =>
+      Directory(_masterPath(null, null, false, false));
 
-  Directory get relativeAudioDir => Directory(_audioPath(null, false, false));
+  Directory get relativeAudioDir =>
+      Directory(_audioPath(null, null, false, false));
 
-  Directory get relativeVideoDir => Directory(_videoPath(null, false, false));
+  Directory get relativeVideoDir =>
+      Directory(_videoPath(null, null, false, false));
 
   File masterFileFrom(String url) {
     return File(_masterPath(url));
   }
 
   File videoFileFrom(String url, [HlsResolutionType? resolutionType]) {
-    return File(_videoPath(url, false, true, resolutionType));
+    return File(_videoPath(url, null, false, true, resolutionType));
   }
 
   File audioFileFrom(String url) {
     return File(_audioPath(url));
+  }
+
+  File masterFile() {
+    return File(_masterPath(null, HlsFilenames.master));
+  }
+
+  File audioMasterFile() {
+    return File(_audioPath(null, HlsFilenames.master));
+  }
+
+  File videoMasterFile() {
+    return File(_videoPath(null, HlsFilenames.master));
   }
 
   File get posterFile => File('${masterDir.path}/${HlsFilenames.hlsPoster}');

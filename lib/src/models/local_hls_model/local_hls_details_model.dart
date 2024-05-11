@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+import '../master_playlist_model/hls_audio.dart';
 import '../master_playlist_model/hls_resolution.dart';
 import 'local_hls_id.dart';
 
@@ -15,6 +16,7 @@ class LocalHlsDetailsModel extends Equatable {
     required this.seasonNum,
     required this.masterLink,
     required this.videoResolution,
+    required this.audioTrack,
   });
 
   final LocalHlsId id;
@@ -24,6 +26,7 @@ class LocalHlsDetailsModel extends Equatable {
   final int? seasonNum;
   final String? masterLink;
   final HlsResolution videoResolution;
+  final HlsAudioTrack audioTrack;
 
   String get fullTitle {
     if (isSerial) {
@@ -42,6 +45,7 @@ class LocalHlsDetailsModel extends Equatable {
       'seasonNum': seasonNum,
       'masterLink': masterLink,
       'videoResolution': videoResolution.toMap(),
+      'audioTrack': audioTrack.toMap(),
     };
   }
 
@@ -56,6 +60,8 @@ class LocalHlsDetailsModel extends Equatable {
           map['masterLink'] != null ? map['masterLink'] as String : null,
       videoResolution:
           HlsResolution.fromMap(map['videoResolution'] as Map<String, dynamic>),
+      audioTrack:
+          HlsAudioTrack.fromMap(map['audio_track'] as Map<String, dynamic>),
     );
   }
 
@@ -65,6 +71,14 @@ class LocalHlsDetailsModel extends Equatable {
       LocalHlsDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  List<Object?> get props =>
-      [title, isSerial, episodeNum, seasonNum, masterLink, videoResolution];
+  List<Object?> get props => [
+        id,
+        title,
+        isSerial,
+        episodeNum,
+        seasonNum,
+        masterLink,
+        videoResolution,
+        audioTrack,
+      ];
 }

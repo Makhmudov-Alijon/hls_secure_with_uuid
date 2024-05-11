@@ -1,25 +1,8 @@
+// ignore_for_file: parameter_assignments
+
 import 'dart:io';
 
 class HlsUtils {
-  static String checkLinks(String currentLink, String oldLink) {
-    if (currentLink.startsWith("http")) {
-      return currentLink;
-    } else {
-      String protocol;
-
-      if (oldLink.contains("https://")) {
-        protocol = "https://";
-        oldLink = oldLink.replaceFirst("https://", '');
-      } else {
-        protocol = "http://";
-        oldLink = oldLink.replaceFirst("http://", '');
-      }
-
-      final linkSegments = oldLink.split('/')..removeLast();
-      return "$protocol${linkSegments.join('/')}/$currentLink";
-    }
-  }
-
   static String getCurrentPath(Directory directory, String path) {
     final pathSegments = path.split('/');
     final includedDirectories = <String>[];
@@ -30,7 +13,7 @@ class HlsUtils {
       return directoryName;
     }
 
-    for (var path in pathSegments) {
+    for (final path in pathSegments) {
       if (findDirectory) {
         includedDirectories.add(path);
       }
@@ -42,8 +25,11 @@ class HlsUtils {
     return includedDirectories.join('/');
   }
 
-  static String hlsUrlToLocal(Directory appDir, String url,
-      [bool addFile = false]) {
+  static String hlsUrlToLocal(
+    Directory appDir,
+    String url, [
+    bool addFile = false,
+  ]) {
     final urlSegments = url.split('/')
       ..removeAt(0)
       ..removeAt(1);
@@ -51,19 +37,19 @@ class HlsUtils {
   }
 
   static String asciiToHex(String input) {
-    return "0x${input.codeUnits.map((unit) => unit.toRadixString(16)).join()}";
+    return '0x${input.codeUnits.map((unit) => unit.toRadixString(16)).join()}';
   }
 
   static Future<List<File>> searchFilesByNameInDirectory(
       Directory directory, String fileName) async {
-    List<File> foundFiles = [];
+    final foundFiles = <File>[];
 
     if (!directory.existsSync()) {
       return foundFiles;
     }
 
     Future<void> searchDirectory(Directory directory) async {
-      await for (var entity in directory.list(followLinks: false)) {
+      await for (final entity in directory.list(followLinks: false)) {
         if (entity is File && entity.path.endsWith('/local_hls.json')) {
           foundFiles.add(entity);
         } else if (entity is Directory) {
