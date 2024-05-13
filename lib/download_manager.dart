@@ -8,13 +8,11 @@ export 'package:download_manager/src/models/local_hls_model/local_hls_status.dar
 export 'package:download_manager/src/models/master_playlist_model/hls_resolution.dart';
 export 'package:download_manager/src/models/master_playlist_model/master_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/hls_segment.dart';
-export 'package:download_manager/src/models/segment_playlist_model/hls_segment_playlist_key.dart';
 export 'package:download_manager/src/models/segment_playlist_model/segment_playlist_parsed_model.dart';
 export 'package:download_manager/src/providers/client_provider.dart';
 export 'package:download_manager/src/providers/hls_downloader_provider.dart';
 export 'package:download_manager/src/providers/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/local_hls_movies_provider.dart';
-export 'package:download_manager/src/providers/remove_hls_provider/models/remote_hls_data_model.dart';
 export 'package:download_manager/src/providers/remove_hls_provider/remote_hls_provider.dart';
 export 'package:download_manager/src/repository/hls_local_repository.dart';
 export 'package:download_manager/src/repository/hls_repository.dart';

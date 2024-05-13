@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:download_manager/src/utils/extension/list_extension.dart';
 import 'package:download_manager/src/utils/extension/string_extension.dart';
+import 'package:download_manager/src/utils/hls_parser/hls_path_manager.dart';
 
-import '../../models/segment_playlist_model/hls_segment_playlist_key.dart';
 import 'entities/hls_playlist_data.dart';
 import 'entities/hls_playlist_item.dart';
 import 'entities/hls_playlist_type.dart';
@@ -11,22 +11,23 @@ import 'hls_constants.dart';
 class HlsParser {
   const HlsParser({
     required this.playlist,
-    this.key,
+    this.encKeyPath,
     this.useAbsoluteLinks = true,
   });
 
   /// Playlist data that came in response
   final String playlist;
 
-  /// Auth key
-  final HlsSegmentsPlaylistKey? key;
+  /// Path to Auth key
+  final String? encKeyPath;
 
+  /// If specified as `true` links will be converted to absolute
   final bool useAbsoluteLinks;
 
   HlsPlaylistData parseData(HlsPlaylistType playlistType) {
-    final playlistLines = playlist.split('\n');
+    final exp = RegExp(r'\r?\n');
+    final playlistLines = playlist.split(exp);
     final playlistItems = <HlsPlaylistItem>[];
-    String? iv;
 
     for (var i = 0; i < playlistLines.length; i++) {
       var line = playlistLines[i];
@@ -35,16 +36,17 @@ class HlsParser {
       }
 
       final valueParameters = <HlsParam?, HlsParamValue>{};
-      String key;
+      String lineKey;
       if (line.isEmpty) {
         continue;
       }
       if (line.startsWith('#')) {
         final temp = line.splitWithExclude(pattern: ':', excludePattern: '"');
-        key = temp.first;
+
+        lineKey = temp.first;
 
         if (temp.length > 1) {
-          final parametersLine = temp[1];
+          final parametersLine = temp.last;
           final valueParametersStr = parametersLine.splitWithExclude(
             pattern: ',',
             excludePattern: '"',
@@ -61,10 +63,10 @@ class HlsParser {
               final key = HlsParam(parameter: temp.first);
               var value = HlsParamValue(value: temp.last);
 
-              if (key == HlsParamConstants.uri) {
-                value = value.copyWith(
-                  value: temp.last,
-                );
+              if (key == HlsParamConstants.uri &&
+                  value.value.contains('enc.key') &&
+                  encKeyPath != null) {
+                value = value.copyWith(value: encKeyPath!.inQuotes);
               }
 
               valueParameters[key] = value;
@@ -76,7 +78,7 @@ class HlsParser {
           /// NO URL FOUND
           playlistItems.add(
             HlsPlaylistItem(
-              hlsKey: HlsKey(key: key),
+              hlsKey: HlsKey(key: lineKey),
               hlsValueParameters: valueParameters,
             ),
           );
@@ -86,7 +88,7 @@ class HlsParser {
           if (nextLine.isNotEmpty) {
             playlistItems.add(
               HlsPlaylistItem(
-                hlsKey: HlsKey(key: key),
+                hlsKey: HlsKey(key: lineKey),
                 hlsValueParameters: valueParameters,
                 url: nextLine,
               ),
@@ -94,44 +96,12 @@ class HlsParser {
           } else {
             playlistItems.add(
               HlsPlaylistItem(
-                hlsKey: HlsKey(key: key),
+                hlsKey: HlsKey(key: lineKey),
                 hlsValueParameters: valueParameters,
               ),
             );
           }
           i += 1;
-        }
-      }
-
-      final ivValue = valueParameters[HlsParamConstants.iv];
-
-      if (ivValue != null) {
-        iv = ivValue.value;
-      }
-    }
-
-    if (key != null) {
-      for (var i = 0; i < playlistItems.length; i++) {
-        final item = playlistItems[i];
-        if (item.hlsKey == HlsKeyConstants.extInf) {
-          if (i != 0) {
-            playlistItems.insert(
-              i,
-              HlsPlaylistItem(
-                hlsKey: HlsKeyConstants.extXKey,
-                hlsValueParameters: {
-                  HlsParamConstants.method: HlsParamValueConstants.aes128,
-                  HlsParamConstants.uri:
-                      HlsParamValue(value: '"${key!.encKeyUrl}"'),
-                  if (iv != null)
-                    HlsParamConstants.iv: HlsParamValue(
-                      value: iv,
-                    ),
-                },
-              ),
-            );
-            break;
-          }
         }
       }
     }

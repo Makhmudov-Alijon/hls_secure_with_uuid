@@ -1,6 +1,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 import 'dart:io';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/models/master_playlist_model/hls_audio.dart';
 
 import '../../models/local_hls_model/local_hls_id.dart';
@@ -41,20 +42,18 @@ extension HlsStringExtension on String {
 
 class HlsPathManager {
   const HlsPathManager({
-    required this.resolutionType,
     required this.baseDir,
     required this.localHlsId,
-    required this.audioTrack,
+    required this.isRemote,
   });
 
+  /// This id identifies the path of movie folder
   final LocalHlsId localHlsId;
-
-  final HlsResolutionType resolutionType;
-
-  final HlsAudioTrack audioTrack;
 
   /// Base directory where files will be saved
   final Directory baseDir;
+
+  final bool isRemote;
 
   bool get isSerial =>
       localHlsId.seasonId != null && localHlsId.episodeId != null;
@@ -63,7 +62,7 @@ class HlsPathManager {
     return "${localHlsId.movieId}${isSerial ? "/${localHlsId.seasonId}/${localHlsId.episodeId}" : ""}";
   }
 
-  String _getFileName(String? url) {
+  String _filenameFromUrl(String? url) {
     return url?.split('?').first.split('/').last ?? '';
   }
 
@@ -85,43 +84,46 @@ class HlsPathManager {
     );
   }
 
-  String _masterPath([
+  String _hlsDataSource(bool isRemote) {
+    return isRemote ? 'remote' : 'local';
+  }
+
+  String _masterPath({
     String? url,
     String? fileName,
     bool enablePrefix = false,
     bool useAbsolute = true,
-  ]) {
+  }) {
     return _checkLink(
-      'media/$movieIdFolder/${fileName ?? _getFileName(url)}',
+      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/${fileName ?? _filenameFromUrl(url)}',
       enablePrefix,
       useAbsolute,
     );
   }
 
-  String _videoPath([
+  String _videoPath({
     String? url,
     String? fileName,
     bool enablePrefix = false,
     bool useAbsolute = true,
-    HlsResolutionType? resolutionType,
-  ]) {
+    required HlsResolutionType resolutionType,
+  }) {
     return _checkLink(
-      'media/$movieIdFolder/video/${(resolutionType ?? this.resolutionType).quality}p/${fileName ?? _getFileName(url)}',
+      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/video/${resolutionType.quality}p/${fileName ?? _filenameFromUrl(url)}',
       enablePrefix,
       useAbsolute,
     );
   }
 
-  String _audioPath([
+  String _audioPath({
     String? url,
     String? fileName,
     bool enablePrefix = false,
     bool useAbsolute = true,
-    HlsAudioTrack? audioTrack,
-  ]) {
-    final track = audioTrack ?? this.audioTrack;
+    required HlsAudioTrack audioTrack,
+  }) {
     return _checkLink(
-      'media/$movieIdFolder/audio/${track.trackName}/${track.trackType.shortName}/${fileName ?? _getFileName(url)}',
+      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
       enablePrefix,
       useAbsolute,
     );
@@ -129,48 +131,95 @@ class HlsPathManager {
 
   Directory get masterDir => Directory(_masterPath());
 
-  Directory get audioDir => Directory(_audioPath());
+  Directory audioDir({required HlsAudioTrack audioTrack}) => Directory(
+        _audioPath(
+          audioTrack: audioTrack,
+        ),
+      );
 
-  Directory get videoDir => Directory(_videoPath());
+  Directory videoDir({required HlsResolutionType resolutionType}) => Directory(
+        _videoPath(
+          resolutionType: resolutionType,
+        ),
+      );
 
-  Directory get relativeMasterDir =>
-      Directory(_masterPath(null, null, false, false));
-
-  Directory get relativeAudioDir =>
-      Directory(_audioPath(null, null, false, false));
-
-  Directory get relativeVideoDir =>
-      Directory(_videoPath(null, null, false, false));
-
-  File masterFileFrom(String url) {
-    return File(_masterPath(url));
+  File fileFromMaster(String url) {
+    return File(
+      _masterPath(
+        url: url,
+      ),
+    );
   }
 
-  File videoFileFrom(String url, [HlsResolutionType? resolutionType]) {
-    return File(_videoPath(url, null, false, true, resolutionType));
+  File fileFromVideo(
+      {required String url, required HlsResolutionType resolutionType}) {
+    return File(
+      _videoPath(
+        url: url,
+        resolutionType: resolutionType,
+      ),
+    );
   }
 
-  File audioFileFrom(String url) {
-    return File(_audioPath(url));
+  File fileFromAudio({
+    required String url,
+    required HlsAudioTrack audioTrack,
+  }) {
+    return File(
+      _audioPath(
+        url: url,
+        audioTrack: audioTrack,
+      ),
+    );
   }
 
   File masterFile() {
-    return File(_masterPath(null, HlsFilenames.master));
+    return File(
+      _masterPath(
+        fileName: HlsFilenames.master,
+      ),
+    );
   }
 
-  File audioMasterFile() {
-    return File(_audioPath(null, HlsFilenames.master));
+  File audioMasterFile({required HlsAudioTrack audioTrack}) {
+    return File(
+      _audioPath(
+        fileName: HlsFilenames.master,
+        audioTrack: audioTrack,
+      ),
+    );
   }
 
-  File videoMasterFile() {
-    return File(_videoPath(null, HlsFilenames.master));
+  File videoMasterFile({required HlsResolutionType resolutionType}) {
+    return File(
+      _videoPath(
+        fileName: HlsFilenames.master,
+        resolutionType: resolutionType,
+      ),
+    );
   }
 
-  File get posterFile => File('${masterDir.path}/${HlsFilenames.hlsPoster}');
+  File get posterFile => File(
+        _masterPath(
+          fileName: HlsFilenames.hlsPoster,
+        ),
+      );
 
-  File get localHlsFile =>
-      File('${masterDir.path}/${HlsFilenames.localHlsJson}');
+  File get localHlsFile => File(
+        _masterPath(
+          fileName: HlsFilenames.localHlsJson,
+        ),
+      );
 
-  File get downloadTaskFile =>
-      File('${masterDir.path}/${HlsFilenames.downloadTask}');
+  File get downloadTaskFile => File(
+        _masterPath(
+          fileName: HlsFilenames.downloadTask,
+        ),
+      );
+
+  File get encKeyFile => File(
+        _masterPath(
+          fileName: HlsFilenames.enc,
+        ),
+      );
 }

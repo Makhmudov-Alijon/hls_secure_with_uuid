@@ -9,13 +9,11 @@ class MasterPlaylistModel extends Equatable {
     required this.resolutions,
     required this.audioTrackGroups,
     required this.masterPlaylistData,
-    this.segmentPlaylistKey,
   });
 
   factory MasterPlaylistModel.fromParsedPlaylist(
-    HlsPlaylistData parsedMasterPlaylist, [
-    HlsSegmentsPlaylistKey? segmentPlaylistKey,
-  ]) {
+    HlsPlaylistData parsedMasterPlaylist,
+  ) {
     final resolutions = <HlsResolution>{};
     final trackMap = <String, Set<HlsAudioTrack>>{};
 
@@ -25,9 +23,10 @@ class MasterPlaylistModel extends Equatable {
       final itemUrl = item.url;
       if (itemUrl != null) {
         for (final resolution in HlsResolutionType.values) {
-          if (itemUrl.contains(resolution.title)) {
+          if (itemUrl.startsWith(resolution.title)) {
             final trackType = item.hlsValueParameters[HlsParamConstants.audio]
                 ?.value.escapeQuotes;
+
             if (trackType != null) {
               resolutions.add(
                 HlsResolution(
@@ -38,6 +37,7 @@ class MasterPlaylistModel extends Equatable {
                 ),
               );
             }
+            break;
           }
         }
       }
@@ -86,20 +86,17 @@ class MasterPlaylistModel extends Equatable {
       audioTrackGroups: audioTrackGroups,
       resolutions: resolutions,
       masterPlaylistData: parsedMasterPlaylist,
-      segmentPlaylistKey: segmentPlaylistKey,
     );
   }
 
   final Set<HlsResolution> resolutions;
   final Set<HlsAudioTrackGroup> audioTrackGroups;
   final HlsPlaylistData masterPlaylistData;
-  final HlsSegmentsPlaylistKey? segmentPlaylistKey;
 
   @override
   List<Object?> get props => [
         resolutions,
         audioTrackGroups,
         masterPlaylistData,
-        segmentPlaylistKey,
       ];
 }

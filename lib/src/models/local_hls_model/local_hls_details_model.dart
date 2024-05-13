@@ -15,8 +15,8 @@ class LocalHlsDetailsModel extends Equatable {
     required this.episodeNum,
     required this.seasonNum,
     required this.masterLink,
-    required this.videoResolution,
-    required this.audioTrack,
+    required this.resolution,
+    required this.audioTracks,
   });
 
   final LocalHlsId id;
@@ -25,8 +25,8 @@ class LocalHlsDetailsModel extends Equatable {
   final int? episodeNum;
   final int? seasonNum;
   final String? masterLink;
-  final HlsResolution videoResolution;
-  final HlsAudioTrack audioTrack;
+  final HlsResolution resolution;
+  final Set<HlsAudioTrack> audioTracks;
 
   String get fullTitle {
     if (isSerial) {
@@ -44,12 +44,13 @@ class LocalHlsDetailsModel extends Equatable {
       'episodeNum': episodeNum,
       'seasonNum': seasonNum,
       'masterLink': masterLink,
-      'videoResolution': videoResolution.toMap(),
-      'audioTrack': audioTrack.toMap(),
+      'resolution': resolution.toMap(),
+      'audioTracks': audioTracks.map((e) => e.toMap()).toSet(),
     };
   }
 
   factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
+    final audioTracks = map['audioTracks'] as Set<Map<String, dynamic>>;
     return LocalHlsDetailsModel(
       id: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
       title: map['title'] as String,
@@ -58,10 +59,11 @@ class LocalHlsDetailsModel extends Equatable {
       seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
       masterLink:
           map['masterLink'] != null ? map['masterLink'] as String : null,
-      videoResolution:
-          HlsResolution.fromMap(map['videoResolution'] as Map<String, dynamic>),
-      audioTrack:
-          HlsAudioTrack.fromMap(map['audio_track'] as Map<String, dynamic>),
+      resolution:
+          HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
+      audioTracks: Set<HlsAudioTrack>.from(
+        audioTracks.map(HlsAudioTrack.fromMap),
+      ),
     );
   }
 
@@ -78,7 +80,7 @@ class LocalHlsDetailsModel extends Equatable {
         episodeNum,
         seasonNum,
         masterLink,
-        videoResolution,
-        audioTrack,
+        resolution,
+        audioTracks,
       ];
 }

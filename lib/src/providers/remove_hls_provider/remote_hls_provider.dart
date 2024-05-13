@@ -1,10 +1,6 @@
-import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 
-import '../../utils/hls_parser/entities/hls_playlist_type.dart';
 
 class RemoteHlsState extends Equatable {
   const RemoteHlsState();
@@ -26,42 +22,7 @@ class RemoteHlsProvider extends Notifier<RemoteHlsState> {
     return const RemoteHlsInitialState();
   }
 
-  Future<void> parse({required String url, required String token}) async {
-    final client = ref.read(managerClientProvider);
-    try {
-      final response = await client.get<String>(url);
-
-      if (response.data is String) {
-        final parser = HlsParser(
-          playlist: response.data!,
-          useAbsoluteLinks: false,
-        );
-        final parsedMaster = parser.parseData(HlsPlaylistType.masterPlaylist);
-        final master = MasterPlaylistModel.fromParsedPlaylist(parsedMaster);
-
-        final selectedResolution = master.resolutions.first;
-
-        final selectedAudioGroup = master.audioTrackGroups.first;
-
-        final hlsPathManager = HlsPathManager(
-          resolutionType: selectedResolution.resolution,
-          audioTrack: selectedAudioGroup.tracks.firstWhere(
-              (element) => element.trackType == selectedResolution.trackType),
-          baseDir: await getApplicationDocumentsDirectory(),
-          localHlsId: const LocalHlsId(movieId: 1),
-        );
-        debugPrint('playlist:\n${master.masterPlaylistData}');
-        debugPrint('local playlist:');
-        debugPrint(
-          await master.masterPlaylistData.toLocalPlaylist(
-            pathManager: hlsPathManager,
-          ),
-        );
-      }
-    } catch (e) {
-      'Error $e'.log();
-    }
-  }
+  Future<void> parse({required String url, required String token}) async {}
 
   Future<String> fetchVideoData({
     required String url,

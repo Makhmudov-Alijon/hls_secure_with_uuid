@@ -20,7 +20,7 @@ enum HlsDownloaderState {
 
 final hlsDownloaderProvider =
     NotifierProvider<HlsDownloaderNotifier, HlsDownloaderState>(
-  () => HlsDownloaderNotifier(),
+  HlsDownloaderNotifier.new,
 );
 
 class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
@@ -57,7 +57,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     final hls =
         ref.read(localHlsMoviesProvider.notifier).hlsById(hlsDetails.id);
     if (downloadTask == null || hls == null) {
-      throw Exception("Something went wrong!");
+      throw Exception('Something went wrong!');
     } else {
       if (state == HlsDownloaderState.downloading) {
         addToQueue(hls);
@@ -92,13 +92,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
-        downloadOrContinue(downloadTask: downloadTask, hls: nextHls);
+        unawaited(
+          downloadOrContinue(downloadTask: downloadTask, hls: nextHls),
+        );
       }
     }
   }
 
-  Future<void> downloadOrContinue(
-      {required DownloadTask downloadTask, required LocalHlsModel hls}) async {
+  Future<void> downloadOrContinue({
+    required DownloadTask downloadTask,
+    required LocalHlsModel hls,
+  }) async {
     changeState(HlsDownloaderState.downloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
           hls.id,
@@ -119,12 +123,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         .read(localHlsMoviesProvider.notifier)
         .updateHlsStatus(hls.id, resultState);
     if (resultState is LocalHlsErrorState) {
-      throw Exception("Something went wrong!");
+      throw Exception('Something went wrong!');
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    checkForNextQueue();
+    unawaited(checkForNextQueue());
   }
 
   static Future<LocalHlsState> downloadStart(

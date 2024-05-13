@@ -26,4 +26,6 @@ class HlsFilenames {
   static const downloadTask = 'download_task.json';
 
   static const master = 'master.m3u8';
+
+  static const enc = 'enc.key';
 }

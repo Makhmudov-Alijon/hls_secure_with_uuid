@@ -5,7 +5,9 @@ import 'package:equatable/equatable.dart';
 
 enum HlsAudioTrackType {
   low('group_audio_low', 'low'),
-  high('group_audio_high', 'high');
+  high('group_audio_high', 'high'),
+  single('group_audio', 'single'),
+  ;
 
   const HlsAudioTrackType(this.name, this.shortName);
 
@@ -54,7 +56,8 @@ class HlsAudioTrack extends Equatable {
 
   factory HlsAudioTrack.fromJson(String jsonString) {
     return HlsAudioTrack.fromMap(
-        json.decode(jsonString) as Map<String, dynamic>);
+      json.decode(jsonString) as Map<String, dynamic>,
+    );
   }
 
   @override
