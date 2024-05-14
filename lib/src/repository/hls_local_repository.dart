@@ -10,8 +10,9 @@ final hlsLocalRepositoryProvider = Provider(
 );
 
 class HlsLocalRepository {
-  Future<List<LocalHlsModel>> fetchLocalHlsMovies(
-      [bool isInitial = false]) async {
+  Future<List<LocalHlsModel>> fetchLocalHlsMovies({
+    bool isInitial = false,
+  }) async {
     final mediaDir = await HlsPathConstants.mediaDir;
     final hlsFiles = await HlsUtils.searchFilesByNameInDirectory(
       mediaDir,

@@ -1,19 +1,21 @@
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/models/hls_data_model/hls_data_model.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../utils/hls_parser/entities/hls_playlist_data.dart';
-import 'hls_audio.dart';
 
 class MasterPlaylistModel extends Equatable {
   const MasterPlaylistModel({
     required this.resolutions,
     required this.audioTrackGroups,
     required this.masterPlaylistData,
+    required this.hlsData,
   });
 
-  factory MasterPlaylistModel.fromParsedPlaylist(
-    HlsPlaylistData parsedMasterPlaylist,
-  ) {
+  factory MasterPlaylistModel.fromParsedPlaylist({
+    required HlsPlaylistData parsedMasterPlaylist,
+    required HlsDataModel hlsData,
+  }) {
     final resolutions = <HlsResolution>{};
     final trackMap = <String, Set<HlsAudioTrack>>{};
 
@@ -86,17 +88,20 @@ class MasterPlaylistModel extends Equatable {
       audioTrackGroups: audioTrackGroups,
       resolutions: resolutions,
       masterPlaylistData: parsedMasterPlaylist,
+      hlsData: hlsData,
     );
   }
 
   final Set<HlsResolution> resolutions;
   final Set<HlsAudioTrackGroup> audioTrackGroups;
   final HlsPlaylistData masterPlaylistData;
+  final HlsDataModel hlsData;
 
   @override
   List<Object?> get props => [
         resolutions,
         audioTrackGroups,
         masterPlaylistData,
+        hlsData,
       ];
 }

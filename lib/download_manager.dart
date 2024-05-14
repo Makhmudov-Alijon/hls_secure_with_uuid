@@ -5,6 +5,7 @@ export 'package:download_manager/src/models/local_hls_model/local_hls_group_mode
 export 'package:download_manager/src/models/local_hls_model/local_hls_id.dart';
 export 'package:download_manager/src/models/local_hls_model/local_hls_model.dart';
 export 'package:download_manager/src/models/local_hls_model/local_hls_status.dart';
+export 'package:download_manager/src/models/master_playlist_model/hls_audio.dart';
 export 'package:download_manager/src/models/master_playlist_model/hls_resolution.dart';
 export 'package:download_manager/src/models/master_playlist_model/master_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/hls_segment.dart';

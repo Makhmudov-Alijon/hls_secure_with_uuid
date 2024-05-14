@@ -69,7 +69,7 @@ class HlsRepository {
     }
   }
 
-  Future<void> fetchData({
+  Future<MasterPlaylistModel> fetchMasterPlaylist({
     required String url,
     required String token,
     required String key,
@@ -94,7 +94,56 @@ class HlsRepository {
 
       final playlistData = hlsParser.parseData(HlsPlaylistType.masterPlaylist);
 
-      // final master = MasterPlaylistModel.fromParsedPlaylist(playlistData);
+      return MasterPlaylistModel.fromParsedPlaylist(
+        parsedMasterPlaylist: playlistData,
+        hlsData: hlsData,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> prepareForWatching({
+    required String url,
+    required String token,
+    required String key,
+    required LocalHlsId hlsId,
+  }) async {
+    try {
+      final baseDir = await getApplicationDocumentsDirectory();
+
+      final master = await fetchMasterPlaylist(
+        url: url,
+        token: token,
+        key: key,
+        hlsId: hlsId,
+      );
+
+      final hlsPathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: hlsId,
+        isRemote: true,
+      );
+
+      hlsPathManager.masterDir.createIfNotExist();
+
+      hlsPathManager.masterFile().createIfNotExist();
+
+      hlsPathManager.masterFile().writeAsStringSync(
+            master.masterPlaylistData.toString(),
+          );
+
+      for (final resolution in master.resolutions) {
+        hlsPathManager
+            .videoDir(resolutionType: resolution.resolution)
+            .createIfNotExist();
+      }
+
+      for (final audioGroup in master.audioTrackGroups) {
+        for (final audioTrack in audioGroup.tracks) {
+          hlsPathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
+        }
+      }
     } catch (e) {
       rethrow;
     }

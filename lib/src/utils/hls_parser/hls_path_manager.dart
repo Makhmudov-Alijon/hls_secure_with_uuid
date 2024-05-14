@@ -2,11 +2,6 @@
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/master_playlist_model/hls_audio.dart';
-
-import '../../models/local_hls_model/local_hls_id.dart';
-import '../../models/master_playlist_model/hls_resolution.dart';
-import 'hls_path_constants.dart';
 
 extension FileSystemEntityExtension on FileSystemEntity {
   String get fileName => path.split('?').first.split('/').last;
@@ -102,11 +97,11 @@ class HlsPathManager {
   }
 
   String _videoPath({
+    required HlsResolutionType resolutionType,
     String? url,
     String? fileName,
     bool enablePrefix = false,
     bool useAbsolute = true,
-    required HlsResolutionType resolutionType,
   }) {
     return _checkLink(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/video/${resolutionType.quality}p/${fileName ?? _filenameFromUrl(url)}',
@@ -116,11 +111,11 @@ class HlsPathManager {
   }
 
   String _audioPath({
+    required HlsAudioTrack audioTrack,
     String? url,
     String? fileName,
     bool enablePrefix = false,
     bool useAbsolute = true,
-    required HlsAudioTrack audioTrack,
   }) {
     return _checkLink(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
@@ -151,8 +146,10 @@ class HlsPathManager {
     );
   }
 
-  File fileFromVideo(
-      {required String url, required HlsResolutionType resolutionType}) {
+  File fileFromVideo({
+    required String url,
+    required HlsResolutionType resolutionType,
+  }) {
     return File(
       _videoPath(
         url: url,

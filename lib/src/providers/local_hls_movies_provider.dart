@@ -10,7 +10,7 @@ import 'local_hls_movie_provider.dart';
 
 final localHlsMoviesProvider =
     AsyncNotifierProvider<LocalHlsMoviesNotifier, List<LocalHlsModel>>(
-  () => LocalHlsMoviesNotifier(),
+  LocalHlsMoviesNotifier.new,
 );
 
 class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
@@ -23,7 +23,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
       return [];
     }
 
-    for (var hls in state.value!) {
+    for (final hls in state.value!) {
       final key = hls.hlsDetails.id.movieId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
@@ -32,7 +32,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
           });
         } else {
           groupMap.addAll({
-            key: [hls]
+            key: [hls],
           });
         }
       }
@@ -73,7 +73,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
   LocalHlsGroupModel? getGroupById(int movieId) {
     final groups = getGroupedItems();
-    for (var group in groups) {
+    for (final group in groups) {
       if (movieId == group.id) {
         return group;
       }
@@ -121,7 +121,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   FutureOr<List<LocalHlsModel>> build() async {
     return ref
         .read(hlsLocalRepositoryProvider)
-        .fetchLocalHlsMovies(_checkInitial());
+        .fetchLocalHlsMovies(isInitial: _checkInitial());
   }
 
   Future<void> refreshMovies() async {
@@ -154,7 +154,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   }
 
   void deleteGroupOfHls(LocalHlsGroupModel hlsGroup) {
-    for (var item in hlsGroup.movies) {
+    for (final item in hlsGroup.movies) {
       deleteHls(item);
     }
   }
