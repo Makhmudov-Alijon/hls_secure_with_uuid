@@ -37,27 +37,35 @@ class HlsResolution extends Equatable {
     required this.resolution,
     required this.videoPlaylistUrl,
     required this.trackType,
+    required this.filesCount,
+    required this.size,
   });
 
   final HlsResolutionType resolution;
   final String videoPlaylistUrl;
   final HlsAudioTrackType trackType;
+  final int size;
+  final int filesCount;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'resolution': resolution.name,
       'videoPlaylistUrl': videoPlaylistUrl,
-      'track_type': trackType.name,
+      'trackType': trackType.name,
+      'filesCount': filesCount,
+      'size': size,
     };
   }
 
   factory HlsResolution.fromMap(Map<String, dynamic> map) {
     return HlsResolution(
+      size: int.parse(map['size'] as String),
+      filesCount: int.parse(map['filesCount'] as String),
       resolution: HlsResolutionType.values.first
           .fromString(map['resolution'] as String),
       videoPlaylistUrl: map['videoPlaylistUrl'] as String,
-      trackType: HlsAudioTrackType.values.first
-          .fromString(map['track_type'] as String),
+      trackType:
+          HlsAudioTrackType.values.first.fromString(map['trackType'] as String),
     );
   }
 
@@ -67,5 +75,11 @@ class HlsResolution extends Equatable {
       HlsResolution.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  List<Object?> get props => [resolution, videoPlaylistUrl, trackType];
+  List<Object?> get props => [
+        resolution,
+        videoPlaylistUrl,
+        trackType,
+        size,
+        filesCount,
+      ];
 }

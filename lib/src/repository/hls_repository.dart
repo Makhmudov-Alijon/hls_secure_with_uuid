@@ -1,27 +1,18 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:download_manager/src/models/hls_data_model/hls_data_model.dart';
-import 'package:download_manager/src/models/local_hls_model/local_hls_id.dart';
+import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/repository/hls_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../models/download_task_model/download_item_model.dart';
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_details_model.dart';
-import '../models/master_playlist_model/hls_resolution.dart';
-import '../models/master_playlist_model/master_playlist_model.dart';
-import '../models/segment_playlist_model/segment_playlist_parsed_model.dart';
-import '../providers/client_provider.dart';
 import '../utils/hls_parser/entities/hls_playlist_type.dart';
-import '../utils/hls_parser/hls_parser.dart';
-import '../utils/hls_parser/hls_path_manager.dart';
-import '../utils/security/security.dart';
 
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
     dio: ref.read(managerClientProvider),
     ref: ref,
+    hlsService: ref.read(hlsServiceProvider),
   ),
 );
 
@@ -29,15 +20,18 @@ class HlsRepository {
   const HlsRepository({
     required this.dio,
     required this.ref,
+    required this.hlsService,
   });
 
   final Dio dio;
   final Ref ref;
+  final HlsService hlsService;
 
-  Future<HlsDataModel> decryptPlaylistData({
-    required String token,
+  Future<MasterPlaylistModel> fetchMasterPlaylist({
     required String url,
+    required String token,
     required String key,
+    required LocalHlsId hlsId,
   }) async {
     try {
       final response = await dio.get<dynamic>(
@@ -49,47 +43,15 @@ class HlsRepository {
         ),
       );
 
-      final data = response.data;
-
-      if (data is String) {
-        final decrypted = await SecurityService().getDTD(
-          data: data,
-          token: token,
-          key: key,
-        );
-
-        return HlsDataModel.fromJson(decrypted);
-      } else if (data is Map<String, dynamic>) {
-        return HlsDataModel.fromJson(data);
-      } else {
-        throw const FormatException('Playlist data type is not correct');
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<MasterPlaylistModel> fetchMasterPlaylist({
-    required String url,
-    required String token,
-    required String key,
-    required LocalHlsId hlsId,
-  }) async {
-    try {
-      final hlsData =
-          await decryptPlaylistData(token: token, url: url, key: key);
-
-      final baseDir = await getApplicationDocumentsDirectory();
-
-      final hlsPathManager = HlsPathManager(
-        baseDir: baseDir,
-        localHlsId: hlsId,
-        isRemote: false,
+      final hlsData = await hlsService.decryptPlaylistData(
+        token: token,
+        url: url,
+        key: key,
+        data: response.data,
       );
 
       final hlsParser = HlsParser(
         playlist: hlsData.master,
-        encKeyPath: hlsPathManager.encKeyFile.path,
       );
 
       final playlistData = hlsParser.parseData(HlsPlaylistType.masterPlaylist);
@@ -112,6 +74,12 @@ class HlsRepository {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
 
+      final pathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: hlsId,
+        isRemote: true,
+      );
+
       final master = await fetchMasterPlaylist(
         url: url,
         token: token,
@@ -119,31 +87,31 @@ class HlsRepository {
         hlsId: hlsId,
       );
 
-      final hlsPathManager = HlsPathManager(
-        baseDir: baseDir,
-        localHlsId: hlsId,
-        isRemote: true,
+      final masterLinkSwapper = hlsService.getMasterLinkSwapper(
+        pathManager: pathManager,
+        master: master,
       );
 
-      hlsPathManager.masterDir.createIfNotExist();
+      pathManager.masterDir.createIfNotExist();
 
-      hlsPathManager.masterFile().createIfNotExist();
+      pathManager.masterFile()
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          master.masterPlaylistData.toLocalPlaylist(
+            linkSwapper: masterLinkSwapper,
+            useAbsolute: false,
+          ),
+        );
 
-      hlsPathManager.masterFile().writeAsStringSync(
-            master.masterPlaylistData.toString(),
-          );
+      await hlsService.writeVideoResolutions(
+        pathManager: pathManager,
+        master: master,
+      );
 
-      for (final resolution in master.resolutions) {
-        hlsPathManager
-            .videoDir(resolutionType: resolution.resolution)
-            .createIfNotExist();
-      }
-
-      for (final audioGroup in master.audioTrackGroups) {
-        for (final audioTrack in audioGroup.tracks) {
-          hlsPathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
-        }
-      }
+      await hlsService.writeAudioTracks(
+        pathManager: pathManager,
+        master: master,
+      );
     } catch (e) {
       rethrow;
     }

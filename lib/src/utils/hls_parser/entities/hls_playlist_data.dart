@@ -1,3 +1,7 @@
+import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
+import 'package:download_manager/src/utils/hls_parser/entities/hls_link_swapper.dart';
+
+import '../../../../download_manager.dart';
 import 'hls_playlist_item.dart';
 import 'hls_playlist_type.dart';
 
@@ -5,110 +9,55 @@ class HlsPlaylistData {
   const HlsPlaylistData({
     required this.playlistItems,
     required this.playlistType,
+    this.encKey,
   });
 
   final List<HlsPlaylistItem> playlistItems;
   final HlsPlaylistType playlistType;
+  final HlsEncryptionKey? encKey;
 
   @override
   String toString() {
     return playlistItems.map((e) => e.toString()).join('\r\n');
   }
 
-  // Future<String> toLocalPlaylist({
-  //   required HlsPathManager pathManager,
-  //   bool ignoreSegments = false,
-  //   bool ignoreOtherResolutions = true,
-  // }) async {
-  //   final strings = <String>[];
+  String toLocalPlaylist(
+      {HlsLinkSwapper? linkSwapper, bool useAbsolute = true}) {
+    if (linkSwapper == null || linkSwapper.isEmpty) {
+      return toString();
+    }
 
-  //   for (var item in playlistItems) {
-  //     final url = item.url;
-  //     switch (playlistType) {
-  //       case HlsPlaylistType.masterPlaylist:
-  //         if (url != null) {
-  //           if (item.containsParam(param: HlsParamConstants.resolution)) {
-  //             if (!url.contains(pathManager.resolutionType.title) &&
-  //                 ignoreOtherResolutions) {
-  //               continue;
-  //             } else {
-  //               item = item.copyWith(
-  //                 url: pathManager
-  //                     .videoFileFrom(
-  //                       url,
-  //                       HlsResolutionType.v1080p.fromString(url),
-  //                     )
-  //                     .playlistPath,
-  //               );
-  //             }
-  //           }
-  //         }
+    final strings = <String>[];
 
-  //         if (item.containsParam(
-  //             param: HlsParamConstants.type,
-  //             paramValue: HlsParamValueConstants.audio)) {
-  //           item = item.copyWith(
-  //             hlsValueParameters: {
-  //               ...item.hlsValueParameters,
-  //               HlsParamConstants.uri: HlsParamValue(
-  //                 value: pathManager
-  //                     .audioFileFrom(
-  //                         item.hlsValueParameters[HlsParamConstants.uri]!.value)
-  //                     .playlistPath
-  //                     .inQuotes,
-  //               ),
-  //             },
-  //           );
-  //         }
-  //       case HlsPlaylistType.audioSegmentPlaylist:
-  //         if (ignoreSegments) break;
+    for (var item in playlistItems) {
+      final uri = item.hlsValueParameters[HlsParamConstants.uri];
+      if (uri != null) {
+        final swapperLink = linkSwapper[uri.value.escapeQuotes];
+        if (swapperLink != null) {
+          item = item.copyWith(
+            hlsValueParameters: {
+              ...item.hlsValueParameters,
+              HlsParamConstants.uri: HlsParamValue(
+                value:
+                    (useAbsolute ? swapperLink.absolute : swapperLink.relative)
+                        .inQuotes,
+              ),
+            },
+          );
+        }
+      }
 
-  //         if (url != null) {
-  //           item = item.copyWith(
-  //             url: pathManager.audioFileFrom(url).playlistPath,
-  //           );
-  //         }
+      if (item.url != null) {
+        final swapperLink = linkSwapper[item.url!];
+        if (swapperLink != null) {
+          item = item.copyWith(
+            url: useAbsolute ? swapperLink.absolute : swapperLink.relative,
+          );
+        }
+      }
 
-  //         if (item.containsParam(param: HlsParamConstants.method) &&
-  //             item.containsParam(param: HlsParamConstants.uri)) {
-  //           item = item.copyWith(
-  //             hlsValueParameters: {
-  //               ...item.hlsValueParameters,
-  //               HlsParamConstants.uri: HlsParamValue(
-  //                 value: pathManager
-  //                     .masterFileFrom(
-  //                         item.hlsValueParameters[HlsParamConstants.uri]!.value)
-  //                     .playlistPath,
-  //               ),
-  //             },
-  //           );
-  //         }
-  //       case HlsPlaylistType.videoSegmentPlaylist:
-  //         if (ignoreSegments) break;
-
-  //         if (url != null) {
-  //           item = item.copyWith(
-  //             url: pathManager.videoFileFrom(url).playlistPath,
-  //           );
-  //         }
-
-  //         if (item.containsParam(param: HlsParamConstants.method) &&
-  //             item.containsParam(param: HlsParamConstants.uri)) {
-  //           item = item.copyWith(
-  //             hlsValueParameters: {
-  //               ...item.hlsValueParameters,
-  //               HlsParamConstants.uri: HlsParamValue(
-  //                 value: pathManager
-  //                     .masterFileFrom(
-  //                         item.hlsValueParameters[HlsParamConstants.uri]!.value)
-  //                     .playlistPath,
-  //               ),
-  //             },
-  //           );
-  //         }
-  //     }
-  //     strings.add(item.toString());
-  //   }
-  //   return strings.join('\n');
-  // }
+      strings.add(item.toString());
+    }
+    return strings.join('\n');
+  }
 }

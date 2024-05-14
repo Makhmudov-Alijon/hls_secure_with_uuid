@@ -58,7 +58,13 @@ class HlsPathManager {
   }
 
   String _filenameFromUrl(String? url) {
-    return url?.split('?').first.split('/').last ?? '';
+    if (url == null) {
+      return '';
+    } else if (url.contains('?')) {
+      return url.split('?').first.split('/').last;
+    } else {
+      return url.split('/').last;
+    }
   }
 
   String _checkForPrefix(String url, bool enablePrefix) {
@@ -117,6 +123,7 @@ class HlsPathManager {
     bool enablePrefix = false,
     bool useAbsolute = true,
   }) {
+    print("filename: ${_filenameFromUrl(url)}");
     return _checkLink(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
       enablePrefix,

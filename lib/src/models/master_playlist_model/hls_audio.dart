@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 enum HlsAudioTrackType {
   low('group_audio_low', 'low'),
   high('group_audio_high', 'high'),
-  single('group_audio', 'single'),
+  defaultTrack('default', 'default'),
   ;
 
   const HlsAudioTrackType(this.name, this.shortName);
@@ -17,8 +17,12 @@ enum HlsAudioTrackType {
 
 extension HlsAudioTrackTypeX on HlsAudioTrackType {
   HlsAudioTrackType fromString(String name) {
-    return HlsAudioTrackType.values
-        .firstWhere((element) => element.name == name);
+    for (final trackType in HlsAudioTrackType.values) {
+      if (trackType.name == name) {
+        return trackType;
+      }
+    }
+    return HlsAudioTrackType.defaultTrack;
   }
 }
 
@@ -27,22 +31,30 @@ class HlsAudioTrack extends Equatable {
     required this.trackType,
     required this.trackUrl,
     required this.trackName,
+    required this.filesCount,
+    required this.size,
   });
 
   final String trackName;
   final HlsAudioTrackType trackType;
   final String trackUrl;
+  final int size;
+  final int filesCount;
 
   Map<String, dynamic> toMap() {
     return {
       'track_type': trackType.name,
       'track_name': trackName,
       'track_url': trackUrl,
+      'filesCount': filesCount,
+      'size': size,
     };
   }
 
   factory HlsAudioTrack.fromMap(Map<String, dynamic> json) {
     return HlsAudioTrack(
+      filesCount: int.parse(json['filesCount'] as String),
+      size: int.parse(json['size'] as String),
       trackType: HlsAudioTrackType.values.first
           .fromString(json['track_type'] as String),
       trackUrl: json['track_url'] as String,
@@ -61,7 +73,7 @@ class HlsAudioTrack extends Equatable {
   }
 
   @override
-  List<Object?> get props => [trackType, trackUrl];
+  List<Object?> get props => [trackType, trackUrl, trackName, size, filesCount];
 }
 
 class HlsAudioTrackGroup extends Equatable {

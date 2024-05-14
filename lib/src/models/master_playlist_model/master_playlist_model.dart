@@ -24,20 +24,35 @@ class MasterPlaylistModel extends Equatable {
       final item = parsedMasterPlaylist.playlistItems[i];
       final itemUrl = item.url;
       if (itemUrl != null) {
+        itemUrl.log();
         for (final resolution in HlsResolutionType.values) {
-          if (itemUrl.startsWith(resolution.title)) {
+          if (itemUrl.contains(resolution.title)) {
             final trackType = item.hlsValueParameters[HlsParamConstants.audio]
                 ?.value.escapeQuotes;
-
+            'track type: $trackType'.log();
             if (trackType != null) {
-              resolutions.add(
-                HlsResolution(
-                  resolution: resolution,
-                  videoPlaylistUrl: itemUrl,
-                  trackType:
-                      HlsAudioTrackType.values.first.fromString(trackType),
-                ),
-              );
+              final resolutionDetailsIndex =
+                  hlsData.videoPlaylists.indexWhere((element) {
+                print(
+                    "searching: ${element.path} == $itemUrl: ${element.path == itemUrl}");
+                return element.path == itemUrl;
+              });
+
+              if (resolutionDetailsIndex >= 0) {
+                final resolutionDetails =
+                    hlsData.videoPlaylists[resolutionDetailsIndex];
+                'find ${resolutionDetails.path}';
+                resolutions.add(
+                  HlsResolution(
+                    resolution: resolution,
+                    videoPlaylistUrl: itemUrl,
+                    filesCount: resolutionDetails.filesCount,
+                    size: resolutionDetails.size,
+                    trackType:
+                        HlsAudioTrackType.values.first.fromString(trackType),
+                  ),
+                );
+              }
             }
             break;
           }
@@ -56,18 +71,27 @@ class MasterPlaylistModel extends Equatable {
         final trackName =
             item.hlsValueParameters[HlsParamConstants.name]?.value.escapeQuotes;
         if (trackType != null && trackUrl != null && trackName != null) {
-          final track = HlsAudioTrack(
-            trackType: HlsAudioTrackType.values.first.fromString(trackType),
-            trackUrl: trackUrl,
-            trackName: trackName,
+          final trackDetailsIndex = hlsData.audioPlaylists.indexWhere(
+            (element) => element.path == trackUrl,
           );
-          if (trackMap[trackName] != null) {
-            trackMap[trackName] = {
-              ...trackMap[trackName]!,
-              track,
-            };
-          } else {
-            trackMap[trackName] = {track};
+
+          if (trackDetailsIndex >= 0) {
+            final trackDetails = hlsData.audioPlaylists[trackDetailsIndex];
+            final track = HlsAudioTrack(
+              filesCount: trackDetails.filesCount,
+              size: trackDetails.size,
+              trackType: HlsAudioTrackType.values.first.fromString(trackType),
+              trackUrl: trackUrl,
+              trackName: trackName,
+            );
+            if (trackMap[trackName] != null) {
+              trackMap[trackName] = {
+                ...trackMap[trackName]!,
+                track,
+              };
+            } else {
+              trackMap[trackName] = {track};
+            }
           }
         }
       }
