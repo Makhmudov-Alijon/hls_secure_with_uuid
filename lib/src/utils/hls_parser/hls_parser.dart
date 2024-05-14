@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
 import 'package:download_manager/src/utils/extension/list_extension.dart';
 import 'package:download_manager/src/utils/extension/string_extension.dart';
@@ -58,7 +59,7 @@ class HlsParser {
 
               if (key == HlsParamConstants.uri &&
                   value.value.contains('enc.key')) {
-                encKey = HlsEncryptionKey(url: value.value);
+                encKey = HlsEncryptionKey(url: value.value.escapeQuotes);
               }
 
               valueParameters[key] = value;

@@ -24,24 +24,19 @@ class MasterPlaylistModel extends Equatable {
       final item = parsedMasterPlaylist.playlistItems[i];
       final itemUrl = item.url;
       if (itemUrl != null) {
-        itemUrl.log();
         for (final resolution in HlsResolutionType.values) {
           if (itemUrl.contains(resolution.title)) {
             final trackType = item.hlsValueParameters[HlsParamConstants.audio]
                 ?.value.escapeQuotes;
-            'track type: $trackType'.log();
             if (trackType != null) {
               final resolutionDetailsIndex =
                   hlsData.videoPlaylists.indexWhere((element) {
-                print(
-                    "searching: ${element.path} == $itemUrl: ${element.path == itemUrl}");
                 return element.path == itemUrl;
               });
 
               if (resolutionDetailsIndex >= 0) {
                 final resolutionDetails =
                     hlsData.videoPlaylists[resolutionDetailsIndex];
-                'find ${resolutionDetails.path}';
                 resolutions.add(
                   HlsResolution(
                     resolution: resolution,

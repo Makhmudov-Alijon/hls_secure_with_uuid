@@ -99,7 +99,6 @@ class HlsRepository {
         ..writeAsStringSync(
           master.masterPlaylistData.toLocalPlaylist(
             linkSwapper: masterLinkSwapper,
-            useAbsolute: false,
           ),
         );
 
@@ -115,47 +114,6 @@ class HlsRepository {
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<SegmentPlaylistParsedModel> fetchDataFromResolutionPlaylist(
-    MasterPlaylistModel masterPlaylist,
-    HlsResolution resolution,
-  ) async {
-    try {
-      final response = await dio.get<String>(resolution.videoPlaylistUrl);
-      final parser = HlsParser(
-        playlist: response.data!,
-      );
-      final parsed = parser.parseData(HlsPlaylistType.videoSegmentPlaylist);
-      return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        playlistData: parsed,
-        isVideo: true,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<SegmentPlaylistParsedModel> fetchAudioPlaylist(
-    MasterPlaylistModel masterPlaylist,
-  ) async {
-    // try {
-    //   final response = await dio.get<String>(masterPlaylist.audioPlaylistUrl);
-    //   final parser = HlsParser(
-    //     playlist: response.data!,
-    //     playlistUrl: masterPlaylist.audioPlaylistUrl,
-    //     key: masterPlaylist.segmentPlaylistKey,
-    //   );
-    //   final parsed = parser.parseData(HlsPlaylistType.audioSegmentPlaylist);
-    //   return SegmentPlaylistParsedModel.fromParsedPlaylist(
-    //     playlistData: parsed,
-    //     isVideo: false,
-    //     playlistKey: masterPlaylist.segmentPlaylistKey,
-    //   );
-    // } catch (e) {
-    //   rethrow;
-    // }
-    throw UnimplementedError();
   }
 
   Future<void> downloadMustHaveData(List<DownloadItem> downloadTasks) async {

@@ -53,6 +53,11 @@ class HlsLink extends Equatable {
 }
 
 class HlsLinkSwapper {
+  HlsLinkSwapper({
+    required this.useAbsolute,
+  });
+
+  final bool useAbsolute;
   final Map<String, HlsLink> _links = {};
 
   void addLinkFromFile({
@@ -67,7 +72,12 @@ class HlsLinkSwapper {
     return _links.isEmpty;
   }
 
-  HlsLink? operator [](String key) {
-    return _links[key];
+  String? operator [](String key) {
+    final value = _links[key];
+    return value == null
+        ? null
+        : useAbsolute
+            ? value.absolute
+            : value.relative;
   }
 }

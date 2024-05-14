@@ -48,6 +48,7 @@ class HlsPathManager {
   /// Base directory where files will be saved
   final Directory baseDir;
 
+  /// Defines if hls should be paste inside remote folder
   final bool isRemote;
 
   bool get isSerial =>
@@ -67,38 +68,17 @@ class HlsPathManager {
     }
   }
 
-  String _checkForPrefix(String url, bool enablePrefix) {
-    return enablePrefix ? 'file://$url' : url;
-  }
-
-  String _checkForBase(String url, bool useAbsolute) {
+  String _checkForBase(String url, [bool useAbsolute = true]) {
     return useAbsolute ? '${baseDir.path}/$url' : url;
-  }
-
-  String _checkLink(String url, bool enablePrefix, bool useAbsolute) {
-    return _checkForPrefix(
-      _checkForBase(
-        url,
-        useAbsolute,
-      ),
-      enablePrefix,
-    );
   }
 
   String _hlsDataSource(bool isRemote) {
     return isRemote ? 'remote' : 'local';
   }
 
-  String _masterPath({
-    String? url,
-    String? fileName,
-    bool enablePrefix = false,
-    bool useAbsolute = true,
-  }) {
-    return _checkLink(
+  String _masterPath({String? url, String? fileName}) {
+    return _checkForBase(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/${fileName ?? _filenameFromUrl(url)}',
-      enablePrefix,
-      useAbsolute,
     );
   }
 
@@ -106,13 +86,9 @@ class HlsPathManager {
     required HlsResolutionType resolutionType,
     String? url,
     String? fileName,
-    bool enablePrefix = false,
-    bool useAbsolute = true,
   }) {
-    return _checkLink(
+    return _checkForBase(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/video/${resolutionType.quality}p/${fileName ?? _filenameFromUrl(url)}',
-      enablePrefix,
-      useAbsolute,
     );
   }
 
@@ -120,14 +96,9 @@ class HlsPathManager {
     required HlsAudioTrack audioTrack,
     String? url,
     String? fileName,
-    bool enablePrefix = false,
-    bool useAbsolute = true,
   }) {
-    print("filename: ${_filenameFromUrl(url)}");
-    return _checkLink(
+    return _checkForBase(
       'media/${_hlsDataSource(isRemote)}/$movieIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
-      enablePrefix,
-      useAbsolute,
     );
   }
 

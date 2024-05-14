@@ -24,7 +24,7 @@ class HlsService {
 
         final encKey = parsedPlaylist.playlistData.encKey;
 
-        final playlistLinkSwapper = HlsLinkSwapper();
+        final playlistLinkSwapper = HlsLinkSwapper(useAbsolute: false);
 
         if (encKey != null) {
           playlistLinkSwapper.addLinkFromFile(
@@ -63,7 +63,7 @@ class HlsService {
 
       final encKey = parsedPlaylist.playlistData.encKey;
 
-      final playlistLinkSwapper = HlsLinkSwapper();
+      final playlistLinkSwapper = HlsLinkSwapper(useAbsolute: false);
 
       if (encKey != null) {
         playlistLinkSwapper.addLinkFromFile(
@@ -150,7 +150,7 @@ class HlsService {
     required HlsPathManager pathManager,
     required MasterPlaylistModel master,
   }) {
-    final masterSwapper = HlsLinkSwapper();
+    final masterSwapper = HlsLinkSwapper(useAbsolute: false);
 
     for (final resolution in master.resolutions) {
       final videoMasterFile = pathManager.videoMasterFile(

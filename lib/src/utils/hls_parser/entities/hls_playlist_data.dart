@@ -21,8 +21,9 @@ class HlsPlaylistData {
     return playlistItems.map((e) => e.toString()).join('\r\n');
   }
 
-  String toLocalPlaylist(
-      {HlsLinkSwapper? linkSwapper, bool useAbsolute = true}) {
+  String toLocalPlaylist({
+    HlsLinkSwapper? linkSwapper,
+  }) {
     if (linkSwapper == null || linkSwapper.isEmpty) {
       return toString();
     }
@@ -38,9 +39,7 @@ class HlsPlaylistData {
             hlsValueParameters: {
               ...item.hlsValueParameters,
               HlsParamConstants.uri: HlsParamValue(
-                value:
-                    (useAbsolute ? swapperLink.absolute : swapperLink.relative)
-                        .inQuotes,
+                value: swapperLink.inQuotes,
               ),
             },
           );
@@ -51,7 +50,7 @@ class HlsPlaylistData {
         final swapperLink = linkSwapper[item.url!];
         if (swapperLink != null) {
           item = item.copyWith(
-            url: useAbsolute ? swapperLink.absolute : swapperLink.relative,
+            url: swapperLink,
           );
         }
       }
