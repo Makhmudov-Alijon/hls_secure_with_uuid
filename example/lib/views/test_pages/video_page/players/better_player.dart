@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
+import 'package:river_player/river_player.dart';
 
 class LocalBetterPlayer extends StatefulWidget {
   const LocalBetterPlayer({super.key, required this.file});
