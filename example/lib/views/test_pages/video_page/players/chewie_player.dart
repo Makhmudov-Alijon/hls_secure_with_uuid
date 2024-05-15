@@ -48,7 +48,9 @@ class _LocalChewiePlayerState extends State<LocalChewiePlayer> {
   @override
   Widget build(BuildContext context) {
     return chewieVideoController == null
-        ? const CircularProgressIndicator()
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
         : Chewie(
             controller: chewieVideoController!,
           );

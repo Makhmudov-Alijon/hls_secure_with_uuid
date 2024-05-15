@@ -21,9 +21,7 @@ class _LocalBetterPlayerState extends State<LocalBetterPlayer> {
       const BetterPlayerConfiguration(
         autoPlay: true,
       ),
-      betterPlayerDataSource: BetterPlayerDataSource.file(
-        'file://${widget.file.path}',
-      ),
+      betterPlayerDataSource: BetterPlayerDataSource.file(widget.file.path),
     );
     super.initState();
   }
