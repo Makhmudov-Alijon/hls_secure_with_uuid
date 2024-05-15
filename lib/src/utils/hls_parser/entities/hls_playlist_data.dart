@@ -1,16 +1,19 @@
 import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
 import 'package:download_manager/src/utils/hls_parser/entities/hls_link_swapper.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../download_manager.dart';
 import 'hls_playlist_item.dart';
 import 'hls_playlist_type.dart';
 
 class HlsPlaylistData {
-  const HlsPlaylistData({
+  HlsPlaylistData({
     required this.playlistItems,
     required this.playlistType,
     this.encKey,
-  });
+  }) {
+    debugPrint('${toString()}\n\n');
+  }
 
   final List<HlsPlaylistItem> playlistItems;
   final HlsPlaylistType playlistType;

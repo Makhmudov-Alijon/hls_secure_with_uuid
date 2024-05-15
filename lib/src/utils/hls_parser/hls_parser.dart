@@ -55,7 +55,13 @@ class HlsParser {
             } else {
               /// NAMED PARAMETER WITH VALUE
               final key = HlsParam(parameter: temp.first);
-              final value = HlsParamValue(value: temp.last);
+              var value = HlsParamValue(value: temp.last);
+
+              // if (key == HlsParamConstants.codecs) {
+              //   value = value.copyWith(
+              //     value: value.value.escapeQuotes.split(',').first.inQuotes,
+              //   );
+              // }
 
               if (key == HlsParamConstants.uri &&
                   value.value.contains('enc.key')) {

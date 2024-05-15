@@ -1,10 +1,14 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager_example/views/download_hls_pages/directory_page.dart';
+import 'package:download_manager_example/views/test_pages/directory_page.dart';
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -24,8 +28,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   // final link = 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/1313/';
 
-  final link =
-      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48161/';
+  // final link =
+  //     'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48161/';
+
+  final link = 'https://api.splay.uz/en/api/v3/content/hls-json-enc/30959/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';

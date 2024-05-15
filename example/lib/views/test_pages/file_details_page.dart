@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:download_manager/download_manager.dart';
 import 'package:flutter/material.dart';
 
+import 'video_page/video_page.dart';
+
 class FileDetailsPage extends StatefulWidget {
   const FileDetailsPage({super.key, required this.file});
   final File file;
@@ -48,11 +50,11 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
             if (fileExtension == "m3u8")
               IconButton(
                 onPressed: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => VideoPage(videoFile: widget.file),
-                  //   ),
-                  // );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => VideoPage(master: widget.file),
+                    ),
+                  );
                 },
                 icon: Icon(
                   Icons.play_arrow,

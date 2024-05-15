@@ -102,6 +102,14 @@ class HlsRepository {
           ),
         );
 
+      final encKey = master.hlsData.enc;
+
+      if (encKey != null) {
+        pathManager.encKeyFile
+          ..createIfNotExist()
+          ..writeAsStringSync(encKey);
+      }
+
       await hlsService.writeVideoResolutions(
         pathManager: pathManager,
         master: master,
