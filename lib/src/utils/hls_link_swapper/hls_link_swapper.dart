@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -60,6 +61,14 @@ class HlsLinkSwapper {
   final bool useAbsolute;
   final Map<String, HlsLink> _links = {};
 
+  void addLinkFromUrl({
+    required String url,
+    required File saveFile,
+    required Directory baseDir,
+  }) {
+    _links[url] = HlsLink.fromFileEntity(baseDir: baseDir, file: saveFile);
+  }
+
   void addLinkFromFile({
     required String originalLink,
     required File file,
@@ -79,5 +88,13 @@ class HlsLinkSwapper {
         : useAbsolute
             ? value.absolute
             : value.relative;
+  }
+
+  HlsLinkSwapper copyWith({
+    bool? useAbsolute,
+  }) {
+    return HlsLinkSwapper(
+      useAbsolute: useAbsolute ?? this.useAbsolute,
+    );
   }
 }

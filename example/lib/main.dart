@@ -28,10 +28,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   // final link = 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/1313/';
 
-  // final link =
-  //     'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48161/';
+  final link =
+      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48161/';
 
-  final link = 'https://api.splay.uz/en/api/v3/content/hls-json-enc/30959/';
+  // final link = 'https://api.splay.uz/en/api/v3/content/hls-json-enc/30959/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';
@@ -60,6 +60,21 @@ class _MyAppState extends ConsumerState<MyApp> {
     });
   }
 
+  Future<void> onDownload() async {
+    final resolution = selectedResolution!;
+    final audioTracks = <HlsAudioTrack>[];
+
+    for (final trackGroup in selectedGroups) {
+      for (final track in trackGroup.tracks) {
+        if (track.trackType == resolution.trackType) {
+          audioTracks.add(track);
+        }
+      }
+    }
+
+    print("audio tracks: $audioTracks");
+  }
+
   Future<void> prepareForWatching() async {
     ref.read(hlsRepositoryProvider).prepareForWatching(
           url: link,
@@ -77,6 +92,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           key: key,
           token: token,
           hlsId: hlsId,
+          forWatching: false,
         );
 
     setState(() {
@@ -211,7 +227,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: canDownload ? () {} : null,
+                    onPressed: canDownload ? onDownload : null,
                     child: const Text('Скачать'),
                   ),
                 ],

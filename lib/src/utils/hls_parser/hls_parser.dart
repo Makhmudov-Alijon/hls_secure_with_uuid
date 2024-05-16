@@ -1,13 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
-import 'package:download_manager/src/utils/extension/list_extension.dart';
-import 'package:download_manager/src/utils/extension/string_extension.dart';
 
+import '../../models/master_playlist_model/hls_enctyption_key.dart';
 import 'entities/hls_playlist_data.dart';
 import 'entities/hls_playlist_item.dart';
-import 'entities/hls_playlist_type.dart';
-import 'hls_constants.dart';
 
 class HlsParser {
   const HlsParser({
@@ -17,7 +13,7 @@ class HlsParser {
   /// Playlist data that came in response
   final String playlist;
 
-  HlsPlaylistData parseData(HlsPlaylistType playlistType) {
+  HlsPlaylistData parseData() {
     final exp = RegExp(r'\r?\n');
     final playlistLines = playlist.split(exp);
     final playlistItems = <HlsPlaylistItem>[];
@@ -55,13 +51,7 @@ class HlsParser {
             } else {
               /// NAMED PARAMETER WITH VALUE
               final key = HlsParam(parameter: temp.first);
-              var value = HlsParamValue(value: temp.last);
-
-              // if (key == HlsParamConstants.codecs) {
-              //   value = value.copyWith(
-              //     value: value.value.escapeQuotes.split(',').first.inQuotes,
-              //   );
-              // }
+              final value = HlsParamValue(value: temp.last);
 
               if (key == HlsParamConstants.uri &&
                   value.value.contains('enc.key')) {
@@ -107,7 +97,6 @@ class HlsParser {
 
     return HlsPlaylistData(
       playlistItems: playlistItems,
-      playlistType: playlistType,
       encKey: encKey,
     );
   }

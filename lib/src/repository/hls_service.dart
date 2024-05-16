@@ -1,9 +1,9 @@
+import 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
+import 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../../download_manager.dart';
 import '../models/hls_data_model/hls_data_model.dart';
-import '../utils/hls_parser/entities/hls_link_swapper.dart';
-import '../utils/hls_parser/entities/hls_playlist_type.dart';
 import '../utils/security/security.dart';
 
 final hlsServiceProvider = Provider(
@@ -11,30 +11,18 @@ final hlsServiceProvider = Provider(
 );
 
 class HlsService {
-  Future<void> writeAudioTracks({
+  Future<void> saveAudioMasterPlaylists({
     required HlsPathManager pathManager,
     required MasterPlaylistModel master,
+    required bool isForWatching,
   }) async {
     for (final trackGroup in master.audioTrackGroups) {
       for (final audioTrack in trackGroup.tracks) {
         final parsedPlaylist = parseAudioTrackPlaylist(
           track: audioTrack,
           hlsData: master.hlsData,
+          pathManager: pathManager,
         );
-
-        final encKey = parsedPlaylist.playlistData.encKey;
-
-        final playlistLinkSwapper = HlsLinkSwapper(useAbsolute: false);
-
-        if (encKey != null) {
-          playlistLinkSwapper.addLinkFromFile(
-            originalLink: encKey.url,
-            file: pathManager.encKeyFile,
-            baseDir: pathManager.audioDir(
-              audioTrack: audioTrack,
-            ),
-          );
-        }
 
         pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
 
@@ -42,38 +30,24 @@ class HlsService {
           audioTrack: audioTrack,
         )..createIfNotExist();
 
-        await audioMaster.writeAsString(
-          parsedPlaylist.playlistData.toLocalPlaylist(
-            linkSwapper: playlistLinkSwapper,
-          ),
-        );
+        await audioMaster.writeAsString(parsedPlaylist.toLocalPlaylist(
+          isForWatching: isForWatching,
+        ));
       }
     }
   }
 
-  Future<void> writeVideoResolutions({
+  Future<void> saveVideoMasterPlaylists({
     required HlsPathManager pathManager,
     required MasterPlaylistModel master,
+    required bool isForWatching,
   }) async {
     for (final resolution in master.resolutions) {
       final parsedPlaylist = parseResolutionPlaylist(
         resolution: resolution,
         hlsData: master.hlsData,
+        pathManager: pathManager,
       );
-
-      final encKey = parsedPlaylist.playlistData.encKey;
-
-      final playlistLinkSwapper = HlsLinkSwapper(useAbsolute: false);
-
-      if (encKey != null) {
-        playlistLinkSwapper.addLinkFromFile(
-          originalLink: encKey.url,
-          file: pathManager.encKeyFile,
-          baseDir: pathManager.videoDir(
-            resolutionType: resolution.resolution,
-          ),
-        );
-      }
 
       pathManager
           .videoDir(
@@ -86,9 +60,7 @@ class HlsService {
       )..createIfNotExist();
 
       await videoMaster.writeAsString(
-        parsedPlaylist.playlistData.toLocalPlaylist(
-          linkSwapper: playlistLinkSwapper,
-        ),
+        parsedPlaylist.toLocalPlaylist(isForWatching: isForWatching),
       );
     }
   }
@@ -114,67 +86,37 @@ class HlsService {
     }
   }
 
-  SegmentPlaylistParsedModel parseAudioTrackPlaylist({
+  AudioSegmentPlaylistModel parseAudioTrackPlaylist({
     required HlsAudioTrack track,
     required HlsDataModel hlsData,
+    required HlsPathManager pathManager,
   }) {
     final playlist = hlsData.audioPlaylists
         .firstWhere(
           (element) => element.path == track.trackUrl,
         )
         .data;
-    final hlsParser = HlsParser(playlist: playlist);
-    return SegmentPlaylistParsedModel.fromParsedPlaylist(
-      playlistData: hlsParser.parseData(HlsPlaylistType.audioSegmentPlaylist),
-      isVideo: false,
+    return AudioSegmentPlaylistModel.parse(
+      playlist: playlist,
+      audioTrack: track,
+      pathManager: pathManager,
     );
   }
 
-  SegmentPlaylistParsedModel parseResolutionPlaylist({
+  VideoSegmentPlaylistModel parseResolutionPlaylist({
     required HlsResolution resolution,
     required HlsDataModel hlsData,
+    required HlsPathManager pathManager,
   }) {
     final playlist = hlsData.videoPlaylists.firstWhere(
       (element) {
         return element.path == resolution.videoPlaylistUrl;
       },
     ).data;
-    final hlsParser = HlsParser(playlist: playlist);
-    return SegmentPlaylistParsedModel.fromParsedPlaylist(
-      playlistData: hlsParser.parseData(HlsPlaylistType.videoSegmentPlaylist),
-      isVideo: true,
+    return VideoSegmentPlaylistModel.parse(
+      playlist: playlist,
+      pathManager: pathManager,
+      resolution: resolution,
     );
-  }
-
-  HlsLinkSwapper getMasterLinkSwapper({
-    required HlsPathManager pathManager,
-    required MasterPlaylistModel master,
-  }) {
-    final masterSwapper = HlsLinkSwapper(useAbsolute: false);
-
-    for (final resolution in master.resolutions) {
-      final videoMasterFile = pathManager.videoMasterFile(
-        resolutionType: resolution.resolution,
-      );
-      masterSwapper.addLinkFromFile(
-        originalLink: resolution.videoPlaylistUrl,
-        file: videoMasterFile,
-        baseDir: pathManager.masterDir,
-      );
-    }
-
-    for (final audioGroup in master.audioTrackGroups) {
-      for (final audioTrack in audioGroup.tracks) {
-        final audioMasterFile =
-            pathManager.audioMasterFile(audioTrack: audioTrack);
-        masterSwapper.addLinkFromFile(
-          originalLink: audioTrack.trackUrl,
-          baseDir: pathManager.masterDir,
-          file: audioMasterFile,
-        );
-      }
-    }
-
-    return masterSwapper;
   }
 }

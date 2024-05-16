@@ -1,27 +1,32 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/models/hls_data_model/hls_data_model.dart';
+import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../utils/hls_link_swapper/hls_link_swapper.dart';
 import '../../utils/hls_parser/entities/hls_playlist_data.dart';
 
 class MasterPlaylistModel extends Equatable {
   const MasterPlaylistModel({
     required this.resolutions,
     required this.audioTrackGroups,
-    required this.masterPlaylistData,
+    required HlsPlaylistData playlistData,
     required this.hlsData,
-  });
+    required HlsLinkSwapper linkSwapper,
+  })  : _masterPlaylistData = playlistData,
+        _linkSwapper = linkSwapper;
 
-  factory MasterPlaylistModel.fromParsedPlaylist({
-    required HlsPlaylistData parsedMasterPlaylist,
+  factory MasterPlaylistModel.parse({
+    required String playlist,
     required HlsDataModel hlsData,
+    required HlsPathManager pathManager,
   }) {
     final resolutions = <HlsResolution>{};
     final trackMap = <String, Set<HlsAudioTrack>>{};
-
+    final parsedPlaylist = HlsParser(playlist: playlist).parseData();
     // Fetching hls resolutions
-    for (var i = 0; i < parsedMasterPlaylist.playlistItems.length; i++) {
-      final item = parsedMasterPlaylist.playlistItems[i];
+    for (var i = 0; i < parsedPlaylist.playlistItems.length; i++) {
+      final item = parsedPlaylist.playlistItems[i];
       final itemUrl = item.url;
       if (itemUrl != null) {
         for (final resolution in HlsResolutionType.values) {
@@ -106,21 +111,68 @@ class MasterPlaylistModel extends Equatable {
     return MasterPlaylistModel(
       audioTrackGroups: audioTrackGroups,
       resolutions: resolutions,
-      masterPlaylistData: parsedMasterPlaylist,
+      playlistData: parsedPlaylist,
       hlsData: hlsData,
+      linkSwapper: _getMasterLinkSwapper(
+        pathManager: pathManager,
+        trackGroups: audioTrackGroups,
+        resolutions: resolutions,
+      ),
     );
+  }
+
+  String toLocalPlaylist() {
+    return _masterPlaylistData.toLocalPlaylist(
+      linkSwapperGroup: HlsLinkSwapperGroup(
+        swappers: [_linkSwapper],
+      ),
+    );
+  }
+
+  static HlsLinkSwapper _getMasterLinkSwapper({
+    required HlsPathManager pathManager,
+    required Set<HlsAudioTrackGroup> trackGroups,
+    required Set<HlsResolution> resolutions,
+  }) {
+    final masterSwapper = HlsLinkSwapper(useAbsolute: false);
+
+    for (final resolution in resolutions) {
+      final videoMasterFile = pathManager.videoMasterFile(
+        resolutionType: resolution.resolution,
+      );
+      masterSwapper.addLinkFromFile(
+        originalLink: resolution.videoPlaylistUrl,
+        file: videoMasterFile,
+        baseDir: pathManager.masterDir,
+      );
+    }
+
+    for (final audioGroup in trackGroups) {
+      for (final audioTrack in audioGroup.tracks) {
+        final audioMasterFile =
+            pathManager.audioMasterFile(audioTrack: audioTrack);
+        masterSwapper.addLinkFromFile(
+          originalLink: audioTrack.trackUrl,
+          baseDir: pathManager.masterDir,
+          file: audioMasterFile,
+        );
+      }
+    }
+
+    return masterSwapper;
   }
 
   final Set<HlsResolution> resolutions;
   final Set<HlsAudioTrackGroup> audioTrackGroups;
-  final HlsPlaylistData masterPlaylistData;
+  final HlsPlaylistData _masterPlaylistData;
   final HlsDataModel hlsData;
+  final HlsLinkSwapper _linkSwapper;
 
   @override
   List<Object?> get props => [
         resolutions,
         audioTrackGroups,
-        masterPlaylistData,
+        _masterPlaylistData,
         hlsData,
       ];
 }

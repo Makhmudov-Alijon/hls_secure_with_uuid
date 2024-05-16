@@ -1,22 +1,16 @@
 import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
-import 'package:download_manager/src/utils/hls_parser/entities/hls_link_swapper.dart';
-import 'package:flutter/foundation.dart';
+import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
 
 import '../../../../download_manager.dart';
 import 'hls_playlist_item.dart';
-import 'hls_playlist_type.dart';
 
 class HlsPlaylistData {
-  HlsPlaylistData({
+  const HlsPlaylistData({
     required this.playlistItems,
-    required this.playlistType,
     this.encKey,
-  }) {
-    debugPrint('${toString()}\n\n');
-  }
+  });
 
   final List<HlsPlaylistItem> playlistItems;
-  final HlsPlaylistType playlistType;
   final HlsEncryptionKey? encKey;
 
   @override
@@ -25,9 +19,9 @@ class HlsPlaylistData {
   }
 
   String toLocalPlaylist({
-    HlsLinkSwapper? linkSwapper,
+    required HlsLinkSwapperGroup linkSwapperGroup,
   }) {
-    if (linkSwapper == null || linkSwapper.isEmpty) {
+    if (linkSwapperGroup.isEmpty) {
       return toString();
     }
 
@@ -36,7 +30,7 @@ class HlsPlaylistData {
     for (var item in playlistItems) {
       final uri = item.hlsValueParameters[HlsParamConstants.uri];
       if (uri != null) {
-        final swapperLink = linkSwapper[uri.value.escapeQuotes];
+        final swapperLink = linkSwapperGroup[uri.value.escapeQuotes];
         if (swapperLink != null) {
           item = item.copyWith(
             hlsValueParameters: {
@@ -50,7 +44,7 @@ class HlsPlaylistData {
       }
 
       if (item.url != null) {
-        final swapperLink = linkSwapper[item.url!];
+        final swapperLink = linkSwapperGroup[item.url!];
         if (swapperLink != null) {
           item = item.copyWith(
             url: swapperLink,

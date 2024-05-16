@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
@@ -7,6 +8,7 @@ class HlsSegment extends Equatable {
     required this.link,
     required this.isVideo,
     required this.duration,
+    required this.saveFile,
   });
 
   factory HlsSegment.fromMap(Map<String, dynamic> map) {
@@ -14,6 +16,7 @@ class HlsSegment extends Equatable {
       link: map['link'] as String,
       isVideo: map['isVideo'] as bool,
       duration: double.parse(map['duration'] as String),
+      saveFile: File(map['saveFile'] as String),
     );
   }
 
@@ -21,6 +24,8 @@ class HlsSegment extends Equatable {
       HlsSegment.fromMap(json.decode(source) as Map<String, dynamic>);
 
   final String link;
+
+  final File saveFile;
 
   final bool isVideo;
 
@@ -45,13 +50,14 @@ class HlsSegment extends Equatable {
   }
 
   @override
-  List<Object?> get props => [link, isVideo];
+  List<Object?> get props => [link, isVideo, saveFile, duration];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'link': link,
       'isVideo': isVideo,
       'duration': duration,
+      'saveFile': saveFile.path,
     };
   }
 
