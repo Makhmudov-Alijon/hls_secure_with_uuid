@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:watcher/watcher.dart';
 
@@ -69,28 +68,28 @@ class LocalHlsErrorState extends LocalHlsState {
 }
 
 class LocalHlsPauseState extends LocalHlsState {
-  LocalHlsPauseState({double progress = 0}) : super(progress: progress);
+  LocalHlsPauseState({super.progress});
 }
 
 class LocalHlsInQueueState extends LocalHlsState {
-  LocalHlsInQueueState({double progress = 0}) : super(progress: progress);
+  LocalHlsInQueueState({super.progress});
 }
 
 class LocalHlsDisableState extends LocalHlsState {
-  LocalHlsDisableState({double progress = 0}) : super(progress: progress);
+  LocalHlsDisableState({super.progress});
 }
 
 class LocalHlsCompleteState extends LocalHlsState {
-  LocalHlsCompleteState({double progress = 0}) : super(progress: progress);
+  LocalHlsCompleteState({super.progress});
 }
 
 class LocalHlsDeletedState extends LocalHlsState {
-  LocalHlsDeletedState({double progress = 0}) : super(progress: progress);
+  LocalHlsDeletedState({super.progress});
 }
 
 final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
-  () => LocalHlsMovieNotifier(),
+  LocalHlsMovieNotifier.new,
 );
 
 class LocalHlsMovieNotifier
@@ -117,17 +116,18 @@ class LocalHlsMovieNotifier
   }
 
   void startListenToChanges() {
-    log("start listen to ${currentHls?.hlsDetails.id} hls");
+    log('start listen to ${currentHls?.hlsDetails.id} hls');
 
-    videoStream = DirectoryWatcher(currentHls!.videoDir.path);
-    audioStream = DirectoryWatcher(currentHls!.audioDir.path);
+    // TODO: change stream download
+    // videoStream = DirectoryWatcher(currentHls!.videoDir.path);
+    // audioStream = DirectoryWatcher(currentHls!.audioDir.path);
 
     videoStreamSub = videoStream?.events.listen(onFileEvent);
     audioStreamSub = audioStream?.events.listen(onFileEvent);
   }
 
   void stopListenToChanges() {
-    log("stop listen to ${currentHls?.hlsDetails.id} hls");
+    log('stop listen to ${currentHls?.hlsDetails.id} hls');
     videoStreamSub?.cancel();
     audioStreamSub?.cancel();
     resetAll();
@@ -185,7 +185,7 @@ class LocalHlsMovieNotifier
       stopListenToChanges();
       final currentState = currentHls!.localHlsState;
       if (currentState is LocalHlsDownloadingState) {
-        ref
+        await ref
             .read(hlsDownloaderProvider.notifier)
             .cancelDownloadAndDelete(currentHls!);
       } else if (currentState is LocalHlsPauseState ||

@@ -46,11 +46,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     String? posterLink,
   }) async {
     final downloadTask =
-        await ref.read(hlsRepositoryProvider).prepareDataForDownload(
+        await ref.read(hlsRepositoryProvider).downloadPlaylists(
+              isSomeHlsIsLoading: () => state == HlsDownloaderState.downloading,
+              master: masterPlaylist,
               hlsDetails: hlsDetails,
-              masterPlaylist: masterPlaylist,
               posterLink: posterLink,
-              isDownloading: state == HlsDownloaderState.downloading,
             );
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
     ref.invalidate(localHlsMovieProvider(hlsDetails.id));

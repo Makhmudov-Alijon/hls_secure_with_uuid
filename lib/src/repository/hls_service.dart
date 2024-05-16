@@ -1,5 +1,7 @@
+import 'package:download_manager/src/models/hls_full_playlist_model/hls_full_playlist_model.dart';
 import 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
 import 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
+import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../../download_manager.dart';
@@ -11,18 +13,30 @@ final hlsServiceProvider = Provider(
 );
 
 class HlsService {
-  Future<void> saveAudioMasterPlaylists({
+  Future<HlsFullPlaylistModel> saveSegmentPlaylists({
     required HlsPathManager pathManager,
     required MasterPlaylistModel master,
     required bool isForWatching,
+    Set<HlsAudioTrack>? selectedTracks,
+    Set<HlsResolution>? selectedResolutions,
   }) async {
+    final masterLinkExcluder = HlsLinkExcluder();
+    final audioPlaylists = <AudioSegmentPlaylistModel>[];
+    final videoPlaylists = <VideoSegmentPlaylistModel>[];
+
     for (final trackGroup in master.audioTrackGroups) {
       for (final audioTrack in trackGroup.tracks) {
+        if (selectedTracks != null && !selectedTracks.contains(audioTrack)) {
+          masterLinkExcluder.addLink(audioTrack.trackUrl);
+          continue;
+        }
         final parsedPlaylist = parseAudioTrackPlaylist(
           track: audioTrack,
           hlsData: master.hlsData,
           pathManager: pathManager,
         );
+
+        audioPlaylists.add(parsedPlaylist);
 
         pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
 
@@ -30,24 +44,28 @@ class HlsService {
           audioTrack: audioTrack,
         )..createIfNotExist();
 
-        await audioMaster.writeAsString(parsedPlaylist.toLocalPlaylist(
-          isForWatching: isForWatching,
-        ));
+        await audioMaster.writeAsString(
+          parsedPlaylist.toLocalPlaylist(
+            isForWatching: isForWatching,
+          ),
+        );
       }
     }
-  }
 
-  Future<void> saveVideoMasterPlaylists({
-    required HlsPathManager pathManager,
-    required MasterPlaylistModel master,
-    required bool isForWatching,
-  }) async {
     for (final resolution in master.resolutions) {
+      if (selectedResolutions != null &&
+          !selectedResolutions.contains(resolution)) {
+        masterLinkExcluder.addLink(resolution.videoPlaylistUrl);
+        continue;
+      }
+
       final parsedPlaylist = parseResolutionPlaylist(
         resolution: resolution,
         hlsData: master.hlsData,
         pathManager: pathManager,
       );
+
+      videoPlaylists.add(parsedPlaylist);
 
       pathManager
           .videoDir(
@@ -63,6 +81,13 @@ class HlsService {
         parsedPlaylist.toLocalPlaylist(isForWatching: isForWatching),
       );
     }
+
+    return HlsFullPlaylistModel(
+      master: master,
+      videoPlaylists: videoPlaylists,
+      audioPlaylists: audioPlaylists,
+      masterLinkExcluder: masterLinkExcluder,
+    );
   }
 
   Future<HlsDataModel> decryptPlaylistData({
@@ -117,6 +142,52 @@ class HlsService {
       playlist: playlist,
       pathManager: pathManager,
       resolution: resolution,
+    );
+  }
+
+  DownloadTask prepareDownloadTask({
+    required List<AudioSegmentPlaylistModel> audioPlaylists,
+    required VideoSegmentPlaylistModel videoPlaylist,
+    required HlsPathManager pathManager,
+  }) {
+    final downloadItems = <DownloadItem>[];
+    for (final audioPlaylist in audioPlaylists) {
+      for (final segment in audioPlaylist.segments) {
+        downloadItems.add(
+          DownloadItem(
+            url: segment.downloadLink,
+            saveDir: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack),
+            fileName: pathManager
+                .fileFromAudio(
+                  url: segment.downloadLink,
+                  audioTrack: audioPlaylist.audioTrack,
+                )
+                .fileName,
+          ),
+        );
+      }
+    }
+
+    for (final segment in videoPlaylist.segments) {
+      final resolutionType = videoPlaylist.resolution.resolution;
+      downloadItems.add(
+        DownloadItem(
+          url: segment.downloadLink,
+          saveDir: pathManager.videoDir(
+            resolutionType: resolutionType,
+          ),
+          fileName: pathManager
+              .fileFromVideo(
+                url: segment.downloadLink,
+                resolutionType: resolutionType,
+              )
+              .fileName,
+        ),
+      );
+    }
+
+    return DownloadTask(
+      items: downloadItems,
     );
   }
 }

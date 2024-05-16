@@ -1,5 +1,6 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/models/hls_data_model/hls_data_model.dart';
+import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
 import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
 import 'package:equatable/equatable.dart';
 
@@ -121,8 +122,9 @@ class MasterPlaylistModel extends Equatable {
     );
   }
 
-  String toLocalPlaylist() {
+  String toLocalPlaylist({HlsLinkExcluder? linkExcluder}) {
     return _masterPlaylistData.toLocalPlaylist(
+      linkExcluder: linkExcluder,
       linkSwapperGroup: HlsLinkSwapperGroup(
         swappers: [_linkSwapper],
       ),

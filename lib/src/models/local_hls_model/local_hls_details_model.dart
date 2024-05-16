@@ -14,7 +14,6 @@ class LocalHlsDetailsModel extends Equatable {
     required this.isSerial,
     required this.episodeNum,
     required this.seasonNum,
-    required this.masterLink,
     required this.resolution,
     required this.audioTracks,
   });
@@ -24,7 +23,6 @@ class LocalHlsDetailsModel extends Equatable {
   final bool isSerial;
   final int? episodeNum;
   final int? seasonNum;
-  final String? masterLink;
   final HlsResolution resolution;
   final Set<HlsAudioTrack> audioTracks;
 
@@ -43,22 +41,19 @@ class LocalHlsDetailsModel extends Equatable {
       'isSerial': isSerial,
       'episodeNum': episodeNum,
       'seasonNum': seasonNum,
-      'masterLink': masterLink,
       'resolution': resolution.toMap(),
-      'audioTracks': audioTracks.map((e) => e.toMap()).toSet(),
+      'audioTracks': audioTracks.map((e) => e.toMap()).toList(),
     };
   }
 
   factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
-    final audioTracks = map['audioTracks'] as Set<Map<String, dynamic>>;
+    final audioTracks = map['audioTracks'] as List<Map<String, dynamic>>;
     return LocalHlsDetailsModel(
       id: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
       title: map['title'] as String,
       isSerial: map['isSerial'] as bool,
       episodeNum: map['episodeNum'] != null ? map['episodeNum'] as int : null,
       seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
-      masterLink:
-          map['masterLink'] != null ? map['masterLink'] as String : null,
       resolution:
           HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
       audioTracks: Set<HlsAudioTrack>.from(
@@ -79,7 +74,6 @@ class LocalHlsDetailsModel extends Equatable {
         isSerial,
         episodeNum,
         seasonNum,
-        masterLink,
         resolution,
         audioTracks,
       ];

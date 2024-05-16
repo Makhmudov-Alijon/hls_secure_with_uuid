@@ -20,7 +20,7 @@ class HlsLocalRepository {
     );
     final hlsMovies = <LocalHlsModel>[];
 
-    for (var file in hlsFiles) {
+    for (final file in hlsFiles) {
       var hls = LocalHlsModel.fromFile(file);
       if (isInitial) {
         if (hls.localHlsState is LocalHlsCompleteState &&

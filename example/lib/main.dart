@@ -24,14 +24,8 @@ class MyApp extends ConsumerStatefulWidget {
 }
 
 class _MyAppState extends ConsumerState<MyApp> {
-  // final link = 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/654/';
-
-  // final link = 'http://192.168.0.130:8000/en/api/v3/content/hls-json-enc/1313/';
-
   final link =
-      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48161/';
-
-  // final link = 'https://api.splay.uz/en/api/v3/content/hls-json-enc/30959/';
+      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48167/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';
@@ -62,7 +56,8 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   Future<void> onDownload() async {
     final resolution = selectedResolution!;
-    final audioTracks = <HlsAudioTrack>[];
+    final master = masterPlaylist!;
+    final audioTracks = <HlsAudioTrack>{};
 
     for (final trackGroup in selectedGroups) {
       for (final track in trackGroup.tracks) {
@@ -72,11 +67,25 @@ class _MyAppState extends ConsumerState<MyApp> {
       }
     }
 
-    print("audio tracks: $audioTracks");
+    await ref.read(hlsRepositoryProvider).downloadPlaylists(
+          isSomeHlsIsLoading: () => false,
+          posterLink:
+              "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=",
+          master: master,
+          hlsDetails: LocalHlsDetailsModel(
+            id: hlsId,
+            title: "Название",
+            isSerial: false,
+            episodeNum: null,
+            seasonNum: null,
+            resolution: resolution,
+            audioTracks: audioTracks,
+          ),
+        );
   }
 
   Future<void> prepareForWatching() async {
-    ref.read(hlsRepositoryProvider).prepareForWatching(
+    ref.read(hlsRepositoryProvider).prepareDataForWatching(
           url: link,
           token: token,
           key: key,
