@@ -1,5 +1,5 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/hls_data_model/hls_data_model.dart';
+import 'package:download_manager/src/models/hls_full_non_parsed_model/hls_full_non_parsed_model.dart';
 import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
 import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
 import 'package:equatable/equatable.dart';
@@ -19,7 +19,7 @@ class MasterPlaylistModel extends Equatable {
 
   factory MasterPlaylistModel.parse({
     required String playlist,
-    required HlsDataModel hlsData,
+    required HlsFullNonParsedModel hlsData,
     required HlsPathManager pathManager,
   }) {
     final resolutions = <HlsResolution>{};
@@ -167,7 +167,7 @@ class MasterPlaylistModel extends Equatable {
   final Set<HlsResolution> resolutions;
   final Set<HlsAudioTrackGroup> audioTrackGroups;
   final HlsPlaylistData _masterPlaylistData;
-  final HlsDataModel hlsData;
+  final HlsFullNonParsedModel hlsData;
   final HlsLinkSwapper _linkSwapper;
 
   @override

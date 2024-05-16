@@ -5,7 +5,7 @@ import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.
 import 'package:riverpod/riverpod.dart';
 
 import '../../download_manager.dart';
-import '../models/hls_data_model/hls_data_model.dart';
+import '../models/hls_full_non_parsed_model/hls_full_non_parsed_model.dart';
 import '../utils/security/security.dart';
 
 final hlsServiceProvider = Provider(
@@ -90,7 +90,7 @@ class HlsService {
     );
   }
 
-  Future<HlsDataModel> decryptPlaylistData({
+  Future<HlsFullNonParsedModel> decryptPlaylistData({
     required String token,
     required String url,
     required String key,
@@ -103,9 +103,9 @@ class HlsService {
         key: key,
       );
 
-      return HlsDataModel.fromJson(decrypted);
+      return HlsFullNonParsedModel.fromJson(decrypted);
     } else if (data is Map<String, dynamic>) {
-      return HlsDataModel.fromJson(data);
+      return HlsFullNonParsedModel.fromJson(data);
     } else {
       throw const FormatException('Playlist data type is not correct');
     }
@@ -113,7 +113,7 @@ class HlsService {
 
   AudioSegmentPlaylistModel parseAudioTrackPlaylist({
     required HlsAudioTrack track,
-    required HlsDataModel hlsData,
+    required HlsFullNonParsedModel hlsData,
     required HlsPathManager pathManager,
   }) {
     final playlist = hlsData.audioPlaylists
@@ -130,7 +130,7 @@ class HlsService {
 
   VideoSegmentPlaylistModel parseResolutionPlaylist({
     required HlsResolution resolution,
-    required HlsDataModel hlsData,
+    required HlsFullNonParsedModel hlsData,
     required HlsPathManager pathManager,
   }) {
     final playlist = hlsData.videoPlaylists.firstWhere(

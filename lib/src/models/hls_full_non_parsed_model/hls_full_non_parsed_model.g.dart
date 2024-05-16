@@ -1,13 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'hls_data_model.dart';
+part of 'hls_full_non_parsed_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$HlsDataModelImpl _$$HlsDataModelImplFromJson(Map<String, dynamic> json) =>
-    _$HlsDataModelImpl(
+_$HlsFullNonParsedModelImpl _$$HlsFullNonParsedModelImplFromJson(
+        Map<String, dynamic> json) =>
+    _$HlsFullNonParsedModelImpl(
       master: json['master'] as String,
       videoPlaylists: (json['video_playlists'] as List<dynamic>)
           .map((e) =>
@@ -20,7 +21,8 @@ _$HlsDataModelImpl _$$HlsDataModelImplFromJson(Map<String, dynamic> json) =>
       enc: json['enc'] as String?,
     );
 
-Map<String, dynamic> _$$HlsDataModelImplToJson(_$HlsDataModelImpl instance) =>
+Map<String, dynamic> _$$HlsFullNonParsedModelImplToJson(
+        _$HlsFullNonParsedModelImpl instance) =>
     <String, dynamic>{
       'master': instance.master,
       'video_playlists':

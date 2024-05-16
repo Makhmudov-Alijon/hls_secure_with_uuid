@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
@@ -15,23 +16,43 @@ class FileDetailsPage extends StatefulWidget {
 
 class _FileDetailsPageState extends State<FileDetailsPage> {
   final List<String> fileContent = [];
+  String? jsonContent;
   bool hasError = false;
+
+  String formatJson(String jsonString) {
+    var decodedJson = json.decode(jsonString);
+    var encoder = const JsonEncoder.withIndent('  ');
+    return encoder.convert(decodedJson);
+  }
 
   @override
   void initState() {
-    widget.file.readAsLines().then(
-      (value) {
+    if (widget.file.fileExtension == 'json') {
+      widget.file.readAsString().then((value) {
         setState(() {
-          fileContent.addAll(value);
+          jsonContent = value;
         });
-      },
-    ).catchError(
-      (error, stackTrace) {
+      }).catchError((error, stackTrace) {
         setState(() {
           hasError = true;
         });
-      },
-    );
+      });
+    } else {
+      widget.file.readAsLines().then(
+        (value) {
+          setState(() {
+            fileContent.addAll(value);
+          });
+        },
+      ).catchError(
+        (error, stackTrace) {
+          setState(() {
+            hasError = true;
+          });
+        },
+      );
+    }
+
     super.initState();
   }
 
@@ -80,25 +101,31 @@ class _FileDetailsPageState extends State<FileDetailsPage> {
                       ),
                     ),
                   )
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(
-                        fileContent.length,
-                        (index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Text(
-                              fileContent[index],
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ),
-                            ),
-                          );
-                        },
+                : jsonContent != null
+                    ? SingleChildScrollView(
+                        child: Text(
+                          formatJson(jsonContent!),
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(
+                            fileContent.length,
+                            (index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Text(
+                                  fileContent[index],
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
       ),
     );
   }

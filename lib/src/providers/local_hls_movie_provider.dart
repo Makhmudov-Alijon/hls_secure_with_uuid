@@ -145,7 +145,7 @@ class LocalHlsMovieNotifier
     return foundHls.localHlsState;
   }
 
-  Future<void> pauseDownload([double progress = 0]) async {
+  Future<void> pauseDownload() async {
     if (currentHls != null) {
       stopListenToChanges();
       await ref.read(hlsDownloaderProvider.notifier).pauseDownload(currentHls!);

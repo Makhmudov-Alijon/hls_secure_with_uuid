@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:download_manager_example/views/test_pages/video_page/players/better_player.dart';
 import 'package:download_manager_example/views/test_pages/video_page/players/chewie_player.dart';
 import 'package:download_manager_example/views/test_pages/video_page/players/media_kit_player.dart';
-import 'package:download_manager_example/views/test_pages/video_page/players/theo_player.dart';
 import 'package:flutter/material.dart';
 
 class VideoPage extends StatefulWidget {
@@ -57,12 +56,6 @@ class _VideoPageState extends State<VideoPage> {
               );
             }
             break;
-          case 3:
-            if (player is! LocalTheoPlayer) {
-              player = LocalTheoPlayer(
-                file: widget.master,
-              );
-            }
         }
       },
     );
@@ -94,12 +87,6 @@ class _VideoPageState extends State<VideoPage> {
               Icons.looks_3_sharp,
             ),
             label: 'Better Player',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.looks_4_sharp,
-            ),
-            label: 'Theoplayer',
           ),
         ],
       ),

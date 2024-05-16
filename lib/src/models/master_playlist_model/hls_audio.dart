@@ -43,9 +43,9 @@ class HlsAudioTrack extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'track_type': trackType.name,
-      'track_name': trackName,
-      'track_url': trackUrl,
+      'trackType': trackType.name,
+      'trackName': trackName,
+      'trackUrl': trackUrl,
       'filesCount': filesCount,
       'size': size,
     };
@@ -56,9 +56,9 @@ class HlsAudioTrack extends Equatable {
       filesCount: json['filesCount'] as int,
       size: json['size'] as int,
       trackType: HlsAudioTrackType.values.first
-          .fromString(json['track_type'] as String),
-      trackUrl: json['track_url'] as String,
-      trackName: json['track_url'] as String,
+          .fromString(json['trackType'] as String),
+      trackUrl: json['trackUrl'] as String,
+      trackName: json['trackName'] as String,
     );
   }
 

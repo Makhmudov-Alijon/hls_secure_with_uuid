@@ -58,7 +58,7 @@ class LocalHlsModel extends Equatable {
 
     for (final audioTrack in audioTracks) {
       final audioDir = pathManager.audioDir(audioTrack: audioTrack);
-      downloadedSegments += audioDir.listSync().length;
+      downloadedSegments += audioDir.listSync().length - 1;
     }
 
     return downloadedSegments / totalSegments;

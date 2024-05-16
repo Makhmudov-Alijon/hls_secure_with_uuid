@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+// ignore_for_file: type_literal_in_constant_pattern
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager_example/views/test_pages/directory_page.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +59,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     final resolution = selectedResolution!;
     final master = masterPlaylist!;
     final audioTracks = <HlsAudioTrack>{};
-    final poster =
+    const poster =
         "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=";
 
     for (final trackGroup in selectedGroups) {
@@ -128,6 +127,46 @@ class _MyAppState extends ConsumerState<MyApp> {
   bool get canDownload =>
       selectedGroups.isNotEmpty && selectedResolution != null;
 
+  String getStatusBy(LocalHlsState hlsState) {
+    switch (hlsState.runtimeType) {
+      case LocalHlsDownloadingState:
+        return 'Загрузка';
+      case LocalHlsDeletedState:
+        return 'Удалено';
+      case LocalHlsCompleteState:
+        return 'Завершено';
+      case LocalHlsDisableState:
+        return 'Отсутствует';
+      case LocalHlsInQueueState:
+        return 'В очереди';
+      case LocalHlsPauseState:
+        return 'Приостановлен';
+      case LocalHlsErrorState:
+        return 'Ошибка';
+      default:
+        return 'Неизвестно';
+    }
+  }
+
+  IconData? iconByStatus(LocalHlsState hlsState) {
+    if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
+      return Icons.play_circle_fill;
+    } else if (hlsState is LocalHlsDownloadingState) {
+      return Icons.pause_circle;
+    } else {
+      return null;
+    }
+  }
+
+  void onIconPressed(LocalHlsState hlsState) {
+    final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
+    if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
+      movieContoller.continueDownload();
+    } else if (hlsState is LocalHlsDownloadingState) {
+      movieContoller.pauseDownload();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -155,9 +194,10 @@ class _MyAppState extends ConsumerState<MyApp> {
               ],
             ),
             body: ref.watch(localHlsMoviesProvider).when(
+              skipLoadingOnRefresh: true,
+              skipLoadingOnReload: true,
               data: (data) {
                 final movieState = ref.watch(localHlsMovieProvider(hlsId));
-                log("progress: ${movieState.progress}");
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -261,8 +301,39 @@ class _MyAppState extends ConsumerState<MyApp> {
                       if (movieState.progress != 0)
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
-                          child: LinearProgressIndicator(
-                            value: movieState.progress,
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  if (iconByStatus(movieState) != null)
+                                    SizedBox(
+                                      width: 25,
+                                      height: 25,
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () => onIconPressed(movieState),
+                                        icon: Icon(iconByStatus(movieState)!),
+                                      ),
+                                    ),
+                                  Expanded(
+                                    child: LinearProgressIndicator(
+                                      value: movieState.progress,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    getStatusBy(movieState),
+                                  ),
+                                  if (movieState is! LocalHlsCompleteState)
+                                    Text('${(movieState.progress * 100).toStringAsFixed(1)}%'),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                     ],
