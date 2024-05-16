@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager_example/views/test_pages/directory_page.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +60,8 @@ class _MyAppState extends ConsumerState<MyApp> {
     final resolution = selectedResolution!;
     final master = masterPlaylist!;
     final audioTracks = <HlsAudioTrack>{};
+    final poster =
+        "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=";
 
     for (final trackGroup in selectedGroups) {
       for (final track in trackGroup.tracks) {
@@ -67,21 +71,31 @@ class _MyAppState extends ConsumerState<MyApp> {
       }
     }
 
-    await ref.read(hlsRepositoryProvider).downloadPlaylists(
-          isSomeHlsIsLoading: () => false,
-          posterLink:
-              "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=",
-          master: master,
-          hlsDetails: LocalHlsDetailsModel(
-            id: hlsId,
-            title: "Название",
-            isSerial: false,
-            episodeNum: null,
-            seasonNum: null,
-            resolution: resolution,
-            audioTracks: audioTracks,
+    final localHlsDetails = LocalHlsDetailsModel(
+      id: hlsId,
+      title: "Название",
+      isSerial: false,
+      episodeNum: null,
+      seasonNum: null,
+      resolution: resolution,
+      audioTracks: audioTracks,
+    );
+
+    try {
+      ref.read(hlsDownloaderProvider.notifier).downloadOrEnqueue(
+            masterPlaylist: master,
+            hlsDetails: localHlsDetails,
+            posterLink: poster,
+          );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
           ),
-        );
+        ),
+      );
+    }
   }
 
   Future<void> prepareForWatching() async {
@@ -140,107 +154,132 @@ class _MyAppState extends ConsumerState<MyApp> {
                 ),
               ],
             ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Text(
-                    link,
-                  ),
-                  ElevatedButton(
-                    onPressed: prepareForDownload,
-                    child: const Text("Подготовить к скачиванию"),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                    onPressed: prepareForWatching,
-                    child: const Text('Посмотреть'),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            body: ref.watch(localHlsMoviesProvider).when(
+              data: (data) {
+                final movieState = ref.watch(localHlsMovieProvider(hlsId));
+                log("progress: ${movieState.progress}");
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (resolutions.isNotEmpty)
-                              const Text(
-                                "Доступные качества",
-                              ),
-                            ...List.generate(
-                              resolutions.length,
-                              (index) {
-                                final resolution = resolutions.elementAt(index);
-                                return RadioListTile.adaptive(
-                                  dense: true,
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  visualDensity: VisualDensity.compact,
-                                  contentPadding: EdgeInsets.zero,
-                                  value: resolution == selectedResolution,
-                                  groupValue: true,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      selectedResolution = resolution;
-                                    });
-                                  },
-                                  title: Text(
-                                    resolution.resolution.title,
+                      Text(
+                        link,
+                      ),
+                      ElevatedButton(
+                        onPressed: prepareForDownload,
+                        child: const Text("Подготовить к скачиванию"),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: prepareForWatching,
+                        child: const Text('Посмотреть'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (resolutions.isNotEmpty)
+                                  const Text(
+                                    "Доступные качества",
                                   ),
-                                );
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (trackGroups.isNotEmpty)
-                              const Text(
-                                "Доступные озвучки",
-                              ),
-                            ...List.generate(
-                              trackGroups.length,
-                              (index) {
-                                final group = trackGroups.elementAt(index);
-                                return CheckboxListTile(
-                                  title: Text(group.language),
-                                  dense: true,
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  visualDensity: VisualDensity.compact,
-                                  contentPadding: EdgeInsets.zero,
-                                  value: selectedGroups.contains(group),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (selectedGroups.contains(group)) {
-                                        selectedGroups.remove(group);
-                                      } else {
-                                        selectedGroups.add(group);
-                                      }
-                                    });
+                                ...List.generate(
+                                  resolutions.length,
+                                  (index) {
+                                    final resolution =
+                                        resolutions.elementAt(index);
+                                    return RadioListTile.adaptive(
+                                      dense: true,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      contentPadding: EdgeInsets.zero,
+                                      value: resolution == selectedResolution,
+                                      groupValue: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedResolution = resolution;
+                                        });
+                                      },
+                                      title: Text(
+                                        resolution.resolution.title,
+                                      ),
+                                    );
                                   },
-                                );
-                              },
+                                )
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (trackGroups.isNotEmpty)
+                                  const Text(
+                                    "Доступные озвучки",
+                                  ),
+                                ...List.generate(
+                                  trackGroups.length,
+                                  (index) {
+                                    final group = trackGroups.elementAt(index);
+                                    return CheckboxListTile(
+                                      title: Text(group.language),
+                                      dense: true,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      contentPadding: EdgeInsets.zero,
+                                      value: selectedGroups.contains(group),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (selectedGroups.contains(group)) {
+                                            selectedGroups.remove(group);
+                                          } else {
+                                            selectedGroups.add(group);
+                                          }
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
+                      ElevatedButton(
+                        onPressed: canDownload ? onDownload : null,
+                        child: const Text('Скачать'),
+                      ),
+                      if (movieState.progress != 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: LinearProgressIndicator(
+                            value: movieState.progress,
+                          ),
+                        ),
                     ],
                   ),
-                  ElevatedButton(
-                    onPressed: canDownload ? onDownload : null,
-                    child: const Text('Скачать'),
+                );
+              },
+              error: (error, stackTrace) {
+                return Center(
+                  child: Text(
+                    "Error: $error",
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
+                );
+              },
+              loading: () {
+                return const CircularProgressIndicator();
+              },
             ),
           );
         },

@@ -186,8 +186,14 @@ class HlsService {
       );
     }
 
-    return DownloadTask(
+    final downloadTask = DownloadTask(
       items: downloadItems,
     );
+
+    pathManager.downloadTaskFile
+      ..createIfNotExist()
+      ..writeAsStringSync(downloadTask.toJson());
+
+    return downloadTask;
   }
 }

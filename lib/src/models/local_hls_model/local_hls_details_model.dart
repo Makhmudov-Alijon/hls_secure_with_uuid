@@ -47,7 +47,8 @@ class LocalHlsDetailsModel extends Equatable {
   }
 
   factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
-    final audioTracks = map['audioTracks'] as List<Map<String, dynamic>>;
+    final audioTracks =
+        List<Map<String, dynamic>>.from(map['audioTracks'] as List<dynamic>);
     return LocalHlsDetailsModel(
       id: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
       title: map['title'] as String,
@@ -56,9 +57,7 @@ class LocalHlsDetailsModel extends Equatable {
       seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
       resolution:
           HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
-      audioTracks: Set<HlsAudioTrack>.from(
-        audioTracks.map(HlsAudioTrack.fromMap),
-      ),
+      audioTracks: audioTracks.map(HlsAudioTrack.fromMap).toSet(),
     );
   }
 

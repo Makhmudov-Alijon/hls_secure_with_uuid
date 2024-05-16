@@ -21,7 +21,8 @@ class HlsLocalRepository {
     final hlsMovies = <LocalHlsModel>[];
 
     for (final file in hlsFiles) {
-      var hls = LocalHlsModel.fromFile(file);
+      final content = await file.readAsString();
+      var hls = LocalHlsModel.fromJson(content);
       if (isInitial) {
         if (hls.localHlsState is LocalHlsCompleteState &&
             hls.timeLeft.inHours < 0) {

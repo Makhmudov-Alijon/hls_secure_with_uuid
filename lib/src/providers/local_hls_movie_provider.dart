@@ -94,10 +94,8 @@ final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
 
 class LocalHlsMovieNotifier
     extends AutoDisposeFamilyNotifier<LocalHlsState, LocalHlsId> {
-  DirectoryWatcher? videoStream;
-  DirectoryWatcher? audioStream;
-  StreamSubscription<WatchEvent>? videoStreamSub;
-  StreamSubscription<WatchEvent>? audioStreamSub;
+  DirectoryWatcher? masterStream;
+  StreamSubscription<WatchEvent>? masterStreamSub;
   LocalHlsModel? currentHls;
 
   void onFileEvent(WatchEvent event) {
@@ -111,30 +109,29 @@ class LocalHlsMovieNotifier
   }
 
   void resetAll() {
-    videoStream = null;
-    audioStream = null;
+    masterStream = null;
+  }
+
+  void onDispose() {
+    stopListenToChanges();
   }
 
   void startListenToChanges() {
     log('start listen to ${currentHls?.hlsDetails.id} hls');
 
-    // TODO: change stream download
-    // videoStream = DirectoryWatcher(currentHls!.videoDir.path);
-    // audioStream = DirectoryWatcher(currentHls!.audioDir.path);
+    masterStream = DirectoryWatcher(currentHls!.masterDir.path);
 
-    videoStreamSub = videoStream?.events.listen(onFileEvent);
-    audioStreamSub = audioStream?.events.listen(onFileEvent);
+    masterStreamSub = masterStream?.events.listen(onFileEvent);
   }
 
   void stopListenToChanges() {
     log('stop listen to ${currentHls?.hlsDetails.id} hls');
-    videoStreamSub?.cancel();
-    audioStreamSub?.cancel();
+    masterStreamSub?.cancel();
     resetAll();
   }
 
   LocalHlsState checkState() {
-    ref.onDispose(stopListenToChanges);
+    ref.onDispose(onDispose);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
     if (foundHls == null) {

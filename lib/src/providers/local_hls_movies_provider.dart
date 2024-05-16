@@ -137,14 +137,14 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
     final moviesInQueue = state.value!
         .where((element) => element.localHlsState is LocalHlsInQueueState)
-        .toList();
-    moviesInQueue.sort(
-      (a, b) {
-        return a.downloadStatus.creationDate.millisecondsSinceEpoch.compareTo(
-          b.downloadStatus.creationDate.millisecondsSinceEpoch,
-        );
-      },
-    );
+        .toList()
+      ..sort(
+        (a, b) {
+          return a.downloadStatus.creationDate.millisecondsSinceEpoch.compareTo(
+            b.downloadStatus.creationDate.millisecondsSinceEpoch,
+          );
+        },
+      );
 
     if (moviesInQueue.isEmpty) {
       return null;

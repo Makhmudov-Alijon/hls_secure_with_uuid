@@ -53,8 +53,8 @@ class HlsAudioTrack extends Equatable {
 
   factory HlsAudioTrack.fromMap(Map<String, dynamic> json) {
     return HlsAudioTrack(
-      filesCount: int.parse(json['filesCount'] as String),
-      size: int.parse(json['size'] as String),
+      filesCount: json['filesCount'] as int,
+      size: json['size'] as int,
       trackType: HlsAudioTrackType.values.first
           .fromString(json['track_type'] as String),
       trackUrl: json['track_url'] as String,

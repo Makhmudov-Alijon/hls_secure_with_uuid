@@ -27,7 +27,7 @@ enum HlsResolutionType {
 extension HlsResolutionTypeExt on HlsResolutionType {
   HlsResolutionType fromString(String value) {
     return HlsResolutionType.values.firstWhere(
-      (element) => value.contains(element.title),
+      (element) => element.title == value,
     );
   }
 }
@@ -49,7 +49,7 @@ class HlsResolution extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'resolution': resolution.name,
+      'resolution': resolution.title,
       'videoPlaylistUrl': videoPlaylistUrl,
       'trackType': trackType.name,
       'filesCount': filesCount,
@@ -59,8 +59,8 @@ class HlsResolution extends Equatable {
 
   factory HlsResolution.fromMap(Map<String, dynamic> map) {
     return HlsResolution(
-      size: int.parse(map['size'] as String),
-      filesCount: int.parse(map['filesCount'] as String),
+      size: map['size'] as int,
+      filesCount: map['filesCount'] as int,
       resolution: HlsResolutionType.values.first
           .fromString(map['resolution'] as String),
       videoPlaylistUrl: map['videoPlaylistUrl'] as String,

@@ -125,6 +125,12 @@ class HlsRepository {
         pathManager: pathManager,
       );
 
+      pathManager.downloadTaskFile
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          downloadTask.toJson(),
+        );
+
       final localHls = LocalHlsModel(
         baseDir: baseDir,
         totalSegments: downloadTask.items.length,
