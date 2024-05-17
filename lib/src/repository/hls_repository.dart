@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/entities/hls_watch_link.dart';
 import 'package:download_manager/src/repository/hls_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -160,7 +161,7 @@ class HlsRepository {
     }
   }
 
-  Future<void> prepareDataForWatching({
+  Future<HlsWatchLink> prepareDataForWatching({
     required String url,
     required String token,
     required String key,
@@ -201,13 +202,14 @@ class HlsRepository {
         isForWatching: isForWatching,
       );
 
-      pathManager.masterFile()
+      final masterFile = pathManager.masterFile()
         ..createIfNotExist()
         ..writeAsStringSync(
           master.toLocalPlaylist(
             linkExcluder: hlsFullPlaylist.masterLinkExcluder,
           ),
         );
+      return HlsWatchLink(master: masterFile);
     } catch (e) {
       rethrow;
     }

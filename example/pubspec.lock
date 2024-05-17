@@ -965,7 +965,7 @@ packages:
     description:
       path: "."
       ref: seasons
-      resolved-ref: "845aee32e7b3fb6606e4abb88987d4b7b70765de"
+      resolved-ref: eddbd8d7fe835230d20017c5ac8e87248347c4e8
       url: "https://github.com/radiants-uz/splay_tv_player.git"
     source: git
     version: "0.0.1"
@@ -1041,6 +1041,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0+1"
+  system_files_viewer:
+    dependency: "direct main"
+    description:
+      name: system_files_viewer
+      sha256: "711deaee43a365ee98798fc94d3e1135d095d92cd4689b16de326b1860741f6a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   term_glyph:
     dependency: transitive
     description:

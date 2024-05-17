@@ -1,14 +1,14 @@
 // ignore_for_file: type_literal_in_constant_pattern
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager_example/views/test_pages/directory_page.dart';
+import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:system_files_viewer/system_files_viewer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -190,12 +190,20 @@ class _MyAppState extends ConsumerState<MyApp> {
                   onPressed: () async {
                     final dir = await getApplicationDocumentsDirectory();
                     if (context.mounted) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return DirectoryPage(directory: dir);
-                          },
-                        ),
+                      SystemFilesViewer.openDirectoryPage(
+                        context: context,
+                        directory: dir,
+                        onHlsPlayPressed: (master) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return VideoPage(
+                                  master: master,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       );
                     }
                   },

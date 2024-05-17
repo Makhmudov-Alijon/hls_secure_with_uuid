@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:download_manager_example/views/test_pages/video_page/players/better_player.dart';
-import 'package:download_manager_example/views/test_pages/video_page/players/chewie_player.dart';
 import 'package:download_manager_example/views/test_pages/video_page/players/media_kit_player.dart';
 import 'package:flutter/material.dart';
 
