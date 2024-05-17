@@ -33,7 +33,7 @@ class HlsRepository {
     required bool forWatching,
   }) async {
     try {
-      final response = await dio.get<dynamic>(
+      final response = await dio.post<dynamic>(
         url,
         options: Options(
           headers: {
