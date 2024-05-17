@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <domain-config>
+    <domain includeSubdomains="true">splay.uz</domain>
+    <domain includeSubdomains="true">vod02.splay.uz</domain>
+    <trust-anchors>
+      <certificates src="@raw/client" />
+    </trust-anchors>
+  </domain-config>
+  <base-config>
+    <trust-anchors>
+      <certificates src="@raw/client" />
+      <certificates src="system" />
+    </trust-anchors>
+  </base-config>
+</network-security-config>

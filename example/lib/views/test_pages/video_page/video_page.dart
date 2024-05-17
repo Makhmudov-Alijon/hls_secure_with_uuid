@@ -43,11 +43,11 @@ class _VideoPageState extends State<VideoPage> {
             }
             break;
           case 1:
-            if (player is! LocalChewiePlayer) {
-              player = LocalChewiePlayer(
-                file: widget.master,
-              );
-            }
+            // if (player is! LocalChewiePlayer) {
+            //   player = LocalChewiePlayer(
+            //     file: widget.master,
+            //   );
+            // }
             break;
           case 2:
             if (player is! LocalBetterPlayer) {
