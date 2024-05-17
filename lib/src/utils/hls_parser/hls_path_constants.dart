@@ -7,7 +7,8 @@ class HlsPathConstants {
 
   static Future<Directory> get mediaDir async {
     return Directory(
-        '${(await baseDir).path}/${HlsFolders.media}/${HlsFolders.local}');
+      '${(await baseDir).path}/${HlsFolders.media}/${HlsFolders.local}',
+    );
   }
 }
 

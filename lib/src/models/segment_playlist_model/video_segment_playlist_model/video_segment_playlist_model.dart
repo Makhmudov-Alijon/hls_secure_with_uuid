@@ -1,9 +1,4 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
-import 'package:download_manager/src/utils/hls_parser/entities/hls_playlist_data.dart';
-
-import '../../../utils/hls_link_swapper/hls_link_swapper.dart';
-import '../../master_playlist_model/hls_enctyption_key.dart';
 
 class VideoSegmentPlaylistModel {
   const VideoSegmentPlaylistModel({

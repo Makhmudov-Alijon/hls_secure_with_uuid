@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/entities/hls_watch_link.dart';
 import 'package:download_manager/src/repository/hls_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';

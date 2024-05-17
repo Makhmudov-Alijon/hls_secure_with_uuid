@@ -1,11 +1,5 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/hls_full_non_parsed_model/hls_full_non_parsed_model.dart';
-import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
-import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../utils/hls_link_swapper/hls_link_swapper.dart';
-import '../../utils/hls_parser/entities/hls_playlist_data.dart';
 
 class MasterPlaylistModel extends Equatable {
   const MasterPlaylistModel({

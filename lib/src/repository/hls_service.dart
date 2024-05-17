@@ -1,11 +1,6 @@
-import 'package:download_manager/src/models/hls_full_playlist_model/hls_full_playlist_model.dart';
-import 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
-import 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
-import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../download_manager.dart';
-import '../models/hls_full_non_parsed_model/hls_full_non_parsed_model.dart';
 import '../utils/security/security.dart';
 
 final hlsServiceProvider = Provider(
@@ -189,10 +184,6 @@ class HlsService {
     final downloadTask = DownloadTask(
       items: downloadItems,
     );
-
-    pathManager.downloadTaskFile
-      ..createIfNotExist()
-      ..writeAsStringSync(downloadTask.toJson());
 
     return downloadTask;
   }

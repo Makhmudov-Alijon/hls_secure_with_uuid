@@ -1,6 +1,5 @@
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../../download_manager.dart';
 
 class HlsKey extends Equatable {
   const HlsKey({required this.key});

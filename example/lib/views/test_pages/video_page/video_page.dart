@@ -75,12 +75,12 @@ class _VideoPageState extends State<VideoPage> {
             ),
             label: 'Media Kit',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.looks_two_sharp,
-            ),
-            label: 'Chewie',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     Icons.looks_two_sharp,
+          //   ),
+          //   label: 'Chewie',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.looks_3_sharp,

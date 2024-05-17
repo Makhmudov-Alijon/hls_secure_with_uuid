@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import 'local_hls_model.dart';
 
 class LocalHlsGroupModel extends Equatable {
   const LocalHlsGroupModel({

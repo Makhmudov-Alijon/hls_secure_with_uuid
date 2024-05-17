@@ -1,15 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:watcher/watcher.dart';
-
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_id.dart';
-import '../models/local_hls_model/local_hls_model.dart';
-import '../models/local_hls_model/local_hls_status.dart';
-import 'hls_downloader_provider.dart';
-import 'local_hls_movies_provider.dart';
 
 abstract class LocalHlsState {
   const LocalHlsState({this.progress = 0});

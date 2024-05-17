@@ -1,9 +1,4 @@
-import 'package:download_manager/src/models/master_playlist_model/hls_enctyption_key.dart';
-import 'package:download_manager/src/utils/hls_link_exlcluder/hls_link_excluder.dart';
-import 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
-
-import '../../../../download_manager.dart';
-import 'hls_playlist_item.dart';
+import 'package:download_manager/download_manager.dart';
 
 class HlsPlaylistData {
   const HlsPlaylistData({

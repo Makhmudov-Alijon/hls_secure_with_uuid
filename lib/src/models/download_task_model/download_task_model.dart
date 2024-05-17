@@ -2,9 +2,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import 'download_item_model.dart';
 
 class DownloadTask extends Equatable {
   const DownloadTask({

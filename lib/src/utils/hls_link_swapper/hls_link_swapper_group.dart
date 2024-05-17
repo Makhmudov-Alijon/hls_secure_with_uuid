@@ -1,4 +1,4 @@
-import 'hls_link_swapper.dart';
+import 'package:download_manager/download_manager.dart';
 
 class HlsLinkSwapperGroup {
   HlsLinkSwapperGroup({required this.swappers});

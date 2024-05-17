@@ -4,32 +4,6 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as path;
 
-// class HlsLinkSwapper extends Equatable {
-//   const HlsLinkSwapper({
-//     required this.baseLink,
-//     required this.relativeLink,
-//     required this.absoluteLink,
-//   });
-//   factory HlsLinkSwapper.fromFileEntity({
-//     required String baseLink,
-//     required File file,
-//     required Directory baseDir,
-//   }) {
-//     return HlsLinkSwapper(
-//       baseLink: baseLink,
-//       relativeLink: path.relative(file.path, from: baseDir.path),
-//       absoluteLink: 'file://${file.path}',
-//     );
-//   }
-
-//   final String baseLink;
-//   final String relativeLink;
-//   final String absoluteLink;
-
-//   @override
-//   List<Object?> get props => [baseLink, relativeLink, absoluteLink];
-// }
-
 class HlsLink extends Equatable {
   const HlsLink({
     required this.absolute,

@@ -1,9 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../../download_manager.dart';
 
 enum HlsResolutionType {
   v240p('240p', 240, '240p'),

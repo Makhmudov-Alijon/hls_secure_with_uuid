@@ -1,9 +1,5 @@
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../models/local_hls_model/local_hls_model.dart';
-import '../providers/local_hls_movie_provider.dart';
-import '../utils/hls_parser/hls_path_constants.dart';
-import '../utils/hls_parser/hls_utils.dart';
 
 final hlsLocalRepositoryProvider = Provider(
   (ref) => HlsLocalRepository(),

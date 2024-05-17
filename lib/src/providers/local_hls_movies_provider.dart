@@ -1,12 +1,7 @@
 import 'dart:async';
 
-import 'package:download_manager/src/models/local_hls_model/local_hls_group_model.dart';
-import 'package:download_manager/src/models/local_hls_model/local_hls_id.dart';
-import 'package:download_manager/src/models/local_hls_model/local_hls_model.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../repository/hls_local_repository.dart';
-import 'local_hls_movie_provider.dart';
 
 final localHlsMoviesProvider =
     AsyncNotifierProvider<LocalHlsMoviesNotifier, List<LocalHlsModel>>(

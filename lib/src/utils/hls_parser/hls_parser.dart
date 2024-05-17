@@ -1,10 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:download_manager/download_manager.dart';
 
-import '../../models/master_playlist_model/hls_enctyption_key.dart';
-import 'entities/hls_playlist_data.dart';
-import 'entities/hls_playlist_item.dart';
-
 class HlsParser {
   const HlsParser({
     required this.playlist,

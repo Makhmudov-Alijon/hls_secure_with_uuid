@@ -2,16 +2,8 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_details_model.dart';
-import '../models/local_hls_model/local_hls_model.dart';
-import '../models/master_playlist_model/master_playlist_model.dart';
-import '../repository/hls_local_repository.dart';
-import '../repository/hls_repository.dart';
-import 'local_hls_movie_provider.dart';
-import 'local_hls_movies_provider.dart';
 
 enum HlsDownloaderState {
   downloading,
