@@ -1,9 +1,9 @@
 extension IntExtension on int {
   String formatBytes(int decimals) {
-    const int oneKB = 1024;
-    const int oneMB = 1024 * oneKB;
-    const int oneGB = 1024 * oneMB;
-    const int oneTB = 1024 * oneGB;
+    const oneKB = 1024;
+    const oneMB = 1024 * oneKB;
+    const oneGB = 1024 * oneMB;
+    const oneTB = 1024 * oneGB;
 
     if (this >= oneTB) {
       return '${(this / oneTB).toStringAsFixed(decimals)} ТБ';

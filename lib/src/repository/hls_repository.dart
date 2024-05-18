@@ -1,26 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/repository/hls_service.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
-
-import '../models/download_task_model/download_item_model.dart';
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_details_model.dart';
-import '../models/local_hls_model/local_hls_model.dart';
-import '../models/local_hls_model/local_hls_status.dart';
-import '../models/master_playlist_model/hls_resolution.dart';
-import '../models/master_playlist_model/master_playlist_model.dart';
-import '../models/segment_playlist_model/hls_segment_playlist_key.dart';
-import '../models/segment_playlist_model/segment_playlist_parsed_model.dart';
-import '../providers/client_provider.dart';
-import '../utils/hls_parser/hls_parser.dart';
-import '../utils/hls_parser/hls_path_constants.dart';
-import '../utils/hls_parser/hls_path_manager.dart';
 
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
     dio: ref.read(managerClientProvider),
     ref: ref,
+    hlsService: ref.read(hlsServiceProvider),
   ),
 );
 
@@ -28,219 +19,206 @@ class HlsRepository {
   const HlsRepository({
     required this.dio,
     required this.ref,
+    required this.hlsService,
   });
 
   final Dio dio;
   final Ref ref;
+  final HlsService hlsService;
 
-  Future<MasterPlaylistModel> fetchDataFromMasterPlaylist(
-    String masterPlaylistUrl,
-  ) async {
-    try {
-      HlsSegmentsPlaylistKey? segmentPlaylistKey;
-      final response = await dio.get<String>(masterPlaylistUrl);
-      final parser = HlsParser(
-        playlist: response.data!,
-        playlistUrl: masterPlaylistUrl,
-      );
-      return MasterPlaylistModel.fromParsedPlaylist(
-        parser.parseData(HlsPlaylistType.masterPlaylist),
-        segmentPlaylistKey,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<SegmentPlaylistParsedModel> fetchDataFromResolutionPlaylist(
-    MasterPlaylistModel masterPlaylist,
-    HlsResolution resolution,
-  ) async {
-    try {
-      final response = await dio.get<String>(resolution.videoPlaylistUrl);
-      final parser = HlsParser(
-        playlist: response.data!,
-        playlistUrl: resolution.videoPlaylistUrl,
-        key: masterPlaylist.segmentPlaylistKey,
-      );
-      final parsed = parser.parseData(HlsPlaylistType.videoSegmentPlaylist);
-      return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        parsed,
-        true,
-        masterPlaylist.segmentPlaylistKey,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<SegmentPlaylistParsedModel> fetchAudioPlaylist(
-    MasterPlaylistModel masterPlaylist,
-  ) async {
-    try {
-      final response = await dio.get<String>(masterPlaylist.audioPlaylistUrl);
-      final parser = HlsParser(
-        playlist: response.data!,
-        playlistUrl: masterPlaylist.audioPlaylistUrl,
-        key: masterPlaylist.segmentPlaylistKey,
-      );
-      final parsed = parser.parseData(HlsPlaylistType.audioSegmentPlaylist);
-      return SegmentPlaylistParsedModel.fromParsedPlaylist(
-        parsed,
-        false,
-        masterPlaylist.segmentPlaylistKey,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> downloadMustHaveData(List<DownloadItem> downloadTasks) async {
-    for (final task in downloadTasks) {
-      await dio.download(
-        task.url,
-        task.absolutePath,
-      );
-    }
-  }
-
-  DownloadTask _prepareDownloadTaskItems({
-    required SegmentPlaylistParsedModel audioPlaylist,
-    required SegmentPlaylistParsedModel videoPlaylist,
-    required HlsPathManager pathManager,
-  }) {
-    final segments = [...audioPlaylist.segments, ...videoPlaylist.segments];
-    final downloadItems = <DownloadItem>[];
-    for (final segment in segments) {
-      downloadItems.add(
-        DownloadItem(
-          url: segment.downloadLink,
-          saveDir:
-              segment.isVideo ? pathManager.videoDir : pathManager.audioDir,
-          fileName: segment.isVideo
-              ? pathManager.videoFileFrom(segment.downloadLink).fileName
-              : pathManager.audioFileFrom(segment.downloadLink).fileName,
-        ),
-      );
-    }
-    return DownloadTask(
-      items: downloadItems,
-    );
-  }
-
-  Future<DownloadTask?> prepareDataForDownload({
-    required LocalHlsDetailsModel hlsDetails,
-    required MasterPlaylistModel masterPlaylist,
-    HlsSegmentsPlaylistKey? key,
-    bool isDownloading = false,
-    String? posterLink,
+  Future<MasterPlaylistModel> fetchMasterPlaylist({
+    required String url,
+    required String token,
+    required String key,
+    required LocalHlsId hlsId,
+    required bool forWatching,
   }) async {
     try {
-      final baseDir = await HlsPathConstants.baseDir;
-      final hlsPathManager = HlsPathManager(
-        baseDir: baseDir,
-        localHlsId: hlsDetails.id,
-        resolutionType: hlsDetails.videoResolution.resolution,
-      );
-
-      final masterDir = hlsPathManager.masterDir..createIfNotExist();
-
-      final audioDir = hlsPathManager.audioDir..createIfNotExist();
-
-      final videoDir = hlsPathManager.videoDir..createIfNotExist();
-
-      unawaited(
-        downloadMustHaveData(
-          [
-            if (key != null &&
-                !hlsPathManager.masterFileFrom(key.encKeyUrl).existsSync())
-              DownloadItem(
-                groupId: hlsDetails.id.toStringId(),
-                url: key.encKeyUrl,
-                saveDir: hlsPathManager.masterDir,
-                fileName: hlsPathManager.masterFileFrom(key.encKeyUrl).fileName,
-              ),
-            if (posterLink != null && !hlsPathManager.posterFile.existsSync())
-              DownloadItem(
-                groupId: hlsDetails.id.toStringId(),
-                url: posterLink,
-                saveDir: hlsPathManager.masterDir,
-                fileName: hlsPathManager.posterFile.fileName,
-              ),
-          ],
+      final response = await dio.post<dynamic>(
+        url,
+        options: Options(
+          headers: {
+            HttpHeaders.authorizationHeader: 'Bearer $token',
+          },
         ),
       );
 
-      final videoPlaylist = await fetchDataFromResolutionPlaylist(
-        masterPlaylist,
-        hlsDetails.videoResolution,
+      final hlsData = await hlsService.decryptPlaylistData(
+        token: token,
+        url: url,
+        key: key,
+        data: response.data,
       );
 
-      final audioPlaylist = await fetchAudioPlaylist(
-        masterPlaylist,
+      final baseDir = await getApplicationDocumentsDirectory();
+
+      final pathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: hlsId,
+        isRemote: forWatching,
       );
 
-      final masterFile = await hlsPathManager
-          .masterFileFrom(masterPlaylist.masterPlaylistData.playlistUrl)
-          .writeAsString(
-            await masterPlaylist.masterPlaylistData.toLocalPlaylist(
-              pathManager: hlsPathManager,
-            ),
-          );
+      return MasterPlaylistModel.parse(
+        playlist: hlsData.master,
+        hlsData: hlsData,
+        pathManager: pathManager,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-      final videoMasterFile = await hlsPathManager
-          .videoFileFrom(videoPlaylist.playlistData.playlistUrl)
-          .writeAsString(
-            await videoPlaylist.playlistData.toLocalPlaylist(
-              pathManager: hlsPathManager,
-            ),
-          );
+  Future<DownloadTask?> downloadPlaylists({
+    required MasterPlaylistModel master,
+    required LocalHlsDetailsModel hlsDetails,
+    required String? posterLink,
+    required bool Function() isSomeHlsIsLoading,
+  }) async {
+    try {
+      final baseDir = await getApplicationDocumentsDirectory();
 
-      final audioMasterFile = await hlsPathManager
-          .audioFileFrom(audioPlaylist.playlistData.playlistUrl)
-          .writeAsString(
-            await audioPlaylist.playlistData.toLocalPlaylist(
-              pathManager: hlsPathManager,
-            ),
-          );
+      final pathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: hlsDetails.id,
+        isRemote: false,
+      );
+
+      final masterDir = pathManager.masterDir..createIfNotExist();
+
+      final encKey = master.hlsData.enc;
+
+      if (encKey != null) {
+        pathManager.encKeyFile
+          ..createIfNotExist()
+          ..writeAsStringSync(encKey);
+      }
+
+      final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
+        pathManager: pathManager,
+        master: master,
+        isForWatching: false,
+        selectedResolutions: {hlsDetails.resolution},
+        selectedTracks: hlsDetails.audioTracks,
+      );
+
+      final masterFile = pathManager.masterFile()
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          master.toLocalPlaylist(
+            linkExcluder: hlsFullPlaylist.masterLinkExcluder,
+          ),
+        );
+
+      if (posterLink != null && !pathManager.posterFile.existsSync()) {
+        await downloadItem(
+          DownloadItem(
+            groupId: hlsDetails.id.toStringId(),
+            url: posterLink,
+            saveDir: pathManager.masterDir,
+            fileName: pathManager.posterFile.fileName,
+          ),
+        );
+      }
+
+      final downloadTask = hlsService.prepareDownloadTask(
+        audioPlaylists: hlsFullPlaylist.audioPlaylists,
+        videoPlaylist: hlsFullPlaylist.videoPlaylists.first,
+        pathManager: pathManager,
+      );
+
+      pathManager.downloadTaskFile
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          downloadTask.toJson(),
+        );
 
       final localHls = LocalHlsModel(
+        baseDir: baseDir,
+        totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
-          statusType: isDownloading
+          statusType: isSomeHlsIsLoading()
               ? LocalHlsStatusType.inQueue
               : LocalHlsStatusType.downloading,
           creationDate: DateTime.now(),
         ),
-        posterFile: hlsPathManager.posterFile,
+        posterFile: pathManager.posterFile,
         masterFile: masterFile,
         masterDir: masterDir,
-        audioDir: audioDir,
-        videoDir: videoDir,
-        audioMasterFile: audioMasterFile,
-        videoMasterFile: videoMasterFile,
-        downloadTasksFile: hlsPathManager.downloadTaskFile,
-        localHlsFile: hlsPathManager.localHlsFile,
-        videoSegmentsLength: videoPlaylist.segments.length,
-        audioSegmentsLength: audioPlaylist.segments.length,
+        downloadTasksFile: pathManager.downloadTaskFile,
+        localHlsFile: pathManager.localHlsFile,
       );
 
-      final downloadTask = _prepareDownloadTaskItems(
-        audioPlaylist: audioPlaylist,
-        videoPlaylist: videoPlaylist,
-        pathManager: hlsPathManager,
-      );
-
-      await hlsPathManager.downloadTaskFile
-          .writeAsString(downloadTask.toJson());
-
-      await hlsPathManager.localHlsFile.writeAsString(
-        localHls.toJson(),
-      );
+      pathManager.localHlsFile
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          localHls.toJson(),
+        );
 
       return downloadTask;
     } catch (e) {
       return null;
     }
+  }
+
+  Future<HlsWatchLink> prepareDataForWatching({
+    required String url,
+    required String token,
+    required String key,
+    required LocalHlsId hlsId,
+  }) async {
+    try {
+      final baseDir = await getApplicationDocumentsDirectory();
+
+      const isForWatching = true;
+
+      final pathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: hlsId,
+        isRemote: isForWatching,
+      );
+
+      final master = await fetchMasterPlaylist(
+        url: url,
+        token: token,
+        key: key,
+        hlsId: hlsId,
+        forWatching: isForWatching,
+      );
+
+      pathManager.masterDir.createIfNotExist();
+
+      final encKey = master.hlsData.enc;
+
+      if (encKey != null) {
+        pathManager.encKeyFile
+          ..createIfNotExist()
+          ..writeAsStringSync(encKey);
+      }
+
+      final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
+        pathManager: pathManager,
+        master: master,
+        isForWatching: isForWatching,
+      );
+
+      final masterFile = pathManager.masterFile()
+        ..createIfNotExist()
+        ..writeAsStringSync(
+          master.toLocalPlaylist(
+            linkExcluder: hlsFullPlaylist.masterLinkExcluder,
+          ),
+        );
+      return HlsWatchLink(master: masterFile);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> downloadItem(DownloadItem downloadItem) async {
+    await dio.download(
+      downloadItem.url,
+      downloadItem.absolutePath,
+    );
   }
 }

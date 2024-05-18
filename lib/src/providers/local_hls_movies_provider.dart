@@ -1,16 +1,11 @@
 import 'dart:async';
 
-import 'package:download_manager/src/models/local_hls_model/local_hls_group_model.dart';
-import 'package:download_manager/src/models/local_hls_model/local_hls_id.dart';
-import 'package:download_manager/src/models/local_hls_model/local_hls_model.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../repository/hls_local_repository.dart';
-import 'local_hls_movie_provider.dart';
 
 final localHlsMoviesProvider =
     AsyncNotifierProvider<LocalHlsMoviesNotifier, List<LocalHlsModel>>(
-  () => LocalHlsMoviesNotifier(),
+  LocalHlsMoviesNotifier.new,
 );
 
 class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
@@ -23,7 +18,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
       return [];
     }
 
-    for (var hls in state.value!) {
+    for (final hls in state.value!) {
       final key = hls.hlsDetails.id.movieId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
@@ -32,7 +27,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
           });
         } else {
           groupMap.addAll({
-            key: [hls]
+            key: [hls],
           });
         }
       }
@@ -73,7 +68,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
   LocalHlsGroupModel? getGroupById(int movieId) {
     final groups = getGroupedItems();
-    for (var group in groups) {
+    for (final group in groups) {
       if (movieId == group.id) {
         return group;
       }
@@ -121,7 +116,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   FutureOr<List<LocalHlsModel>> build() async {
     return ref
         .read(hlsLocalRepositoryProvider)
-        .fetchLocalHlsMovies(_checkInitial());
+        .fetchLocalHlsMovies(isInitial: _checkInitial());
   }
 
   Future<void> refreshMovies() async {
@@ -137,14 +132,14 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
     final moviesInQueue = state.value!
         .where((element) => element.localHlsState is LocalHlsInQueueState)
-        .toList();
-    moviesInQueue.sort(
-      (a, b) {
-        return a.downloadStatus.creationDate.millisecondsSinceEpoch.compareTo(
-          b.downloadStatus.creationDate.millisecondsSinceEpoch,
-        );
-      },
-    );
+        .toList()
+      ..sort(
+        (a, b) {
+          return a.downloadStatus.creationDate.millisecondsSinceEpoch.compareTo(
+            b.downloadStatus.creationDate.millisecondsSinceEpoch,
+          );
+        },
+      );
 
     if (moviesInQueue.isEmpty) {
       return null;
@@ -154,7 +149,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   }
 
   void deleteGroupOfHls(LocalHlsGroupModel hlsGroup) {
-    for (var item in hlsGroup.movies) {
+    for (final item in hlsGroup.movies) {
       deleteHls(item);
     }
   }

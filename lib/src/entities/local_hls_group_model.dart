@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import 'local_hls_model.dart';
 
 class LocalHlsGroupModel extends Equatable {
   const LocalHlsGroupModel({
@@ -20,13 +19,6 @@ class LocalHlsGroupModel extends Equatable {
   final bool isSerial;
   final List<LocalHlsModel> movies;
   final File posterFile;
-
-  int get groupSizeInBytes {
-    return movies.fold(
-      0,
-      (previousValue, element) => previousValue + element.sizeInBytes,
-    );
-  }
 
   @override
   List<Object?> get props => [id, title, season, isSerial, movies, posterFile];

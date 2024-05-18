@@ -1,12 +1,18 @@
+import 'dart:developer' as developerLog;
+
 extension StringExtension on String {
+  void log() {
+    developerLog.log(this);
+  }
+
   List<String> splitWithExclude(
       {required String pattern, required String excludePattern}) {
-    var result = <String>[];
-    var buffer = StringBuffer();
-    bool isInQuotes = false;
+    final result = <String>[];
+    final buffer = StringBuffer();
+    var isInQuotes = false;
 
     for (var i = 0; i < length; i++) {
-      var char = this[i];
+      final char = this[i];
 
       if (char == excludePattern) {
         isInQuotes =

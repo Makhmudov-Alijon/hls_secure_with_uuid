@@ -1,17 +1,14 @@
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../models/local_hls_model/local_hls_model.dart';
-import '../providers/local_hls_movie_provider.dart';
-import '../utils/hls_parser/hls_path_constants.dart';
-import '../utils/hls_parser/hls_utils.dart';
 
 final hlsLocalRepositoryProvider = Provider(
   (ref) => HlsLocalRepository(),
 );
 
 class HlsLocalRepository {
-  Future<List<LocalHlsModel>> fetchLocalHlsMovies(
-      [bool isInitial = false]) async {
+  Future<List<LocalHlsModel>> fetchLocalHlsMovies({
+    bool isInitial = false,
+  }) async {
     final mediaDir = await HlsPathConstants.mediaDir;
     final hlsFiles = await HlsUtils.searchFilesByNameInDirectory(
       mediaDir,
@@ -19,8 +16,9 @@ class HlsLocalRepository {
     );
     final hlsMovies = <LocalHlsModel>[];
 
-    for (var file in hlsFiles) {
-      var hls = LocalHlsModel.fromFile(file);
+    for (final file in hlsFiles) {
+      final content = await file.readAsString();
+      var hls = LocalHlsModel.fromJson(content);
       if (isInitial) {
         if (hls.localHlsState is LocalHlsCompleteState &&
             hls.timeLeft.inHours < 0) {
@@ -59,7 +57,7 @@ class HlsLocalRepository {
     await hls.masterDir.delete(recursive: true);
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModel hls, [double progress = 0]) {
+  LocalHlsState fetchHlsState(LocalHlsModel hls) {
     final hlsFile = hls.localHlsFile;
     if (!hlsFile.existsSync()) {
       return LocalHlsDeletedState();

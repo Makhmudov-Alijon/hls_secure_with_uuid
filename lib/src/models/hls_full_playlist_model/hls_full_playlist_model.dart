@@ -1,0 +1,15 @@
+import 'package:download_manager/download_manager.dart';
+
+class HlsFullPlaylistModel {
+  HlsFullPlaylistModel({
+    required this.master,
+    required this.videoPlaylists,
+    required this.audioPlaylists,
+    required this.masterLinkExcluder,
+  });
+
+  final MasterPlaylistModel master;
+  final List<VideoSegmentPlaylistModel> videoPlaylists;
+  final List<AudioSegmentPlaylistModel> audioPlaylists;
+  final HlsLinkExcluder masterLinkExcluder;
+}

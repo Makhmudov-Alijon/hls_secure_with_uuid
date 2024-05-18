@@ -1,16 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:watcher/watcher.dart';
-
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_id.dart';
-import '../models/local_hls_model/local_hls_model.dart';
-import '../models/local_hls_model/local_hls_status.dart';
-import 'hls_downloader_provider.dart';
-import 'local_hls_movies_provider.dart';
 
 abstract class LocalHlsState {
   const LocalHlsState({this.progress = 0});
@@ -69,36 +62,34 @@ class LocalHlsErrorState extends LocalHlsState {
 }
 
 class LocalHlsPauseState extends LocalHlsState {
-  LocalHlsPauseState({double progress = 0}) : super(progress: progress);
+  LocalHlsPauseState({super.progress});
 }
 
 class LocalHlsInQueueState extends LocalHlsState {
-  LocalHlsInQueueState({double progress = 0}) : super(progress: progress);
+  LocalHlsInQueueState({super.progress});
 }
 
 class LocalHlsDisableState extends LocalHlsState {
-  LocalHlsDisableState({double progress = 0}) : super(progress: progress);
+  LocalHlsDisableState({super.progress});
 }
 
 class LocalHlsCompleteState extends LocalHlsState {
-  LocalHlsCompleteState({double progress = 0}) : super(progress: progress);
+  LocalHlsCompleteState({super.progress});
 }
 
 class LocalHlsDeletedState extends LocalHlsState {
-  LocalHlsDeletedState({double progress = 0}) : super(progress: progress);
+  LocalHlsDeletedState({super.progress});
 }
 
 final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
-  () => LocalHlsMovieNotifier(),
+  LocalHlsMovieNotifier.new,
 );
 
 class LocalHlsMovieNotifier
     extends AutoDisposeFamilyNotifier<LocalHlsState, LocalHlsId> {
-  DirectoryWatcher? videoStream;
-  DirectoryWatcher? audioStream;
-  StreamSubscription<WatchEvent>? videoStreamSub;
-  StreamSubscription<WatchEvent>? audioStreamSub;
+  DirectoryWatcher? masterStream;
+  StreamSubscription<WatchEvent>? masterStreamSub;
   LocalHlsModel? currentHls;
 
   void onFileEvent(WatchEvent event) {
@@ -112,29 +103,29 @@ class LocalHlsMovieNotifier
   }
 
   void resetAll() {
-    videoStream = null;
-    audioStream = null;
+    masterStream = null;
+  }
+
+  void onDispose() {
+    stopListenToChanges();
   }
 
   void startListenToChanges() {
-    log("start listen to ${currentHls?.hlsDetails.id} hls");
+    log('start listen to ${currentHls?.hlsDetails.id} hls');
 
-    videoStream = DirectoryWatcher(currentHls!.videoDir.path);
-    audioStream = DirectoryWatcher(currentHls!.audioDir.path);
+    masterStream = DirectoryWatcher(currentHls!.masterDir.path);
 
-    videoStreamSub = videoStream?.events.listen(onFileEvent);
-    audioStreamSub = audioStream?.events.listen(onFileEvent);
+    masterStreamSub = masterStream?.events.listen(onFileEvent);
   }
 
   void stopListenToChanges() {
-    log("stop listen to ${currentHls?.hlsDetails.id} hls");
-    videoStreamSub?.cancel();
-    audioStreamSub?.cancel();
+    log('stop listen to ${currentHls?.hlsDetails.id} hls');
+    masterStreamSub?.cancel();
     resetAll();
   }
 
   LocalHlsState checkState() {
-    ref.onDispose(stopListenToChanges);
+    ref.onDispose(onDispose);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
     if (foundHls == null) {
@@ -148,7 +139,7 @@ class LocalHlsMovieNotifier
     return foundHls.localHlsState;
   }
 
-  Future<void> pauseDownload([double progress = 0]) async {
+  Future<void> pauseDownload() async {
     if (currentHls != null) {
       stopListenToChanges();
       await ref.read(hlsDownloaderProvider.notifier).pauseDownload(currentHls!);
@@ -185,7 +176,7 @@ class LocalHlsMovieNotifier
       stopListenToChanges();
       final currentState = currentHls!.localHlsState;
       if (currentState is LocalHlsDownloadingState) {
-        ref
+        await ref
             .read(hlsDownloaderProvider.notifier)
             .cancelDownloadAndDelete(currentHls!);
       } else if (currentState is LocalHlsPauseState ||

@@ -2,16 +2,8 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
+import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../models/download_task_model/download_task_model.dart';
-import '../models/local_hls_model/local_hls_details_model.dart';
-import '../models/local_hls_model/local_hls_model.dart';
-import '../models/master_playlist_model/master_playlist_model.dart';
-import '../repository/hls_local_repository.dart';
-import '../repository/hls_repository.dart';
-import 'local_hls_movie_provider.dart';
-import 'local_hls_movies_provider.dart';
 
 enum HlsDownloaderState {
   downloading,
@@ -20,7 +12,7 @@ enum HlsDownloaderState {
 
 final hlsDownloaderProvider =
     NotifierProvider<HlsDownloaderNotifier, HlsDownloaderState>(
-  () => HlsDownloaderNotifier(),
+  HlsDownloaderNotifier.new,
 );
 
 class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
@@ -46,18 +38,18 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     String? posterLink,
   }) async {
     final downloadTask =
-        await ref.read(hlsRepositoryProvider).prepareDataForDownload(
+        await ref.read(hlsRepositoryProvider).downloadPlaylists(
+              isSomeHlsIsLoading: () => state == HlsDownloaderState.downloading,
+              master: masterPlaylist,
               hlsDetails: hlsDetails,
-              masterPlaylist: masterPlaylist,
               posterLink: posterLink,
-              isDownloading: state == HlsDownloaderState.downloading,
             );
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
     ref.invalidate(localHlsMovieProvider(hlsDetails.id));
     final hls =
         ref.read(localHlsMoviesProvider.notifier).hlsById(hlsDetails.id);
     if (downloadTask == null || hls == null) {
-      throw Exception("Something went wrong!");
+      throw Exception('Something went wrong!');
     } else {
       if (state == HlsDownloaderState.downloading) {
         addToQueue(hls);
@@ -92,13 +84,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
-        downloadOrContinue(downloadTask: downloadTask, hls: nextHls);
+        unawaited(
+          downloadOrContinue(downloadTask: downloadTask, hls: nextHls),
+        );
       }
     }
   }
 
-  Future<void> downloadOrContinue(
-      {required DownloadTask downloadTask, required LocalHlsModel hls}) async {
+  Future<void> downloadOrContinue({
+    required DownloadTask downloadTask,
+    required LocalHlsModel hls,
+  }) async {
     changeState(HlsDownloaderState.downloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
           hls.id,
@@ -119,12 +115,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         .read(localHlsMoviesProvider.notifier)
         .updateHlsStatus(hls.id, resultState);
     if (resultState is LocalHlsErrorState) {
-      throw Exception("Something went wrong!");
+      throw Exception('Something went wrong!');
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    checkForNextQueue();
+    unawaited(checkForNextQueue());
   }
 
   static Future<LocalHlsState> downloadStart(
@@ -151,7 +147,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             onReceiveProgress: (count, total) {
               progress = count / total;
               onProgressChanges?.call(progress);
-              final state = hlsLocalRepository.fetchHlsState(hls, progress);
+              final state = hlsLocalRepository.fetchHlsState(hls);
               if (state is LocalHlsPauseState ||
                   state is LocalHlsDeletedState) {
                 cancelToken.cancel();
@@ -161,7 +157,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         } catch (e) {
           if (e is DioException) {
             if (e.type == DioExceptionType.cancel) {
-              final hlsState = hlsLocalRepository.fetchHlsState(hls, progress);
+              final hlsState = hlsLocalRepository.fetchHlsState(hls);
               return hlsState;
             }
             return LocalHlsErrorState(

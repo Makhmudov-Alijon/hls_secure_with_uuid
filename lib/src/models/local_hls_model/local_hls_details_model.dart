@@ -1,10 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
-import '../master_playlist_model/hls_resolution.dart';
-import 'local_hls_id.dart';
 
 class LocalHlsDetailsModel extends Equatable {
   const LocalHlsDetailsModel({
@@ -13,8 +11,8 @@ class LocalHlsDetailsModel extends Equatable {
     required this.isSerial,
     required this.episodeNum,
     required this.seasonNum,
-    required this.masterLink,
-    required this.videoResolution,
+    required this.resolution,
+    required this.audioTracks,
   });
 
   final LocalHlsId id;
@@ -22,12 +20,12 @@ class LocalHlsDetailsModel extends Equatable {
   final bool isSerial;
   final int? episodeNum;
   final int? seasonNum;
-  final String? masterLink;
-  final HlsResolution videoResolution;
+  final HlsResolution resolution;
+  final Set<HlsAudioTrack> audioTracks;
 
   String get fullTitle {
     if (isSerial) {
-      return "$title, $seasonNum, $episodeNum";
+      return '$title, $seasonNum, $episodeNum';
     } else {
       return title;
     }
@@ -40,22 +38,23 @@ class LocalHlsDetailsModel extends Equatable {
       'isSerial': isSerial,
       'episodeNum': episodeNum,
       'seasonNum': seasonNum,
-      'masterLink': masterLink,
-      'videoResolution': videoResolution.toMap(),
+      'resolution': resolution.toMap(),
+      'audioTracks': audioTracks.map((e) => e.toMap()).toList(),
     };
   }
 
   factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
+    final audioTracks =
+        List<Map<String, dynamic>>.from(map['audioTracks'] as List<dynamic>);
     return LocalHlsDetailsModel(
       id: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
       title: map['title'] as String,
       isSerial: map['isSerial'] as bool,
       episodeNum: map['episodeNum'] != null ? map['episodeNum'] as int : null,
       seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
-      masterLink:
-          map['masterLink'] != null ? map['masterLink'] as String : null,
-      videoResolution:
-          HlsResolution.fromMap(map['videoResolution'] as Map<String, dynamic>),
+      resolution:
+          HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
+      audioTracks: audioTracks.map(HlsAudioTrack.fromMap).toSet(),
     );
   }
 
@@ -65,6 +64,13 @@ class LocalHlsDetailsModel extends Equatable {
       LocalHlsDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  List<Object?> get props =>
-      [title, isSerial, episodeNum, seasonNum, masterLink, videoResolution];
+  List<Object?> get props => [
+        id,
+        title,
+        isSerial,
+        episodeNum,
+        seasonNum,
+        resolution,
+        audioTracks,
+      ];
 }
