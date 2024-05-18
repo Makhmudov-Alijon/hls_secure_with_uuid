@@ -147,7 +147,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             onReceiveProgress: (count, total) {
               progress = count / total;
               onProgressChanges?.call(progress);
-              final state = hlsLocalRepository.fetchHlsState(hls, progress);
+              final state = hlsLocalRepository.fetchHlsState(hls);
               if (state is LocalHlsPauseState ||
                   state is LocalHlsDeletedState) {
                 cancelToken.cancel();
@@ -157,7 +157,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         } catch (e) {
           if (e is DioException) {
             if (e.type == DioExceptionType.cancel) {
-              final hlsState = hlsLocalRepository.fetchHlsState(hls, progress);
+              final hlsState = hlsLocalRepository.fetchHlsState(hls);
               return hlsState;
             }
             return LocalHlsErrorState(

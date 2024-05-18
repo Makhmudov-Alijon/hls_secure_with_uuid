@@ -57,7 +57,7 @@ class HlsLocalRepository {
     await hls.masterDir.delete(recursive: true);
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModel hls, [double progress = 0]) {
+  LocalHlsState fetchHlsState(LocalHlsModel hls) {
     final hlsFile = hls.localHlsFile;
     if (!hlsFile.existsSync()) {
       return LocalHlsDeletedState();
