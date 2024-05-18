@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
@@ -37,7 +38,7 @@ class HlsRepository {
         url,
         options: Options(
           headers: {
-            'Bearer': token,
+            HttpHeaders.authorizationHeader: 'Bearer $token',
           },
         ),
       );
