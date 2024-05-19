@@ -47,8 +47,8 @@ class HlsPlaylistData {
         }
       }
 
+      log("to local item url start: ${item.url}");
       if (item.url != null) {
-        log("to local item url initital: ${item.url}");
         if (linkExcluder != null && linkExcluder.contains(item.url!)) {
           continue;
         }

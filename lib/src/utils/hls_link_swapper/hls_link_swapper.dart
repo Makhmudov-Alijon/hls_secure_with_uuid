@@ -41,7 +41,6 @@ class HlsLinkSwapper {
     required File saveFile,
     required Directory baseDir,
   }) {
-    log('swap link for $url: ${HlsLink.fromFileEntity(baseDir: baseDir, file: saveFile)}');
     _links[url] = HlsLink.fromFileEntity(baseDir: baseDir, file: saveFile);
   }
 
