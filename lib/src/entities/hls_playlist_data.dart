@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:download_manager/download_manager.dart';
 
 class HlsPlaylistData {
@@ -46,10 +48,12 @@ class HlsPlaylistData {
       }
 
       if (item.url != null) {
+        log("to local item url initital: ${item.url}");
         if (linkExcluder != null && linkExcluder.contains(item.url!)) {
           continue;
         }
         final swapperLink = linkSwapperGroup[item.url!];
+        log("to local swapper link: ${swapperLink}");
         if (swapperLink != null) {
           item = item.copyWith(
             url: swapperLink,
