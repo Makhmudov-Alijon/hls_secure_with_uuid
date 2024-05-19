@@ -16,10 +16,10 @@ class HlsLinkSwapperGroup {
 
   bool get isEmpty {
     for (final swapper in swappers) {
-      if (swapper.isEmpty) {
-        return true;
+      if (!swapper.isEmpty) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 }
