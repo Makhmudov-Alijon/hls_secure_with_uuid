@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:download_manager/download_manager.dart';
 
 class AudioSegmentPlaylistModel {
@@ -39,6 +41,7 @@ class AudioSegmentPlaylistModel {
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
         final url = item.url!;
+        log('audio url: $url');
         totalDuration += duration;
         final saveFile = pathManager.fileFromAudio(
           url: item.url!,
