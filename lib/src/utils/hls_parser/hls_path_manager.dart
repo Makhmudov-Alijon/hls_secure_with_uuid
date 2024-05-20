@@ -54,15 +54,15 @@ class HlsPathManager {
   bool get isSerial =>
       localHlsId.seasonId != null && localHlsId.episodeId != null;
 
-  String get movieIdFolder {
+  String get contentIdFolder {
     final contentId = localHlsId.contentId;
-    final movieId = localHlsId.movieId;
+    final filmId = localHlsId.filmId;
     final seasonId = localHlsId.seasonId;
     final episodeId = localHlsId.episodeId;
 
-    if (movieId != null && seasonId == null && episodeId == null) {
-      return 'movies/$contentId\n_$movieId';
-    } else if (movieId == null && seasonId != null && episodeId != null) {
+    if (filmId != null && seasonId == null && episodeId == null) {
+      return 'movies/$contentId\n_$filmId';
+    } else if (filmId == null && seasonId != null && episodeId != null) {
       return 'series/$contentId/seasons/$seasonId/$episodeId';
     }
 
@@ -89,7 +89,7 @@ class HlsPathManager {
 
   String _masterPath({String? url, String? fileName}) {
     return _checkForBase(
-      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/${fileName ?? _filenameFromUrl(url)}',
+      'media/${_hlsDataSource(isRemote)}/$contentIdFolder/${fileName ?? _filenameFromUrl(url)}',
     );
   }
 
@@ -99,7 +99,7 @@ class HlsPathManager {
     String? fileName,
   }) {
     return _checkForBase(
-      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/video/${resolutionType.quality}p/${fileName ?? _filenameFromUrl(url)}',
+      'media/${_hlsDataSource(isRemote)}/$contentIdFolder/video/${resolutionType.quality}p/${fileName ?? _filenameFromUrl(url)}',
     );
   }
 
@@ -109,7 +109,7 @@ class HlsPathManager {
     String? fileName,
   }) {
     return _checkForBase(
-      'media/${_hlsDataSource(isRemote)}/$movieIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
+      'media/${_hlsDataSource(isRemote)}/$contentIdFolder/audio/${audioTrack.trackName}/${audioTrack.trackType.shortName}/${fileName ?? _filenameFromUrl(url)}',
     );
   }
 

@@ -6,22 +6,22 @@ import 'package:equatable/equatable.dart';
 class LocalHlsId extends Equatable {
   const LocalHlsId({
     required this.contentId,
-    this.movieId,
+    this.filmId,
     this.seasonId,
     this.episodeId,
   });
 
   final int contentId;
-  final int? movieId;
+  final int? filmId;
   final int? seasonId;
   final int? episodeId;
 
   @override
-  List<Object?> get props => [contentId, movieId, seasonId, episodeId];
+  List<Object?> get props => [contentId, filmId, seasonId, episodeId];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'movieId': movieId,
+      'filmId': filmId,
       'seasonId': seasonId,
       'episodeId': episodeId,
       'contentId': contentId,
@@ -29,12 +29,12 @@ class LocalHlsId extends Equatable {
   }
 
   String toStringId() {
-    return '$movieId-$seasonId-$episodeId';
+    return '$filmId-$seasonId-$episodeId';
   }
 
   factory LocalHlsId.fromMap(Map<String, dynamic> map) {
     return LocalHlsId(
-      movieId: map['movieId'] as int,
+      filmId: map['filmId'] as int,
       seasonId: map['seasonId'] != null ? map['seasonId'] as int : null,
       episodeId: map['episodeId'] != null ? map['episodeId'] as int : null,
       contentId: map['contentId'] as int,
