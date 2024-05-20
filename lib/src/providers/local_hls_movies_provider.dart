@@ -19,7 +19,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
 
     for (final hls in state.value!) {
-      final key = hls.hlsDetails.id.movieId;
+      final key = hls.hlsDetails.id.contentId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
@@ -54,7 +54,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
       }
 
       return LocalHlsGroupModel(
-        id: items.first.hlsDetails.id.movieId,
+        id: items.first.hlsDetails.id.contentId,
         title: items.first.hlsDetails.title,
         season: items.first.hlsDetails.seasonNum,
         isSerial: items.first.hlsDetails.isSerial,
@@ -66,10 +66,10 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     return groups;
   }
 
-  LocalHlsGroupModel? getGroupById(int movieId) {
+  LocalHlsGroupModel? getGroupById(int contentId) {
     final groups = getGroupedItems();
     for (final group in groups) {
-      if (movieId == group.id) {
+      if (contentId == group.id) {
         return group;
       }
     }

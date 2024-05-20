@@ -54,7 +54,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   final key = 'API_DI_KEY';
 
-  final hlsId = const LocalHlsId(movieId: 123);
+  final hlsId = const LocalHlsId(contentId: 123, movieId: 12);
 
   MasterPlaylistModel? masterPlaylist;
 

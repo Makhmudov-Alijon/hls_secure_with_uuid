@@ -55,7 +55,18 @@ class HlsPathManager {
       localHlsId.seasonId != null && localHlsId.episodeId != null;
 
   String get movieIdFolder {
-    return "${localHlsId.movieId}${isSerial ? "/${localHlsId.seasonId}/${localHlsId.episodeId}" : ""}";
+    final contentId = localHlsId.contentId;
+    final movieId = localHlsId.movieId;
+    final seasonId = localHlsId.seasonId;
+    final episodeId = localHlsId.episodeId;
+
+    if (movieId != null && seasonId == null && episodeId == null) {
+      return 'movies/$contentId\n_$movieId';
+    } else if (movieId == null && seasonId != null && episodeId != null) {
+      return 'series/$contentId/seasons/$seasonId/$episodeId';
+    }
+
+    throw UnimplementedError('Not specified required id');
   }
 
   String _filenameFromUrl(String? url) {
