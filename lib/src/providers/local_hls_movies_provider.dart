@@ -81,28 +81,6 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     if (!state.hasValue) {
       return [];
     }
-    // return state.value!.where(
-    //   (hls) {
-    //     return hls.localHlsState is LocalHlsDownloadingState ||
-    //         hls.localHlsState is LocalHlsInQueueState ||
-    //         hls.localHlsState is LocalHlsPauseState ||
-    //         hls.localHlsState is LocalHlsErrorState;
-    //   },
-    // ).toList()
-    //   ..sort(
-    //     (a, b) {
-    //       if (a.localHlsState is LocalHlsDownloadingState) {
-    //         return -1;
-    //       } else if (a.localHlsState is! LocalHlsInQueueState) {
-    //         return 1;
-    //       } else {
-    //         return a.downloadStatus.creationDate.millisecondsSinceEpoch
-    //             .compareTo(
-    //           b.downloadStatus.creationDate.millisecondsSinceEpoch,
-    //         );
-    //       }
-    //     },
-    //   );
     return state.value!.where(
       (hls) {
         return hls.localHlsState is LocalHlsDownloadingState ||
