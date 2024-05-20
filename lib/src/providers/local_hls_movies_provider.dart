@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/providers/local_hls_movie_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final localHlsMoviesProvider =
@@ -112,16 +113,16 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     ).toList()
       ..sort(
         (a, b) {
-          final stateOrder = <Type, int>{
-            LocalHlsDownloadingState: 0,
-            LocalHlsInQueueState: 1,
-            LocalHlsPauseState: 2,
-            LocalHlsErrorState: 3,
+          final stateOrder = <String, int>{
+            LocalHlsDownloadingState().toString(): 0,
+            LocalHlsInQueueState().toString(): 1,
+            LocalHlsPauseState().toString(): 2,
+            LocalHlsErrorState().toString(): 3,
           };
 
-          if (stateOrder[b.runtimeType] != stateOrder[a.runtimeType]) {
-            return stateOrder[b.runtimeType]!.compareTo(
-              stateOrder[a.runtimeType]!,
+          if (stateOrder[a.toString()] != stateOrder[b.toString()]) {
+            return stateOrder[a.toString()]!.compareTo(
+              stateOrder[b.toString()]!,
             );
           } else {
             return b.downloadStatus.creationDate.compareTo(
