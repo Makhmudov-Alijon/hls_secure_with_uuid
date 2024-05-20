@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/providers/local_hls_movie_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final localHlsMoviesProvider =
@@ -171,11 +170,14 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
   void deleteGroupOfHls(LocalHlsGroupModel hlsGroup) {
     for (final item in hlsGroup.movies) {
-      deleteHls(item);
+      deleteHls(hls: item);
     }
   }
 
-  void deleteHls(LocalHlsModel hls) {
+  void deleteHls({
+    required LocalHlsModel hls,
+    FutureOr<void> Function(LocalHlsModel hls)? onDelete,
+  }) {
     final hlsIndex = _hlsIndex(hls.id);
     if (hlsIndex != null) {
       _removeHlsAt(hlsIndex);
@@ -185,6 +187,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
           );
       ref.invalidate(localHlsMovieProvider(hls.id));
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+      onDelete?.call(hls);
     }
   }
 

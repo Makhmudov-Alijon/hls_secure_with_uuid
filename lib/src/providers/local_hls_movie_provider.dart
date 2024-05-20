@@ -182,7 +182,7 @@ class LocalHlsMovieNotifier
       } else if (currentState is LocalHlsPauseState ||
           currentState is LocalHlsErrorState ||
           currentState is LocalHlsInQueueState) {
-        ref.read(localHlsMoviesProvider.notifier).deleteHls(currentHls!);
+        ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: currentHls!);
       }
     }
   }

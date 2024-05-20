@@ -35,6 +35,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrEnqueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
+    FutureOr<void> Function(LocalHlsModel hls)? onDownloadComplete,
     String? posterLink,
   }) async {
     final downloadTask =
@@ -55,7 +56,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         addToQueue(hls);
       } else {
         changeState(HlsDownloaderState.downloading);
-        await downloadOrContinue(downloadTask: downloadTask, hls: hls);
+        await downloadOrContinue(
+          downloadTask: downloadTask,
+          hls: hls,
+          onDownloadComplete: onDownloadComplete,
+        );
       }
     }
   }
@@ -94,6 +99,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
+    FutureOr<void> Function(LocalHlsModel hls)? onDownloadComplete,
   }) async {
     changeState(HlsDownloaderState.downloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
@@ -117,7 +123,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     if (resultState is LocalHlsErrorState) {
       throw Exception('Something went wrong!');
     } else if (resultState is LocalHlsDeletedState) {
-      ref.read(localHlsMoviesProvider.notifier).deleteHls(hls);
+      ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
+    } else if (resultState is LocalHlsCompleteState) {
+      onDownloadComplete?.call(hls);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
     unawaited(checkForNextQueue());
