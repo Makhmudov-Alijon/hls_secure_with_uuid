@@ -23,9 +23,18 @@ class LocalHlsDetailsModel extends Equatable {
   final HlsResolution resolution;
   final Set<HlsAudioTrack> audioTracks;
 
-  String get fullTitle {
+  String fullTitle({String? episodeTitle, String? seasonTitle}) {
     if (isSerial) {
-      return '$title, $seasonNum, $episodeNum';
+      final episode = [
+        if (episodeNum != null) episodeNum.toString(),
+        if (episodeTitle != null) episodeTitle,
+      ].join(' ');
+
+      final season = [
+        if (seasonNum != null) seasonNum.toString(),
+        if (seasonTitle != null) seasonNum.toString(),
+      ].join(' ');
+      return '$title / $season / $episode';
     } else {
       return title;
     }
