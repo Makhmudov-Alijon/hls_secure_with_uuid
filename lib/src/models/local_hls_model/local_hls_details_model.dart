@@ -32,7 +32,7 @@ class LocalHlsDetailsModel extends Equatable {
 
       final season = [
         if (seasonNum != null) seasonNum.toString(),
-        if (seasonTitle != null) seasonNum.toString(),
+        if (seasonTitle != null) seasonTitle,
       ].join(' ');
       return '$title / $season / $episode';
     } else {
