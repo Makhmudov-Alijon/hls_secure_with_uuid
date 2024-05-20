@@ -34,9 +34,9 @@ class LocalHlsId extends Equatable {
 
   factory LocalHlsId.fromMap(Map<String, dynamic> map) {
     return LocalHlsId(
-      filmId: map['filmId'] as int,
-      seasonId: map['seasonId'] != null ? map['seasonId'] as int : null,
-      episodeId: map['episodeId'] != null ? map['episodeId'] as int : null,
+      filmId: map['filmId'] as int?,
+      seasonId: map['seasonId'] as int?,
+      episodeId: map['episodeId'] as int?,
       contentId: map['contentId'] as int,
     );
   }
