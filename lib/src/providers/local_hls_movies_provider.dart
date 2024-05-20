@@ -113,16 +113,30 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     ).toList()
       ..sort(
         (a, b) {
-          final stateOrder = <String, int>{
-            LocalHlsDownloadingState().toString(): 0,
-            LocalHlsInQueueState().toString(): 1,
-            LocalHlsPauseState().toString(): 2,
-            LocalHlsErrorState().toString(): 3,
+          final stateOrder = <Type, int>{
+            LocalHlsDownloadingState: 0,
+            LocalHlsInQueueState: 1,
+            LocalHlsPauseState: 2,
+            LocalHlsErrorState: 3,
           };
 
-          if (stateOrder[a.toString()] != stateOrder[b.toString()]) {
-            return stateOrder[a.toString()]!.compareTo(
-              stateOrder[b.toString()]!,
+          int getStateOrder(LocalHlsState state) {
+            if (state is LocalHlsDownloadingState) {
+              return stateOrder[LocalHlsDownloadingState]!;
+            } else if (state is LocalHlsInQueueState) {
+              return stateOrder[LocalHlsInQueueState]!;
+            } else if (state is LocalHlsPauseState) {
+              return stateOrder[LocalHlsPauseState]!;
+            } else if (state is LocalHlsErrorState) {
+              return stateOrder[LocalHlsErrorState]!;
+            }
+            throw Exception('Unknown state');
+          }
+
+          if (getStateOrder(a.localHlsState) !=
+              getStateOrder(b.localHlsState)) {
+            return getStateOrder(a.localHlsState).compareTo(
+              getStateOrder(b.localHlsState),
             );
           } else {
             return b.downloadStatus.creationDate.compareTo(
