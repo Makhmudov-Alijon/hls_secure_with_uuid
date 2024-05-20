@@ -119,9 +119,9 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
             LocalHlsErrorState: 3,
           };
 
-          if (stateOrder[a.runtimeType] != stateOrder[b.runtimeType]) {
-            return stateOrder[a.runtimeType]!.compareTo(
-              stateOrder[b.runtimeType]!,
+          if (stateOrder[b.runtimeType] != stateOrder[a.runtimeType]) {
+            return stateOrder[b.runtimeType]!.compareTo(
+              stateOrder[a.runtimeType]!,
             );
           } else {
             return b.downloadStatus.creationDate.compareTo(
