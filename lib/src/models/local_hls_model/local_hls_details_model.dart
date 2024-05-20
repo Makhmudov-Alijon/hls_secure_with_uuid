@@ -31,6 +31,14 @@ class LocalHlsDetailsModel extends Equatable {
     }
   }
 
+  int get sizeBytes {
+    var audioSize = 0;
+    for (var audio in audioTracks) {
+      audioSize += audio.size;
+    }
+    return resolution.size + audioSize;
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id.toMap(),
