@@ -61,9 +61,9 @@ class HlsPathManager {
     final episodeId = localHlsId.episodeId;
 
     if (filmId != null && seasonId == null && episodeId == null) {
-      return 'movies/$contentId\n_$filmId';
+      return 'movies/${contentId}_$filmId';
     } else if (filmId == null && seasonId != null && episodeId != null) {
-      return 'series/$contentId/seasons/$seasonId/$episodeId';
+      return 'series/$contentId/season_$seasonId/episode_$episodeId';
     }
 
     throw UnimplementedError('Not specified required id');
