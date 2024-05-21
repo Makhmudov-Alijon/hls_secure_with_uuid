@@ -170,17 +170,17 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
   void deleteGroupOfHls({
     required LocalHlsGroupModel hlsGroup,
-    FutureOr<void> Function(LocalHlsGroupModel group)? onDelete,
+    FutureOr<void> Function(LocalHlsGroupModel group, Ref ref)? onDelete,
   }) {
     for (final item in hlsGroup.movies) {
       deleteHls(hls: item);
     }
-    onDelete?.call(hlsGroup);
+    onDelete?.call(hlsGroup, ref);
   }
 
   void deleteHls({
     required LocalHlsModel hls,
-    FutureOr<void> Function(LocalHlsModel hls)? onDelete,
+    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDelete,
   }) {
     final hlsIndex = _hlsIndex(hls.id);
     if (hlsIndex != null) {
@@ -191,7 +191,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
           );
       ref.invalidate(localHlsMovieProvider(hls.id));
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
-      onDelete?.call(hls);
+      onDelete?.call(hls, ref);
     }
   }
 

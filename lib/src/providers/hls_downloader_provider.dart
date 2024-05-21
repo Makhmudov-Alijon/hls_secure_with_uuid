@@ -36,7 +36,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrEnqueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
-    FutureOr<void> Function(LocalHlsModel hls)? onDownloadComplete,
+    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
     String? posterLink,
   }) async {
     final downloadTask =
@@ -100,7 +100,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
-    FutureOr<void> Function(LocalHlsModel hls)? onDownloadComplete,
+    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
   }) async {
     changeState(HlsDownloaderState.downloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
@@ -130,7 +130,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     unawaited(checkForNextQueue());
     if (resultState is LocalHlsCompleteState) {
       log('download complete send stat for hls: ${hls.id}');
-      onDownloadComplete?.call(hls);
+      onDownloadComplete?.call(hls, ref);
     }
   }
 
