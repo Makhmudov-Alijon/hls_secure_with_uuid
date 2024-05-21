@@ -52,17 +52,23 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     final hls =
         ref.read(localHlsMoviesProvider.notifier).hlsById(hlsDetails.id);
     if (downloadTask == null || hls == null) {
-      throw Exception('Something went wrong!');
+      throw Exception('Download task or hls not provided');
     } else {
       if (state == HlsDownloaderState.downloading) {
         addToQueue(hls);
       } else {
         changeState(HlsDownloaderState.downloading);
-        await downloadOrContinue(
-          downloadTask: downloadTask,
-          hls: hls,
-          onDownloadComplete: onDownloadComplete,
-        );
+        try {
+          await downloadOrContinue(
+            downloadTask: downloadTask,
+            hls: hls,
+            onDownloadComplete: onDownloadComplete,
+          );
+        } catch (e) {
+          await checkForNextQueue(
+            onDownloadComplete: onDownloadComplete,
+          );
+        }
       }
     }
   }
@@ -129,10 +135,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         .read(localHlsMoviesProvider.notifier)
         .updateHlsStatus(hls.id, resultState);
     if (resultState is LocalHlsErrorState) {
-      throw Exception('Something went wrong!');
+      throw Exception('Download end with error!');
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
-    } else if (resultState is LocalHlsCompleteState) {
     }
     await Future.wait(
       [
