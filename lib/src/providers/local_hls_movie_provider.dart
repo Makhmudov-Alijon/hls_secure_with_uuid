@@ -146,7 +146,10 @@ class LocalHlsMovieNotifier
     }
   }
 
-  Future<void> continueDownload() async {
+  Future<void> continueDownload({
+    required FutureOr<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
+  }) async {
     if (currentHls != null) {
       if (ref.read(hlsDownloaderProvider) != HlsDownloaderState.downloading) {
         startListenToChanges();
@@ -162,6 +165,7 @@ class LocalHlsMovieNotifier
         await ref.read(hlsDownloaderProvider.notifier).downloadOrContinue(
               downloadTask: downloadTask,
               hls: currentHls!,
+              onDownloadComplete: onDownloadComplete,
             );
       }
     } else {

@@ -84,14 +84,20 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
   }
 
-  Future<void> checkForNextQueue() async {
+  Future<void> checkForNextQueue({
+    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
+  }) async {
     final nextHls =
         await ref.read(localHlsMoviesProvider.notifier).findNextInQueue();
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
         unawaited(
-          downloadOrContinue(downloadTask: downloadTask, hls: nextHls),
+          downloadOrContinue(
+            downloadTask: downloadTask,
+            hls: nextHls,
+            onDownloadComplete: onDownloadComplete,
+          ),
         );
       }
     }
@@ -100,7 +106,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
-    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
+    required FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
   }) async {
     changeState(HlsDownloaderState.downloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
@@ -127,7 +133,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    unawaited(checkForNextQueue());
+    unawaited(checkForNextQueue(
+      onDownloadComplete: onDownloadComplete,
+    ));
     if (resultState is LocalHlsCompleteState) {
       log('download complete send stat for hls: ${hls.id}');
       onDownloadComplete?.call(hls, ref);

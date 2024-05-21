@@ -195,7 +195,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
-      movieContoller.continueDownload();
+      movieContoller.continueDownload(onDownloadComplete: null);
     } else if (hlsState is LocalHlsDownloadingState) {
       movieContoller.pauseDownload();
     }
