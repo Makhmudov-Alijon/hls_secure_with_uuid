@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -124,11 +125,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       throw Exception('Something went wrong!');
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
-    } else if (resultState is LocalHlsCompleteState) {
-      onDownloadComplete?.call(hls);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
     unawaited(checkForNextQueue());
+    if (resultState is LocalHlsCompleteState) {
+      log('download complete send stat for hls: ${hls.id}');
+      onDownloadComplete?.call(hls);
+    }
   }
 
   static Future<LocalHlsState> downloadStart(

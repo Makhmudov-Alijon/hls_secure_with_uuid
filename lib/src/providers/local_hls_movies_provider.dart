@@ -168,10 +168,14 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
   }
 
-  void deleteGroupOfHls(LocalHlsGroupModel hlsGroup) {
+  void deleteGroupOfHls({
+    required LocalHlsGroupModel hlsGroup,
+    FutureOr<void> Function(LocalHlsGroupModel group)? onDelete,
+  }) {
     for (final item in hlsGroup.movies) {
       deleteHls(hls: item);
     }
+    onDelete?.call(hlsGroup);
   }
 
   void deleteHls({
