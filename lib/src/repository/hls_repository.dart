@@ -220,7 +220,11 @@ class HlsRepository {
             linkExcluder: hlsFullPlaylist.masterLinkExcluder,
           ),
         );
-      return HlsWatchLink(master: masterFile);
+      return HlsWatchLink(
+        master: masterFile,
+        mediumThumbnails: pathManager.mediaThumbnailsFile,
+        largeThumbnails: pathManager.largeThumbnailsFile,
+      );
     } catch (e) {
       rethrow;
     }
