@@ -36,7 +36,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrEnqueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
-    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
+    Future<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
     String? posterLink,
   }) async {
     final downloadTask =
@@ -85,7 +85,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   Future<void> checkForNextQueue({
-    required FutureOr<void> Function(LocalHlsModel hls, Ref ref)?
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
   }) async {
     final nextHls =
@@ -105,7 +105,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
-    required FutureOr<void> Function(LocalHlsModel hls, Ref ref)?
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
   }) async {
     changeState(HlsDownloaderState.downloading);
@@ -133,12 +133,16 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
     } else if (resultState is LocalHlsCompleteState) {
       log('download complete send stat for hls: ${hls.id}');
-      onDownloadComplete?.call(hls, ref);
     }
-    await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    await checkForNextQueue(
-      onDownloadComplete: onDownloadComplete,
-    ); // unawaited before
+    await Future.wait(
+      [
+        if (onDownloadComplete != null) onDownloadComplete.call(hls, ref),
+        ref.read(localHlsMoviesProvider.notifier).refreshMovies(),
+        checkForNextQueue(
+          onDownloadComplete: onDownloadComplete,
+        ), // unawaited before
+      ],
+    );
   }
 
   static Future<LocalHlsState> downloadStart(

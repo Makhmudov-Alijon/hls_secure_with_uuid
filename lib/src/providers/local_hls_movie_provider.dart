@@ -147,7 +147,7 @@ class LocalHlsMovieNotifier
   }
 
   Future<void> continueDownload({
-    required FutureOr<void> Function(LocalHlsModel hls, Ref ref)?
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
   }) async {
     if (currentHls != null) {
