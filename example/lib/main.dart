@@ -106,6 +106,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,
+            onDownloadComplete: null,
           );
     } catch (e) {
       showSnackBar(e.toString());

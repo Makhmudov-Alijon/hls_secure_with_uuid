@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -22,6 +21,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return HlsDownloaderState.notDownloading;
   }
 
+  // ignore: use_setters_to_change_properties
   void changeState(HlsDownloaderState state) {
     this.state = state;
   }
@@ -36,7 +36,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrEnqueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
-    Future<void> Function(LocalHlsModel hls, Ref ref)? onDownloadComplete,
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
     String? posterLink,
   }) async {
     final downloadTask =
@@ -132,7 +133,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
     } else if (resultState is LocalHlsCompleteState) {
-      log('download complete send stat for hls: ${hls.id}');
     }
     await Future.wait(
       [
@@ -140,14 +140,16 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         ref.read(localHlsMoviesProvider.notifier).refreshMovies(),
         checkForNextQueue(
           onDownloadComplete: onDownloadComplete,
-        ), // unawaited before
+        ),
       ],
     );
   }
 
   static Future<LocalHlsState> downloadStart(
-      DownloadTask task, LocalHlsModel hls,
-      [void Function(double progress)? onProgressChanges]) async {
+    DownloadTask task,
+    LocalHlsModel hls, [
+    void Function(double progress)? onProgressChanges,
+  ]) async {
     final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 5),
