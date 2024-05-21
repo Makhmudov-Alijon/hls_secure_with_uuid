@@ -33,7 +33,14 @@ class SecurityService extends Security {
 
   String obscure(String key, String token) {
     final $1 = key.substring(0, 8);
-    final $2 = token.split('.')[2].split('').reversed.join().substring(0, 27);
+    final $2 = token
+        .split('.')[2]
+        .split('')
+        .reversed
+        .join()
+        .substring(0, 27)
+        .replaceAll(RegExp('[+-]'), '_');
+
     final $3 = key.substring(key.length - 9);
 
     return '${$1}${$2}${$3}';
