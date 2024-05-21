@@ -131,15 +131,14 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       throw Exception('Something went wrong!');
     } else if (resultState is LocalHlsDeletedState) {
       ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: hls);
+    } else if (resultState is LocalHlsCompleteState) {
+      log('download complete send stat for hls: ${hls.id}');
+      onDownloadComplete?.call(hls, ref);
     }
     await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
     await checkForNextQueue(
       onDownloadComplete: onDownloadComplete,
     ); // unawaited before
-    if (resultState is LocalHlsCompleteState) {
-      log('download complete send stat for hls: ${hls.id}');
-      onDownloadComplete?.call(hls, ref);
-    }
   }
 
   static Future<LocalHlsState> downloadStart(
