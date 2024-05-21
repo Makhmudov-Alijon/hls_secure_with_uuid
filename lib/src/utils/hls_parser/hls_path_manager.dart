@@ -109,7 +109,7 @@ class HlsPathManager {
     required bool enableFilename,
   }) {
     return _checkForBase(
-      'media/${_hlsDataSource(isRemote)}/thumbnails/${enableFilename ? '${thumbnailsType.name}.vtt' : ''}',
+      'media/${_hlsDataSource(isRemote)}/$contentIdFolder/thumbnails/${enableFilename ? '${thumbnailsType.name}.vtt' : ''}',
     );
   }
 
@@ -176,7 +176,7 @@ class HlsPathManager {
     );
   }
 
-  File masterFile() {
+  File get masterFile {
     return File(
       _masterPath(
         fileName: HlsFilenames.master,

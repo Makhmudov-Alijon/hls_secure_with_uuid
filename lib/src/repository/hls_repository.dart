@@ -100,7 +100,7 @@ class HlsRepository {
         selectedTracks: hlsDetails.audioTracks,
       );
 
-      final masterFile = pathManager.masterFile()
+      final masterFile = pathManager.masterFile
         ..createIfNotExist()
         ..writeAsStringSync(
           master.toLocalPlaylist(
@@ -119,11 +119,6 @@ class HlsRepository {
         );
       }
 
-      await hlsService.saveThumbnailPlaylists(
-        thumbsPlaylists: master.hlsData.thumbsPlaylists,
-        pathManager: pathManager,
-      );
-
       final downloadTask = hlsService.prepareDownloadTask(
         audioPlaylists: hlsFullPlaylist.audioPlaylists,
         videoPlaylist: hlsFullPlaylist.videoPlaylists.first,
@@ -138,8 +133,6 @@ class HlsRepository {
 
       final localHls = LocalHlsModel(
         baseDir: baseDir,
-        largeThumbnailsFile: pathManager.largeThumbnailsFile,
-        mediumThumbnailsFile: pathManager.mediaThumbnailsFile,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -213,18 +206,14 @@ class HlsRepository {
         isForWatching: isForWatching,
       );
 
-      final masterFile = pathManager.masterFile()
+      pathManager.masterFile
         ..createIfNotExist()
         ..writeAsStringSync(
           master.toLocalPlaylist(
             linkExcluder: hlsFullPlaylist.masterLinkExcluder,
           ),
         );
-      return HlsWatchLink(
-        master: masterFile,
-        mediumThumbnails: pathManager.mediaThumbnailsFile,
-        largeThumbnails: pathManager.largeThumbnailsFile,
-      );
+      return HlsWatchLink.fromPathManager(pathManager);
     } catch (e) {
       rethrow;
     }
