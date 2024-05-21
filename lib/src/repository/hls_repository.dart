@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/repository/hls_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -120,6 +119,11 @@ class HlsRepository {
         );
       }
 
+      await hlsService.saveThumbnailPlaylists(
+        thumbsPlaylists: master.hlsData.thumbsPlaylists,
+        pathManager: pathManager,
+      );
+
       final downloadTask = hlsService.prepareDownloadTask(
         audioPlaylists: hlsFullPlaylist.audioPlaylists,
         videoPlaylist: hlsFullPlaylist.videoPlaylists.first,
@@ -134,6 +138,8 @@ class HlsRepository {
 
       final localHls = LocalHlsModel(
         baseDir: baseDir,
+        largeThumbnailsFile: pathManager.largeThumbnailsFile,
+        mediumThumbnailsFile: pathManager.mediaThumbnailsFile,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -195,6 +201,11 @@ class HlsRepository {
           ..createIfNotExist()
           ..writeAsStringSync(encKey);
       }
+
+      await hlsService.saveThumbnailPlaylists(
+        thumbsPlaylists: master.hlsData.thumbsPlaylists,
+        pathManager: pathManager,
+      );
 
       final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
         pathManager: pathManager,

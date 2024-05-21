@@ -18,6 +18,8 @@ _$HlsFullNonParsedModelImpl _$$HlsFullNonParsedModelImplFromJson(
           .map((e) =>
               HlsPlaylistDetailsModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      thumbsPlaylists: const ThumbsConverter()
+          .fromJson(json['thumbs_playlists'] as Map<String, dynamic>),
       enc: json['enc'] as String?,
     );
 
@@ -29,5 +31,7 @@ Map<String, dynamic> _$$HlsFullNonParsedModelImplToJson(
           instance.videoPlaylists.map((e) => e.toJson()).toList(),
       'audio_playlists':
           instance.audioPlaylists.map((e) => e.toJson()).toList(),
+      'thumbs_playlists':
+          const ThumbsConverter().toJson(instance.thumbsPlaylists),
       'enc': instance.enc,
     };

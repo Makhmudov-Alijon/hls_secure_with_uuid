@@ -24,6 +24,7 @@ export 'package:download_manager/src/providers/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/local_hls_movies_provider.dart';
 export 'package:download_manager/src/repository/hls_local_repository.dart';
 export 'package:download_manager/src/repository/hls_repository.dart';
+export 'package:download_manager/src/repository/hls_service.dart';
 export 'package:download_manager/src/utils/app_constants.dart';
 export 'package:download_manager/src/utils/extension/int_extension.dart';
 export 'package:download_manager/src/utils/extension/list_extension.dart';

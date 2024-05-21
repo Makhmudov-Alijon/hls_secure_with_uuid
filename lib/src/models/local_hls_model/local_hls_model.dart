@@ -15,6 +15,8 @@ class LocalHlsModel extends Equatable {
   final LocalHlsDetailsModel hlsDetails;
   final LocalHlsStatus downloadStatus;
   final int totalSegments;
+  final File mediumThumbnailsFile;
+  final File largeThumbnailsFile;
 
   const LocalHlsModel({
     required this.baseDir,
@@ -26,6 +28,8 @@ class LocalHlsModel extends Equatable {
     required this.downloadTasksFile,
     required this.localHlsFile,
     required this.totalSegments,
+    required this.largeThumbnailsFile,
+    required this.mediumThumbnailsFile,
   });
 
   LocalHlsId get id => hlsDetails.id;
@@ -108,6 +112,8 @@ class LocalHlsModel extends Equatable {
         downloadTasksFile,
         localHlsFile,
         totalSegments,
+        largeThumbnailsFile,
+        mediumThumbnailsFile,
       ];
 
   Map<String, dynamic> toMap() {
@@ -121,6 +127,8 @@ class LocalHlsModel extends Equatable {
       'localHlsFile': localHlsFile.path,
       'baseDir': baseDir.path,
       'totalSegments': totalSegments,
+      'largeThumbnailsFile': largeThumbnailsFile.path,
+      'mediumThumbnailsFile': mediumThumbnailsFile.path,
     };
   }
 
@@ -144,6 +152,8 @@ class LocalHlsModel extends Equatable {
       ),
       downloadTasksFile: File(map['downloadTaskFile'] as String),
       localHlsFile: File(map['localHlsFile'] as String),
+      largeThumbnailsFile: File(map['largeThumbnails'] as String),
+      mediumThumbnailsFile: File(map['mediumThumbnails'] as String),
     );
   }
 
@@ -162,8 +172,12 @@ class LocalHlsModel extends Equatable {
     LocalHlsDetailsModel? hlsDetails,
     LocalHlsStatus? downloadStatus,
     int? totalSegments,
+    File? mediumThumbnailsFile,
+    File? largeThumbnailsFile,
   }) {
     return LocalHlsModel(
+      largeThumbnailsFile: largeThumbnailsFile ?? this.largeThumbnailsFile,
+      mediumThumbnailsFile: mediumThumbnailsFile ?? this.mediumThumbnailsFile,
       baseDir: baseDir ?? this.baseDir,
       masterDir: masterDir ?? this.masterDir,
       posterFile: posterFile ?? this.posterFile,

@@ -12,6 +12,7 @@ import 'package:system_files_viewer/system_files_viewer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   MediaKit.ensureInitialized();
 
   ByteData data = await PlatformAssetBundle().load('assets/ca/client.pem');
@@ -102,7 +103,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     try {
-      ref.read(hlsDownloaderProvider.notifier).downloadOrEnqueue(
+      await ref.read(hlsDownloaderProvider.notifier).downloadOrEnqueue(
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,
@@ -148,7 +149,6 @@ class _HomePageState extends ConsumerState<HomePage> {
             hlsId: hlsId,
             forWatching: false,
           );
-
       setState(() {
         resolutions = master.resolutions;
         trackGroups = master.audioTrackGroups;

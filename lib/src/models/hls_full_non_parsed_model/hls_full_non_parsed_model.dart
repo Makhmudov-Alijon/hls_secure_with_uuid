@@ -1,4 +1,5 @@
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'hls_full_non_parsed_model.freezed.dart';
@@ -10,6 +11,7 @@ class HlsFullNonParsedModel with _$HlsFullNonParsedModel {
     required String master,
     required List<HlsPlaylistDetailsModel> videoPlaylists,
     required List<HlsPlaylistDetailsModel> audioPlaylists,
+    @ThumbsConverter() required List<ThumbsPlaylist> thumbsPlaylists,
     String? enc,
   }) = _HlsFullNonParsedModel;
 

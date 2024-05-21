@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';
 
 extension FileSystemEntityExtension on FileSystemEntity {
   String get fileName => path.split('?').first.split('/').last;
@@ -103,6 +104,15 @@ class HlsPathManager {
     );
   }
 
+  String _thumbnailPath({
+    required ThumbsPlaylistType thumbnailsType,
+    required bool enableFilename,
+  }) {
+    return _checkForBase(
+      'media/${_hlsDataSource(isRemote)}/thumbnails/${enableFilename ? '${thumbnailsType.name}.vtt' : ''}',
+    );
+  }
+
   String _audioPath({
     required HlsAudioTrack audioTrack,
     String? url,
@@ -124,6 +134,13 @@ class HlsPathManager {
   Directory videoDir({required HlsResolutionType resolutionType}) => Directory(
         _videoPath(
           resolutionType: resolutionType,
+        ),
+      );
+
+  Directory thumbnailDir({required ThumbsPlaylistType type}) => Directory(
+        _thumbnailPath(
+          thumbnailsType: type,
+          enableFilename: false,
         ),
       );
 
@@ -184,6 +201,29 @@ class HlsPathManager {
       ),
     );
   }
+
+  File thumbnailFile({required ThumbsPlaylistType playlistType}) {
+    return File(
+      _thumbnailPath(
+        thumbnailsType: playlistType,
+        enableFilename: true,
+      ),
+    );
+  }
+
+  File get mediaThumbnailsFile => File(
+        _thumbnailPath(
+          thumbnailsType: ThumbsPlaylistType.medium,
+          enableFilename: true,
+        ),
+      );
+
+  File get largeThumbnailsFile => File(
+        _thumbnailPath(
+          thumbnailsType: ThumbsPlaylistType.large,
+          enableFilename: true,
+        ),
+      );
 
   File get posterFile => File(
         _masterPath(
