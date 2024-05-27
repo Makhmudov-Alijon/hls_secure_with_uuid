@@ -17,6 +17,7 @@ class HlsLocalRepository {
     final hlsMovies = <LocalHlsModel>[];
 
     for (final file in hlsFiles) {
+      if (!file.existsSync()) continue;
       final content = await file.readAsString();
       var hls = LocalHlsModel.fromJson(content);
       if (isInitial) {
