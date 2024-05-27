@@ -83,7 +83,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
   }
 
-  Future<void> cancelDownloadAndDelete(LocalHlsModel hls) async {
+  void cancelDownloadAndDelete(LocalHlsModel hls) {
     changeState(HlsDownloaderState.notDownloading);
     ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
           hls.id,

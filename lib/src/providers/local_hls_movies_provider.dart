@@ -189,8 +189,8 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
             hls,
             LocalHlsDeletedState(),
           );
-      ref.invalidate(localHlsMovieProvider(hls.id));
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+      ref.invalidate(localHlsMovieProvider(hls.id));
       onDelete?.call(hls, ref);
     }
   }
@@ -203,7 +203,9 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
           .read(hlsLocalRepositoryProvider)
           .updateHlsStatus(oldHls, hlsState);
       _replaceHlsAt(hlsIndex, newHls);
-      ref.invalidate(localHlsMovieProvider(id));
+      ref
+        ..invalidate(localHlsMovieProvider(id))
+        ..invalidate(localHlsMoviesProvider);
     }
   }
 

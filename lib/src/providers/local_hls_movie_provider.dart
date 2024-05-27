@@ -104,6 +104,7 @@ class LocalHlsMovieNotifier
 
   void resetAll() {
     masterStream = null;
+    masterStreamSub = null;
   }
 
   void onDispose() {
@@ -112,9 +113,7 @@ class LocalHlsMovieNotifier
 
   void startListenToChanges() {
     log('start listen to ${currentHls?.hlsDetails.id} hls');
-
     masterStream = DirectoryWatcher(currentHls!.masterDir.path);
-
     masterStreamSub = masterStream?.events.listen(onFileEvent);
   }
 
@@ -175,12 +174,12 @@ class LocalHlsMovieNotifier
     }
   }
 
-  Future<void> cancelDownload() async {
+  void cancelDownload() {
     if (currentHls != null) {
       stopListenToChanges();
       final currentState = currentHls!.localHlsState;
       if (currentState is LocalHlsDownloadingState) {
-        await ref
+        ref
             .read(hlsDownloaderProvider.notifier)
             .cancelDownloadAndDelete(currentHls!);
       } else if (currentState is LocalHlsPauseState ||
