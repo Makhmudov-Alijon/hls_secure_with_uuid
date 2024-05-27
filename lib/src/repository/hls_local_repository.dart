@@ -18,12 +18,12 @@ class HlsLocalRepository {
 
     for (final file in hlsFiles) {
       if (!file.existsSync()) continue;
-      final content = await file.readAsString();
+      final content = file.readAsStringSync();
       var hls = LocalHlsModel.fromJson(content);
       if (isInitial) {
         if (hls.localHlsState is LocalHlsCompleteState &&
             hls.timeLeft.inHours < 0) {
-          await deleteHlsDirectory(hls);
+          deleteHlsDirectory(hls);
           continue;
         } else if (hls.localHlsState is LocalHlsDownloadingState) {
           hls = updateHlsStatus(hls, LocalHlsErrorState());
@@ -54,8 +54,8 @@ class HlsLocalRepository {
     return newHls;
   }
 
-  Future<void> deleteHlsDirectory(LocalHlsModel hls) async {
-    await hls.masterDir.delete(recursive: true);
+  void deleteHlsDirectory(LocalHlsModel hls) {
+    hls.masterDir.delete(recursive: true);
   }
 
   LocalHlsState fetchHlsState(LocalHlsModel hls) {
