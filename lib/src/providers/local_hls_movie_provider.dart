@@ -29,6 +29,8 @@ class LocalHlsMovieNotifier
         localHlsMoviesProvider.notifier,
       );
 
+  HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
+
   void onFileEvent(WatchEvent event) {
     if (currentHls != null && sizeToDownload != null) {
       HlsUtils.getTotalDirectorySize(currentHls!.masterDir).then(
@@ -90,7 +92,20 @@ class LocalHlsMovieNotifier
     }
   }
 
-  Future<void> continueDownload({
+  Future<void> tryToContinue({
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
+  }) async {
+    if (currentHls != null) {
+      if (downloaderState == HlsDownloaderState.downloading) {
+        downloaderController.addToQueue(currentHls!);
+      } else {
+        await _continueDownload(onDownloadComplete: onDownloadComplete);
+      }
+    }
+  }
+
+  Future<void> _continueDownload({
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
   }) async {
