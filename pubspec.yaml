@@ -23,7 +23,6 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   riverpod: ^2.5.1
   watcher: ^1.1.0
-  workmanager: ^0.5.2
 
 dev_dependencies:
   flutter_test:
