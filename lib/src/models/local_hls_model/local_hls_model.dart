@@ -86,68 +86,72 @@ class LocalHlsModel extends Equatable {
     );
   }
 
-  double get downloadProgress {
-    final resolution = hlsDetails.resolution;
-    final audioTracks = hlsDetails.audioTracks;
+  // double get downloadProgress {
+  //   final resolution = hlsDetails.resolution;
+  //   final audioTracks = hlsDetails.audioTracks;
 
-    final pathManager = HlsPathManager(
-      baseDir: baseDir,
-      localHlsId: id,
-      isRemote: false,
-    );
+  //   final pathManager = HlsPathManager(
+  //     baseDir: baseDir,
+  //     localHlsId: id,
+  //     isRemote: false,
+  //   );
 
-    var downloadedSegments = 0;
+  //   var downloadedSegments = 0;
 
-    final resolutionDir = pathManager.videoDir(
-      resolutionType: resolution.resolution,
-    );
+  //   final resolutionDir = pathManager.videoDir(
+  //     resolutionType: resolution.resolution,
+  //   );
 
-    if (resolutionDir.existsSync()) {
-      downloadedSegments += resolutionDir.listSync().length - 1;
-    }
+  //   if (resolutionDir.existsSync()) {
+  //     downloadedSegments += resolutionDir.listSync().length - 1;
+  //   }
 
-    for (final audioTrack in audioTracks) {
-      final audioDir = pathManager.audioDir(audioTrack: audioTrack);
-      if (audioDir.existsSync()) {
-        downloadedSegments += audioDir.listSync().length - 1;
-      }
-    }
+  //   for (final audioTrack in audioTracks) {
+  //     final audioDir = pathManager.audioDir(audioTrack: audioTrack);
+  //     if (audioDir.existsSync()) {
+  //       downloadedSegments += audioDir.listSync().length - 1;
+  //     }
+  //   }
 
-    return downloadedSegments / totalSegments;
-  }
+  //   return downloadedSegments / totalSegments;
+  // }
 
   LocalHlsState get localHlsState {
+    final progress =
+        HlsUtils.getTotalDirectorySizeSync(masterDir) / hlsDetails.sizeBytes;
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.inQueue:
         return LocalHlsInQueueState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.paused:
         return LocalHlsPauseState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.complete:
         return LocalHlsCompleteState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.notExist:
         return LocalHlsNotExistState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.downloading:
         return LocalHlsDownloadingState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.deleted:
         return LocalHlsDeletedState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.prepared:
-        return LocalHlsPreparedState();
+        return LocalHlsPreparedState(
+          progress: progress,
+        );
     }
   }
 

@@ -6,6 +6,7 @@ export 'package:download_manager/src/entities/hls_resolution.dart';
 export 'package:download_manager/src/entities/hls_segment.dart';
 export 'package:download_manager/src/entities/hls_watch_link.dart';
 export 'package:download_manager/src/entities/local_hls_group_model.dart';
+export 'package:download_manager/src/entities/local_hls_state.dart';
 export 'package:download_manager/src/entities/local_hls_status.dart';
 export 'package:download_manager/src/models/download_task_model/download_item_model.dart';
 export 'package:download_manager/src/models/download_task_model/download_task_model.dart';

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
@@ -48,7 +49,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   final link =
-      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48167/';
+      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48168/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';
@@ -195,8 +196,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
-    if (hlsState is LocalHlsPauseState ||
-        hlsState is LocalHlsErrorState) {
+    if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       movieContoller.continueDownload(onDownloadComplete: null);
     } else if (hlsState is LocalHlsDownloadingState) {
       movieContoller.pauseDownload();
@@ -238,6 +238,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             skipLoadingOnRefresh: true,
             skipLoadingOnReload: true,
             data: (data) {
+              log(data.toString());
               final movieState = ref.watch(localHlsMovieProvider(hlsId));
               final movieController =
                   ref.watch(localHlsMovieProvider(hlsId).notifier);
@@ -246,6 +247,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   await ref
                       .read(localHlsMoviesProvider.notifier)
                       .refreshMovies();
+                  ref.invalidate(localHlsMovieProvider);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -350,59 +352,58 @@ class _HomePageState extends ConsumerState<HomePage> {
                         onPressed: canDownload ? onDownload : null,
                         child: const Text('Скачать'),
                       ),
-                      if (movieState.progress != 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  if (iconByStatus(movieState) != null)
-                                    SizedBox(
-                                      width: 25,
-                                      height: 25,
-                                      child: IconButton(
-                                        padding: EdgeInsets.zero,
-                                        onPressed: () =>
-                                            onIconPressed(movieState),
-                                        icon: Icon(iconByStatus(movieState)!),
-                                      ),
-                                    ),
-                                  Expanded(
-                                    child: LinearProgressIndicator(
-                                      value: movieState.progress,
+                      // if (movieState.progress != 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                if (iconByStatus(movieState) != null)
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: IconButton(
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () =>
+                                          onIconPressed(movieState),
+                                      icon: Icon(iconByStatus(movieState)!),
                                     ),
                                   ),
-                                  if (movieState is! LocalHlsCompleteState)
-                                    SizedBox(
-                                      width: 25,
-                                      height: 25,
-                                      child: IconButton(
-                                        icon: const Icon(Icons.cancel),
-                                        padding: EdgeInsets.zero,
-                                        onPressed: () {
-                                          movieController.cancelDownload();
-                                        },
-                                      ),
+                                Expanded(
+                                  child: LinearProgressIndicator(
+                                    value: movieState.progress,
+                                  ),
+                                ),
+                                if (movieState is! LocalHlsCompleteState)
+                                  SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.cancel),
+                                      padding: EdgeInsets.zero,
+                                      onPressed: () {
+                                        movieController.cancelDownload();
+                                      },
                                     ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
+                                  ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  getStatusBy(movieState),
+                                ),
+                                if (movieState is! LocalHlsCompleteState)
                                   Text(
-                                    getStatusBy(movieState),
+                                    '${(movieState.progress * 100).toStringAsFixed(1)}%',
                                   ),
-                                  if (movieState is! LocalHlsCompleteState)
-                                    Text(
-                                      '${(movieState.progress * 100).toStringAsFixed(1)}%',
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
+                      ),
                     ].toSlivers.toList(),
                   ),
                 ),

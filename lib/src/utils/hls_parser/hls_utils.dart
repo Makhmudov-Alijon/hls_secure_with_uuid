@@ -61,4 +61,28 @@ class HlsUtils {
     await searchDirectory(directory);
     return foundFiles;
   }
+
+  static Future<int> getTotalDirectorySize(Directory dir) async {
+    var totalSize = 0;
+
+    await for (final entity in dir.list(recursive: true, followLinks: false)) {
+      if (entity is File) {
+        totalSize += await entity.length();
+      }
+    }
+
+    return totalSize;
+  }
+
+  static int getTotalDirectorySizeSync(Directory dir) {
+    var totalSize = 0;
+
+    for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+      if (entity is File) {
+        totalSize += entity.lengthSync();
+      }
+    }
+
+    return totalSize;
+  }
 }
