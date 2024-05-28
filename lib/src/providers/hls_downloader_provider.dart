@@ -117,11 +117,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         _stopDownloading();
         throw Exception('Download end with error!');
       } else if (resultState is LocalHlsDeletedState) {
+        _stopDownloading();
         moviesController.deleteHls(hls: hls);
       } else {
+        _stopDownloading();
         moviesController.updateHlsStatus(hls.id, resultState);
       }
-      _stopDownloading();
       await Future.wait(
         [
           if (onDownloadComplete != null &&
