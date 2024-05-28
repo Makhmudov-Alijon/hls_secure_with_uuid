@@ -47,7 +47,7 @@ class LocalHlsMovieNotifier
   }
 
   void refresh() {
-    state = checkState(state);
+    state = checkState();
   }
 
   void _startListenToProgress() {
@@ -65,7 +65,7 @@ class LocalHlsMovieNotifier
     masterStream = null;
   }
 
-  LocalHlsState checkState(LocalHlsState? oldState) {
+  LocalHlsState checkState() {
     ref.onDispose(_stopListenToProgress);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
@@ -78,50 +78,12 @@ class LocalHlsMovieNotifier
     } else {
       _stopListenToProgress();
     }
-    if (oldState != null) {
-      return foundHls.localHlsState.copyWith(
-        progress: oldState.progress,
-      );
-    }
     return foundHls.localHlsState;
   }
 
   void pauseDownload() {
     if (currentHls != null) {
       downloaderController.pauseDownload(currentHls!);
-    }
-  }
-
-  void tryToContinue({
-    required Future<void> Function(LocalHlsModel hls, Ref ref)?
-        onDownloadComplete,
-  }) {
-    if (currentHls != null) {
-      log('current downloader state: $downloaderState');
-      if (downloaderState == HlsDownloaderState.downloading) {
-        downloaderController.addToQueue(currentHls!);
-      } else {
-        _continueDownload(onDownloadComplete: onDownloadComplete);
-      }
-    }
-  }
-
-  Future<void> _continueDownload({
-    required Future<void> Function(LocalHlsModel hls, Ref ref)?
-        onDownloadComplete,
-  }) async {
-    if (currentHls != null) {
-      final downloadTaskFile = currentHls!.downloadTasksFile;
-      if (downloadTask == null && downloadTaskFile.existsSync()) {
-        downloadTask = DownloadTask.fromFile(downloadTaskFile);
-      }
-      if (downloadTask != null) {
-        await downloaderController.downloadOrContinue(
-          downloadTask: downloadTask!,
-          hls: currentHls!,
-          onDownloadComplete: onDownloadComplete,
-        );
-      }
     }
   }
 
@@ -135,8 +97,20 @@ class LocalHlsMovieNotifier
     }
   }
 
+  void tryContinueDownload({
+    required Future<void> Function(LocalHlsModel, Ref<Object?>)?
+        onDownloadComplete,
+  }) {
+    if (currentHls != null) {
+      downloaderController.tryToDownload(
+        currentHls!,
+        onDownloadComplete,
+      );
+    }
+  }
+
   @override
   LocalHlsState build(LocalHlsId arg) {
-    return checkState(null);
+    return checkState();
   }
 }
