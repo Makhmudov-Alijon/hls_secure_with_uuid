@@ -92,15 +92,16 @@ class LocalHlsMovieNotifier
     }
   }
 
-  Future<void> tryToContinue({
+  void tryToContinue({
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
-  }) async {
+  }) {
     if (currentHls != null) {
+      log('current downloader state: $downloaderState');
       if (downloaderState == HlsDownloaderState.downloading) {
         downloaderController.addToQueue(currentHls!);
       } else {
-        await _continueDownload(onDownloadComplete: onDownloadComplete);
+        _continueDownload(onDownloadComplete: onDownloadComplete);
       }
     }
   }
