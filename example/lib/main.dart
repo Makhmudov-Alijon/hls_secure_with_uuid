@@ -1,7 +1,7 @@
-// ignore_for_file: type_literal_in_constant_pattern
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,7 +48,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   final link =
-      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48168/';
+      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48167/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';
@@ -103,7 +103,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     try {
-      await ref.read(hlsDownloaderProvider.notifier).downloadOrEnqueue(
+      await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueue(
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,
@@ -170,7 +170,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         return 'Удалено';
       case LocalHlsCompleteState:
         return 'Завершено';
-      case LocalHlsDisableState:
+      case LocalHlsNotExistState:
         return 'Отсутствует';
       case LocalHlsInQueueState:
         return 'В очереди';
@@ -195,7 +195,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
-    if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
+    if (hlsState is LocalHlsPauseState ||
+        hlsState is LocalHlsErrorState) {
       movieContoller.continueDownload(onDownloadComplete: null);
     } else if (hlsState is LocalHlsDownloadingState) {
       movieContoller.pauseDownload();
@@ -238,146 +239,172 @@ class _HomePageState extends ConsumerState<HomePage> {
             skipLoadingOnReload: true,
             data: (data) {
               final movieState = ref.watch(localHlsMovieProvider(hlsId));
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      link,
-                    ),
-                    ElevatedButton(
-                      onPressed: prepareForDownload,
-                      child: const Text("Подготовить к скачиванию"),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: prepareForWatching,
-                      child: const Text('Посмотреть'),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (resolutions.isNotEmpty)
-                                const Text(
-                                  "Доступные качества",
-                                ),
-                              ...List.generate(
-                                resolutions.length,
-                                (index) {
-                                  final resolution =
-                                      resolutions.elementAt(index);
-                                  return RadioListTile.adaptive(
-                                    dense: true,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    visualDensity: VisualDensity.compact,
-                                    contentPadding: EdgeInsets.zero,
-                                    value: resolution == selectedResolution,
-                                    groupValue: true,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedResolution = resolution;
-                                      });
-                                    },
-                                    title: Text(
-                                      resolution.resolution.title,
-                                    ),
-                                  );
-                                },
-                              )
-                            ],
+              final movieController =
+                  ref.watch(localHlsMovieProvider(hlsId).notifier);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await ref
+                      .read(localHlsMoviesProvider.notifier)
+                      .refreshMovies();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CustomScrollView(
+                    slivers: [
+                      Text(
+                        link,
+                      ),
+                      ElevatedButton(
+                        onPressed: prepareForDownload,
+                        child: const Text("Подготовить к скачиванию"),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: prepareForWatching,
+                        child: const Text('Посмотреть'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (resolutions.isNotEmpty)
+                                  const Text(
+                                    "Доступные качества",
+                                  ),
+                                ...List.generate(
+                                  resolutions.length,
+                                  (index) {
+                                    final resolution =
+                                        resolutions.elementAt(index);
+                                    return RadioListTile.adaptive(
+                                      dense: true,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      contentPadding: EdgeInsets.zero,
+                                      value: resolution == selectedResolution,
+                                      groupValue: true,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          selectedResolution = resolution;
+                                        });
+                                      },
+                                      title: Text(
+                                        resolution.resolution.title,
+                                      ),
+                                    );
+                                  },
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (trackGroups.isNotEmpty)
-                                const Text(
-                                  "Доступные озвучки",
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (trackGroups.isNotEmpty)
+                                  const Text(
+                                    "Доступные озвучки",
+                                  ),
+                                ...List.generate(
+                                  trackGroups.length,
+                                  (index) {
+                                    final group = trackGroups.elementAt(index);
+                                    return CheckboxListTile(
+                                      title: Text(group.language),
+                                      dense: true,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      contentPadding: EdgeInsets.zero,
+                                      value: selectedGroups.contains(group),
+                                      onChanged: (value) {
+                                        setState(
+                                          () {
+                                            if (selectedGroups
+                                                .contains(group)) {
+                                              selectedGroups.remove(group);
+                                            } else {
+                                              selectedGroups.add(group);
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
                                 ),
-                              ...List.generate(
-                                trackGroups.length,
-                                (index) {
-                                  final group = trackGroups.elementAt(index);
-                                  return CheckboxListTile(
-                                    title: Text(group.language),
-                                    dense: true,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    visualDensity: VisualDensity.compact,
-                                    contentPadding: EdgeInsets.zero,
-                                    value: selectedGroups.contains(group),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        if (selectedGroups.contains(group)) {
-                                          selectedGroups.remove(group);
-                                        } else {
-                                          selectedGroups.add(group);
-                                        }
-                                      });
-                                    },
-                                  );
-                                },
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      ElevatedButton(
+                        onPressed: canDownload ? onDownload : null,
+                        child: const Text('Скачать'),
+                      ),
+                      if (movieState.progress != 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  if (iconByStatus(movieState) != null)
+                                    SizedBox(
+                                      width: 25,
+                                      height: 25,
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () =>
+                                            onIconPressed(movieState),
+                                        icon: Icon(iconByStatus(movieState)!),
+                                      ),
+                                    ),
+                                  Expanded(
+                                    child: LinearProgressIndicator(
+                                      value: movieState.progress,
+                                    ),
+                                  ),
+                                  if (movieState is! LocalHlsCompleteState)
+                                    SizedBox(
+                                      width: 25,
+                                      height: 25,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.cancel),
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () {
+                                          movieController.cancelDownload();
+                                        },
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    getStatusBy(movieState),
+                                  ),
+                                  if (movieState is! LocalHlsCompleteState)
+                                    Text(
+                                      '${(movieState.progress * 100).toStringAsFixed(1)}%',
+                                    ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: canDownload ? onDownload : null,
-                      child: const Text('Скачать'),
-                    ),
-                    if (movieState.progress != 0)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                if (iconByStatus(movieState) != null)
-                                  SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () =>
-                                          onIconPressed(movieState),
-                                      icon: Icon(iconByStatus(movieState)!),
-                                    ),
-                                  ),
-                                Expanded(
-                                  child: LinearProgressIndicator(
-                                    value: movieState.progress,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  getStatusBy(movieState),
-                                ),
-                                if (movieState is! LocalHlsCompleteState)
-                                  Text(
-                                      '${(movieState.progress * 100).toStringAsFixed(1)}%'),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
+                    ].toSlivers.toList(),
+                  ),
                 ),
               );
             },

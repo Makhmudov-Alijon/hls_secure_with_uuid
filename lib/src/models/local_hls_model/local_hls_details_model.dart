@@ -42,7 +42,7 @@ class LocalHlsDetailsModel extends Equatable {
 
   int get sizeBytes {
     var audioSize = 0;
-    for (var audio in audioTracks) {
+    for (final audio in audioTracks) {
       audioSize += audio.size;
     }
     return resolution.size + audioSize;

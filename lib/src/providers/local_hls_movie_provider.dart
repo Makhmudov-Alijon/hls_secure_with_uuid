@@ -31,6 +31,10 @@ abstract class LocalHlsState {
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.inQueue,
         );
+      case LocalHlsPreparedState:
+        return LocalHlsStatus(
+          statusType: LocalHlsStatusType.prepared,
+        );
       case LocalHlsErrorState:
         final error = this as LocalHlsErrorState;
         return LocalHlsStatus(
@@ -69,8 +73,8 @@ class LocalHlsInQueueState extends LocalHlsState {
   LocalHlsInQueueState({super.progress});
 }
 
-class LocalHlsDisableState extends LocalHlsState {
-  LocalHlsDisableState({super.progress});
+class LocalHlsNotExistState extends LocalHlsState {
+  LocalHlsNotExistState({super.progress});
 }
 
 class LocalHlsCompleteState extends LocalHlsState {
@@ -81,9 +85,16 @@ class LocalHlsDeletedState extends LocalHlsState {
   LocalHlsDeletedState({super.progress});
 }
 
+class LocalHlsPreparedState extends LocalHlsState {
+  LocalHlsPreparedState({super.progress});
+}
+
 final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
   LocalHlsMovieNotifier.new,
+  dependencies: [
+    localHlsMoviesProvider,
+  ],
 );
 
 class LocalHlsMovieNotifier
@@ -91,6 +102,15 @@ class LocalHlsMovieNotifier
   DirectoryWatcher? masterStream;
   StreamSubscription<WatchEvent>? masterStreamSub;
   LocalHlsModel? currentHls;
+  DownloadTask? downloadTask;
+
+  HlsDownloaderNotifier get downloaderController => ref.read(
+        hlsDownloaderProvider.notifier,
+      );
+
+  LocalHlsMoviesNotifier get moviesController => ref.read(
+        localHlsMoviesProvider.notifier,
+      );
 
   void onFileEvent(WatchEvent event) {
     final newProgress = currentHls!.downloadProgress;
@@ -102,46 +122,43 @@ class LocalHlsMovieNotifier
     }
   }
 
-  void resetAll() {
-    masterStream = null;
-    masterStreamSub = null;
+  void refresh() {
+    state = checkState();
   }
 
-  void onDispose() {
-    stopListenToChanges();
-  }
-
-  void startListenToChanges() {
-    log('start listen to ${currentHls?.hlsDetails.id} hls');
+  void _startListenToProgress() {
+    log('start listen to ${currentHls?.hlsDetails.id} hls progress');
     masterStream = DirectoryWatcher(currentHls!.masterDir.path);
     masterStreamSub = masterStream?.events.listen(onFileEvent);
   }
 
-  void stopListenToChanges() {
-    log('stop listen to ${currentHls?.hlsDetails.id} hls');
+  void _stopListenToProgress() {
+    if (masterStreamSub != null) {
+      log('stop listen to ${currentHls?.hlsDetails.id} hls progress');
+    }
     masterStreamSub?.cancel();
-    resetAll();
+    masterStreamSub = null;
+    masterStream = null;
   }
 
   LocalHlsState checkState() {
-    ref.onDispose(onDispose);
+    ref.onDispose(_stopListenToProgress);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
     if (foundHls == null) {
-      stopListenToChanges();
-      return LocalHlsDisableState();
+      _stopListenToProgress();
+      return LocalHlsNotExistState();
     } else if (foundHls.localHlsState is LocalHlsDownloadingState) {
-      startListenToChanges();
+      _startListenToProgress();
     } else {
-      stopListenToChanges();
+      _stopListenToProgress();
     }
     return foundHls.localHlsState;
   }
 
-  Future<void> pauseDownload() async {
+  void pauseDownload() {
     if (currentHls != null) {
-      stopListenToChanges();
-      await ref.read(hlsDownloaderProvider.notifier).pauseDownload(currentHls!);
+      downloaderController.pauseDownload(currentHls!);
     }
   }
 
@@ -150,42 +167,26 @@ class LocalHlsMovieNotifier
         onDownloadComplete,
   }) async {
     if (currentHls != null) {
-      if (ref.read(hlsDownloaderProvider) != HlsDownloaderState.downloading) {
-        startListenToChanges();
-        final downloadTask =
-            DownloadTask.fromFile(currentHls!.downloadTasksFile);
-        ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
-              currentHls!.id,
-              LocalHlsDownloadingState(
-                progress: currentHls!.downloadProgress,
-              ),
-            );
-        ref.invalidateSelf();
-        await ref.read(hlsDownloaderProvider.notifier).downloadOrContinue(
-              downloadTask: downloadTask,
-              hls: currentHls!,
-              onDownloadComplete: onDownloadComplete,
-            );
+      final downloadTaskFile = currentHls!.downloadTasksFile;
+      if (downloadTask == null && downloadTaskFile.existsSync()) {
+        downloadTask = DownloadTask.fromFile(downloadTaskFile);
       }
-    } else {
-      ref
-          .read(localHlsMoviesProvider.notifier)
-          .updateHlsStatus(currentHls!.id, LocalHlsInQueueState());
+      if (downloadTask != null) {
+        await downloaderController.downloadOrContinue(
+          downloadTask: downloadTask!,
+          hls: currentHls!,
+          onDownloadComplete: onDownloadComplete,
+        );
+      }
     }
   }
 
   void cancelDownload() {
     if (currentHls != null) {
-      stopListenToChanges();
-      final currentState = currentHls!.localHlsState;
-      if (currentState is LocalHlsDownloadingState) {
-        ref
-            .read(hlsDownloaderProvider.notifier)
-            .cancelDownloadAndDelete(currentHls!);
-      } else if (currentState is LocalHlsPauseState ||
-          currentState is LocalHlsErrorState ||
-          currentState is LocalHlsInQueueState) {
-        ref.read(localHlsMoviesProvider.notifier).deleteHls(hls: currentHls!);
+      if (state is LocalHlsDownloadingState) {
+        downloaderController.cancelDownload(currentHls!);
+      } else {
+        moviesController.deleteHls(hls: currentHls!);
       }
     }
   }

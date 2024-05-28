@@ -10,6 +10,7 @@ enum LocalHlsStatusType {
   inQueue,
   notExist,
   deleted,
+  prepared,
   error;
 }
 

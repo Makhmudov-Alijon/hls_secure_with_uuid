@@ -67,11 +67,10 @@ class HlsRepository {
     }
   }
 
-  Future<DownloadTask?> downloadPlaylists({
+  Future<DownloadTask?> preparePlaylists({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
     required String? posterLink,
-    required bool Function() isSomeHlsIsLoading,
   }) async {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
@@ -136,9 +135,7 @@ class HlsRepository {
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
-          statusType: isSomeHlsIsLoading()
-              ? LocalHlsStatusType.inQueue
-              : LocalHlsStatusType.downloading,
+          statusType: LocalHlsStatusType.prepared,
           creationDate: DateTime.now(),
         ),
         posterFile: pathManager.posterFile,

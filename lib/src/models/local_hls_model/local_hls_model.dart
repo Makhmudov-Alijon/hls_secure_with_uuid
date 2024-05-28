@@ -30,6 +30,54 @@ class LocalHlsModel extends Equatable {
 
   LocalHlsId get id => hlsDetails.id;
 
+  HlsPathManager get pathManager {
+    return HlsPathManager(
+      baseDir: baseDir,
+      localHlsId: hlsDetails.id,
+      isRemote: false,
+    );
+  }
+
+  File get videoMasterFile {
+    return pathManager.videoMasterFile(
+      resolutionType: hlsDetails.resolution.resolution,
+    );
+  }
+
+  List<File> get audioMasterFiles {
+    return hlsDetails.audioTracks
+        .map(
+          (e) => pathManager.audioMasterFile(
+            audioTrack: e,
+          ),
+        )
+        .toList();
+  }
+
+  bool get videoMasterExists {
+    return videoMasterFile.existsSync();
+  }
+
+  bool get audioMastersExists {
+    for (final masterFile in audioMasterFiles) {
+      if (!masterFile.existsSync()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool validate() {
+    return baseDir.existsSync() &&
+        masterDir.existsSync() &&
+        posterFile.existsSync() &&
+        masterFile.existsSync() &&
+        localHlsFile.existsSync() &&
+        downloadTasksFile.existsSync() &&
+        audioMastersExists &&
+        videoMasterExists;
+  }
+
   Duration get timeLeft {
     final hoursPassed =
         downloadStatus.creationDate.difference(DateTime.now()).inHours.abs();
@@ -54,11 +102,15 @@ class LocalHlsModel extends Equatable {
       resolutionType: resolution.resolution,
     );
 
-    downloadedSegments += resolutionDir.listSync().length - 1;
+    if (resolutionDir.existsSync()) {
+      downloadedSegments += resolutionDir.listSync().length - 1;
+    }
 
     for (final audioTrack in audioTracks) {
       final audioDir = pathManager.audioDir(audioTrack: audioTrack);
-      downloadedSegments += audioDir.listSync().length - 1;
+      if (audioDir.existsSync()) {
+        downloadedSegments += audioDir.listSync().length - 1;
+      }
     }
 
     return downloadedSegments / totalSegments;
@@ -83,7 +135,7 @@ class LocalHlsModel extends Equatable {
           progress: downloadProgress,
         );
       case LocalHlsStatusType.notExist:
-        return LocalHlsDisableState(
+        return LocalHlsNotExistState(
           progress: downloadProgress,
         );
       case LocalHlsStatusType.downloading:
@@ -94,6 +146,8 @@ class LocalHlsModel extends Equatable {
         return LocalHlsDeletedState(
           progress: downloadProgress,
         );
+      case LocalHlsStatusType.prepared:
+        return LocalHlsPreparedState();
     }
   }
 

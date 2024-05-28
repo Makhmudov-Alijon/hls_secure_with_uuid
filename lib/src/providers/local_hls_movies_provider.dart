@@ -11,6 +11,10 @@ final localHlsMoviesProvider =
 class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   bool isInitial = true;
 
+  LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
+    return ref.read(localHlsMovieProvider(hlsId).notifier);
+  }
+
   List<LocalHlsGroupModel> getGroupedItems() {
     final groupMap = <int, List<LocalHlsModel>>{};
 
@@ -140,6 +144,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   }
 
   Future<void> refreshMovies() async {
+    if (state is AsyncLoading) return;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
       () => ref.read(hlsLocalRepositoryProvider).fetchLocalHlsMovies(),
@@ -185,25 +190,24 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     final hlsIndex = _hlsIndex(hls.id);
     if (hlsIndex != null) {
       _removeHlsAt(hlsIndex);
-      ref.read(hlsLocalRepositoryProvider).updateHlsStatus(
-            hls,
-            LocalHlsDeletedState(),
-          );
-      ref.invalidate(localHlsMovieProvider(hls.id));
+      movieController(hls.id).refresh(); // TODO: check without it
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
       onDelete?.call(hls, ref);
     }
   }
 
   void updateHlsStatus(LocalHlsId id, LocalHlsState hlsState) {
+    if (!state.hasValue) return;
     final hlsIndex = _hlsIndex(id);
     if (hlsIndex != null) {
       final oldHls = state.value![hlsIndex];
       final newHls = ref
           .read(hlsLocalRepositoryProvider)
           .updateHlsStatus(oldHls, hlsState);
-      _replaceHlsAt(hlsIndex, newHls);
-      ref.invalidate(localHlsMovieProvider(id));
+      if (newHls != null) {
+        _replaceHlsAt(hlsIndex, newHls);
+        movieController(id).refresh(); // TODO: check without it
+      }
     }
   }
 
