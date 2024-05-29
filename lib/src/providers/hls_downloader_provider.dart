@@ -154,11 +154,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
         log('Download complete');
-        unawaited(onDownloadComplete.call(hls, ref));
-        unawaited(
-          checkForNextQueue(
-            onDownloadComplete: onDownloadComplete,
-          ),
+        await onDownloadComplete.call(hls, ref);
+        await checkForNextQueue(
+          onDownloadComplete: onDownloadComplete,
         );
       }
     } catch (e) {
