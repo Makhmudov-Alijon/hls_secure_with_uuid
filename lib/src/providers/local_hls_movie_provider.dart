@@ -97,14 +97,37 @@ class LocalHlsMovieNotifier
     }
   }
 
+  void addToQueue() {
+    if (currentHls != null) {
+      downloaderController.addToQueue(currentHls!);
+    }
+  }
+
   void tryContinueDownload({
     required Future<void> Function(LocalHlsModel, Ref<Object?>)?
         onDownloadComplete,
   }) {
     if (currentHls != null) {
       downloaderController.tryToDownload(
-        currentHls!,
+        hls: currentHls!,
+        downloadTask: downloadTask,
+        onDownloadComplete: onDownloadComplete,
+      );
+    }
+  }
+
+  void continueDownload({
+    required Future<void> Function(LocalHlsModel, Ref<Object?>)?
         onDownloadComplete,
+  }) {
+    if (currentHls != null) {
+      downloaderController.downloadOrContinue(
+        downloadTask: downloadTask ??
+            DownloadTask.fromFile(
+              currentHls!.downloadTasksFile,
+            ),
+        hls: currentHls!,
+        onDownloadComplete: onDownloadComplete,
       );
     }
   }
