@@ -117,8 +117,9 @@ class LocalHlsModel extends Equatable {
   // }
 
   LocalHlsState get localHlsState {
+    final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
     final progress =
-        HlsUtils.getTotalDirectorySizeSync(masterDir) / hlsDetails.sizeBytes;
+        downloadedSize == null ? 0.0 : downloadedSize / hlsDetails.sizeBytes;
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
