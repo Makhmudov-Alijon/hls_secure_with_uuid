@@ -46,7 +46,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   void pauseDownload(LocalHlsModel hls) {
-    if (hls.id != _downloadingHls) {
+    if (hls.id == _downloadingHls) {
       _stopDownloading();
     }
     moviesController.updateHlsStatus(hls.id, LocalHlsPauseState());
