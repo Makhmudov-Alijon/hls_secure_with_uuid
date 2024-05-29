@@ -100,10 +100,12 @@ class LocalHlsMovieNotifier
   void tryContinueDownload({
     required Future<void> Function(LocalHlsModel, Ref<Object?>)?
         onDownloadComplete,
+    required void Function(LocalHlsErrorState error)? onError,
   }) {
     if (currentHls != null) {
       downloaderController.tryToDownload(
         hls: currentHls!,
+        onError: onError,
         downloadTask: downloadTask,
         onDownloadComplete: onDownloadComplete,
       );

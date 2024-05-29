@@ -107,6 +107,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,
+            onError: null,
             onDownloadComplete: (hls, ref) async {
               await Future.delayed(
                 const Duration(seconds: 2),
@@ -203,7 +204,10 @@ class _HomePageState extends ConsumerState<HomePage> {
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
-      movieContoller.tryContinueDownload(onDownloadComplete: null);
+      movieContoller.tryContinueDownload(
+        onDownloadComplete: null,
+        onError: null,
+      );
     } else if (hlsState is LocalHlsDownloadingState ||
         hlsState is LocalHlsInQueueState) {
       movieContoller.pauseDownload();

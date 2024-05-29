@@ -55,7 +55,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   void tryToDownload({
     required LocalHlsModel hls,
     required DownloadTask? downloadTask,
-    Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)?
+    required void Function(LocalHlsErrorState error)? onError,
+    required Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)?
         onDownloadComplete,
   }) {
     if (state == HlsDownloaderState.downloading) {
@@ -67,6 +68,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               downloadTask ?? DownloadTask.fromFile(hls.downloadTasksFile),
           hls: hls,
           onDownloadComplete: onDownloadComplete,
+          onError: onError,
         );
       }
     }
@@ -77,6 +79,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required LocalHlsDetailsModel hlsDetails,
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
+    required void Function(LocalHlsErrorState error)? onError,
     String? posterLink,
   }) async {
     final downloadTask = await ref.read(hlsRepositoryProvider).preparePlaylists(
@@ -96,6 +99,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               downloadTask: downloadTask,
               hls: hls,
               onDownloadComplete: onDownloadComplete,
+              onError: onError,
             );
           }
         }
@@ -106,6 +110,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> checkForNextQueue({
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
+    required void Function(LocalHlsErrorState error)? onError,
   }) async {
     final nextHls = await moviesController.findNextInQueue();
     if (nextHls != null) {
@@ -115,6 +120,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           downloadTask: downloadTask,
           hls: nextHls,
           onDownloadComplete: onDownloadComplete,
+          onError: onError,
         );
       }
     }
@@ -125,6 +131,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required LocalHlsModel hls,
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
+    required void Function(LocalHlsErrorState error)? onError,
   }) async {
     _startDownloading();
     moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
@@ -142,7 +149,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       if (resultState is LocalHlsErrorState) {
         moviesController.updateHlsStatus(hls.id, resultState);
         _stopDownloading();
-        throw Exception('Download end with error!');
+        onError?.call(resultState);
       } else if (resultState is LocalHlsDeletedState) {
         _stopDownloading();
         moviesController.deleteHls(hls: hls);
@@ -156,6 +163,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
       await checkForNextQueue(
         onDownloadComplete: onDownloadComplete,
+        onError: onError,
       );
     } catch (e) {
       isolateRunning = false;
