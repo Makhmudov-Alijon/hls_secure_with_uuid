@@ -9,7 +9,7 @@ final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
   LocalHlsMovieNotifier.new,
   dependencies: [
-    localHlsMoviesProvider,
+    // localHlsMoviesProvider,
   ],
 );
 
@@ -97,12 +97,6 @@ class LocalHlsMovieNotifier
     }
   }
 
-  void addToQueue() {
-    if (currentHls != null) {
-      downloaderController.addToQueue(currentHls!);
-    }
-  }
-
   void tryContinueDownload({
     required Future<void> Function(LocalHlsModel, Ref<Object?>)?
         onDownloadComplete,
@@ -111,22 +105,6 @@ class LocalHlsMovieNotifier
       downloaderController.tryToDownload(
         hls: currentHls!,
         downloadTask: downloadTask,
-        onDownloadComplete: onDownloadComplete,
-      );
-    }
-  }
-
-  void continueDownload({
-    required Future<void> Function(LocalHlsModel, Ref<Object?>)?
-        onDownloadComplete,
-  }) {
-    if (currentHls != null) {
-      downloaderController.downloadOrContinue(
-        downloadTask: downloadTask ??
-            DownloadTask.fromFile(
-              currentHls!.downloadTasksFile,
-            ),
-        hls: currentHls!,
         onDownloadComplete: onDownloadComplete,
       );
     }
