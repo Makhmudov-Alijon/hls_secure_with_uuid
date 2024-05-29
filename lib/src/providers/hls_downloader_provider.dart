@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -153,12 +152,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
 
       if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
-        log('Download complete');
         await onDownloadComplete.call(hls, ref);
-        await checkForNextQueue(
-          onDownloadComplete: onDownloadComplete,
-        );
       }
+      await checkForNextQueue(
+        onDownloadComplete: onDownloadComplete,
+      );
     } catch (e) {
       isolateRunning = false;
       _stopDownloading();
