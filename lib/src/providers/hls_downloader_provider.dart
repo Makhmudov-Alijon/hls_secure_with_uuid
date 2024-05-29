@@ -21,7 +21,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return HlsDownloaderState.notDownloading;
   }
 
-  bool isolateRunning = false;
+  bool _isolateRunning = false;
+
+  LocalHlsId? _downloadingHls;
 
   LocalHlsMoviesNotifier get moviesController => ref.read(
         localHlsMoviesProvider.notifier,
@@ -44,7 +46,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   void pauseDownload(LocalHlsModel hls) {
-    _stopDownloading();
+    if (hls.id != _downloadingHls) {
+      _stopDownloading();
+    }
     moviesController.updateHlsStatus(hls.id, LocalHlsPauseState());
   }
 
@@ -94,7 +98,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         if (state == HlsDownloaderState.downloading) {
           addToQueue(hls);
         } else {
-          if (!isolateRunning) {
+          if (!_isolateRunning) {
             await downloadOrContinue(
               downloadTask: downloadTask,
               hls: hls,
@@ -134,9 +138,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
     _startDownloading();
+    _downloadingHls = hls.id;
     moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
     try {
-      isolateRunning = true;
+      _isolateRunning = true;
       final resultState = await Isolate.run<LocalHlsState>(
         () {
           return downloadStart(
@@ -145,7 +150,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           );
         },
       );
-      isolateRunning = false;
+      _downloadingHls = null;
+      _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
         moviesController.updateHlsStatus(hls.id, resultState);
         _stopDownloading();
@@ -166,7 +172,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onError: onError,
       );
     } catch (e) {
-      isolateRunning = false;
+      _isolateRunning = false;
       _stopDownloading();
     }
   }
