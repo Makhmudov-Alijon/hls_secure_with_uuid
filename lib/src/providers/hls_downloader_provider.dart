@@ -51,13 +51,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   void tryToDownload(
     LocalHlsModel hls,
-    Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)? onDownloadComplete,
+    Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)?
+        onDownloadComplete,
   ) {
     if (state == HlsDownloaderState.downloading) {
       moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState());
     } else {
       if (hls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(hls.downloadTasksFile);
+        moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
         downloadOrContinue(
           downloadTask: downloadTask,
           hls: hls,
