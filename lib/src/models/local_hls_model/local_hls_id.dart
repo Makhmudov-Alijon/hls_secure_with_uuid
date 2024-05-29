@@ -5,35 +5,39 @@ import 'package:equatable/equatable.dart';
 
 class LocalHlsId extends Equatable {
   const LocalHlsId({
-    required this.movieId,
+    required this.contentId,
+    this.filmId,
     this.seasonId,
     this.episodeId,
   });
 
-  final int movieId;
+  final int contentId;
+  final int? filmId;
   final int? seasonId;
   final int? episodeId;
 
   @override
-  List<Object?> get props => [movieId, seasonId, episodeId];
+  List<Object?> get props => [contentId, filmId, seasonId, episodeId];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'movieId': movieId,
+      'filmId': filmId,
       'seasonId': seasonId,
       'episodeId': episodeId,
+      'contentId': contentId,
     };
   }
 
   String toStringId() {
-    return '$movieId-$seasonId-$episodeId';
+    return '$filmId-$seasonId-$episodeId';
   }
 
   factory LocalHlsId.fromMap(Map<String, dynamic> map) {
     return LocalHlsId(
-      movieId: map['movieId'] as int,
-      seasonId: map['seasonId'] != null ? map['seasonId'] as int : null,
-      episodeId: map['episodeId'] != null ? map['episodeId'] as int : null,
+      filmId: map['filmId'] as int?,
+      seasonId: map['seasonId'] as int?,
+      episodeId: map['episodeId'] as int?,
+      contentId: map['contentId'] as int,
     );
   }
 

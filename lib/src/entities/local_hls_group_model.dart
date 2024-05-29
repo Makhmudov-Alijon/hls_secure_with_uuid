@@ -20,6 +20,14 @@ class LocalHlsGroupModel extends Equatable {
   final List<LocalHlsModel> movies;
   final File posterFile;
 
+  int get totalSizeInBytes {
+    var temp = 0;
+    for (final movie in movies) {
+      temp += movie.hlsDetails.sizeBytes;
+    }
+    return temp;
+  }
+
   @override
   List<Object?> get props => [id, title, season, isSerial, movies, posterFile];
 }

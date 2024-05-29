@@ -1,6 +1,7 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';
 import '../utils/security/security.dart';
 
 final hlsServiceProvider = Provider(
@@ -103,6 +104,19 @@ class HlsService {
       return HlsFullNonParsedModel.fromJson(data);
     } else {
       throw const FormatException('Playlist data type is not correct');
+    }
+  }
+
+  Future<void> saveThumbnailPlaylists({
+    required List<ThumbsPlaylist> thumbsPlaylists,
+    required HlsPathManager pathManager,
+  }) async {
+    for (final playlist in thumbsPlaylists) {
+      final file = pathManager.thumbnailFile(
+        playlistType: playlist.playlistType,
+      )..createIfNotExist();
+
+      await file.writeAsString(playlist.content);
     }
   }
 

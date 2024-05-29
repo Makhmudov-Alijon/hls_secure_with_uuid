@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/repository/hls_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -68,11 +67,10 @@ class HlsRepository {
     }
   }
 
-  Future<DownloadTask?> downloadPlaylists({
+  Future<DownloadTask?> preparePlaylists({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
     required String? posterLink,
-    required bool Function() isSomeHlsIsLoading,
   }) async {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
@@ -101,7 +99,7 @@ class HlsRepository {
         selectedTracks: hlsDetails.audioTracks,
       );
 
-      final masterFile = pathManager.masterFile()
+      final masterFile = pathManager.masterFile
         ..createIfNotExist()
         ..writeAsStringSync(
           master.toLocalPlaylist(
@@ -137,9 +135,7 @@ class HlsRepository {
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
-          statusType: isSomeHlsIsLoading()
-              ? LocalHlsStatusType.inQueue
-              : LocalHlsStatusType.downloading,
+          statusType: LocalHlsStatusType.prepared,
           creationDate: DateTime.now(),
         ),
         posterFile: pathManager.posterFile,
@@ -196,20 +192,25 @@ class HlsRepository {
           ..writeAsStringSync(encKey);
       }
 
+      await hlsService.saveThumbnailPlaylists(
+        thumbsPlaylists: master.hlsData.thumbsPlaylists,
+        pathManager: pathManager,
+      );
+
       final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
         pathManager: pathManager,
         master: master,
         isForWatching: isForWatching,
       );
 
-      final masterFile = pathManager.masterFile()
+      pathManager.masterFile
         ..createIfNotExist()
         ..writeAsStringSync(
           master.toLocalPlaylist(
             linkExcluder: hlsFullPlaylist.masterLinkExcluder,
           ),
         );
-      return HlsWatchLink(master: masterFile);
+      return HlsWatchLink.fromPathManager(pathManager);
     } catch (e) {
       rethrow;
     }

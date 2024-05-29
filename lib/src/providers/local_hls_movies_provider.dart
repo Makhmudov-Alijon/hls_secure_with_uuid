@@ -11,6 +11,10 @@ final localHlsMoviesProvider =
 class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   bool isInitial = true;
 
+  LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
+    return ref.read(localHlsMovieProvider(hlsId).notifier);
+  }
+
   List<LocalHlsGroupModel> getGroupedItems() {
     final groupMap = <int, List<LocalHlsModel>>{};
 
@@ -19,7 +23,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
 
     for (final hls in state.value!) {
-      final key = hls.hlsDetails.id.movieId;
+      final key = hls.hlsDetails.id.contentId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
@@ -54,7 +58,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
       }
 
       return LocalHlsGroupModel(
-        id: items.first.hlsDetails.id.movieId,
+        id: items.first.hlsDetails.id.contentId,
         title: items.first.hlsDetails.title,
         season: items.first.hlsDetails.seasonNum,
         isSerial: items.first.hlsDetails.isSerial,
@@ -66,10 +70,10 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     return groups;
   }
 
-  LocalHlsGroupModel? getGroupById(int movieId) {
+  LocalHlsGroupModel? getGroupById(int contentId) {
     final groups = getGroupedItems();
     for (final group in groups) {
-      if (movieId == group.id) {
+      if (contentId == group.id) {
         return group;
       }
     }
@@ -90,14 +94,34 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     ).toList()
       ..sort(
         (a, b) {
-          if (a.localHlsState is LocalHlsDownloadingState) {
-            return -1;
-          } else if (a.localHlsState is! LocalHlsInQueueState) {
-            return 1;
+          final stateOrder = <Type, int>{
+            LocalHlsDownloadingState: 0,
+            LocalHlsInQueueState: 1,
+            LocalHlsPauseState: 2,
+            LocalHlsErrorState: 3,
+          };
+
+          int getStateOrder(LocalHlsState state) {
+            if (state is LocalHlsDownloadingState) {
+              return stateOrder[LocalHlsDownloadingState]!;
+            } else if (state is LocalHlsInQueueState) {
+              return stateOrder[LocalHlsInQueueState]!;
+            } else if (state is LocalHlsPauseState) {
+              return stateOrder[LocalHlsPauseState]!;
+            } else if (state is LocalHlsErrorState) {
+              return stateOrder[LocalHlsErrorState]!;
+            }
+            throw Exception('Unknown state');
+          }
+
+          if (getStateOrder(a.localHlsState) !=
+              getStateOrder(b.localHlsState)) {
+            return getStateOrder(a.localHlsState).compareTo(
+              getStateOrder(b.localHlsState),
+            );
           } else {
-            return a.downloadStatus.creationDate.millisecondsSinceEpoch
-                .compareTo(
-              b.downloadStatus.creationDate.millisecondsSinceEpoch,
+            return b.downloadStatus.creationDate.compareTo(
+              a.downloadStatus.creationDate,
             );
           }
         },
@@ -120,6 +144,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
   }
 
   Future<void> refreshMovies() async {
+    if (state is AsyncLoading) return;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
       () => ref.read(hlsLocalRepositoryProvider).fetchLocalHlsMovies(),
@@ -148,34 +173,41 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
   }
 
-  void deleteGroupOfHls(LocalHlsGroupModel hlsGroup) {
+  void deleteGroupOfHls({
+    required LocalHlsGroupModel hlsGroup,
+    FutureOr<void> Function(LocalHlsGroupModel group, Ref ref)? onDelete,
+  }) {
     for (final item in hlsGroup.movies) {
-      deleteHls(item);
+      deleteHls(hls: item);
     }
+    onDelete?.call(hlsGroup, ref);
   }
 
-  void deleteHls(LocalHlsModel hls) {
+  void deleteHls({
+    required LocalHlsModel hls,
+    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDelete,
+  }) {
     final hlsIndex = _hlsIndex(hls.id);
     if (hlsIndex != null) {
       _removeHlsAt(hlsIndex);
-      ref.read(hlsLocalRepositoryProvider).updateHlsStatus(
-            hls,
-            LocalHlsDeletedState(),
-          );
-      ref.invalidate(localHlsMovieProvider(hls.id));
+      movieController(hls.id).refresh(); // TODO: check without it
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+      onDelete?.call(hls, ref);
     }
   }
 
   void updateHlsStatus(LocalHlsId id, LocalHlsState hlsState) {
+    if (!state.hasValue) return;
     final hlsIndex = _hlsIndex(id);
     if (hlsIndex != null) {
       final oldHls = state.value![hlsIndex];
       final newHls = ref
           .read(hlsLocalRepositoryProvider)
           .updateHlsStatus(oldHls, hlsState);
-      _replaceHlsAt(hlsIndex, newHls);
-      ref.invalidate(localHlsMovieProvider(id));
+      if (newHls != null) {
+        _replaceHlsAt(hlsIndex, newHls);
+        movieController(id).refresh(); // TODO: check without it
+      }
     }
   }
 

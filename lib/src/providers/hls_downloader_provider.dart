@@ -21,71 +21,100 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return HlsDownloaderState.notDownloading;
   }
 
-  void changeState(HlsDownloaderState state) {
-    this.state = state;
+  bool isolateRunning = false;
+
+  LocalHlsMoviesNotifier get moviesController => ref.read(
+        localHlsMoviesProvider.notifier,
+      );
+
+  void _startDownloading() {
+    if (state == HlsDownloaderState.notDownloading) {
+      state = HlsDownloaderState.downloading;
+    }
   }
 
-  void addToQueue(LocalHlsModel localHls) {
-    ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
-          localHls.id,
-          LocalHlsInQueueState(),
-        );
+  void _stopDownloading() {
+    if (state == HlsDownloaderState.downloading) {
+      state = HlsDownloaderState.notDownloading;
+    }
   }
 
-  Future<void> downloadOrEnqueue({
-    required MasterPlaylistModel masterPlaylist,
-    required LocalHlsDetailsModel hlsDetails,
-    String? posterLink,
-  }) async {
-    final downloadTask =
-        await ref.read(hlsRepositoryProvider).downloadPlaylists(
-              isSomeHlsIsLoading: () => state == HlsDownloaderState.downloading,
-              master: masterPlaylist,
-              hlsDetails: hlsDetails,
-              posterLink: posterLink,
-            );
-    await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    ref.invalidate(localHlsMovieProvider(hlsDetails.id));
-    final hls =
-        ref.read(localHlsMoviesProvider.notifier).hlsById(hlsDetails.id);
-    if (downloadTask == null || hls == null) {
-      throw Exception('Something went wrong!');
+  void addToQueue(LocalHlsModel hls) {
+    moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState());
+  }
+
+  void pauseDownload(LocalHlsModel hls) {
+    _stopDownloading();
+    moviesController.updateHlsStatus(hls.id, LocalHlsPauseState());
+  }
+
+  void cancelDownload(LocalHlsModel hls) {
+    moviesController.updateHlsStatus(hls.id, LocalHlsDeletedState());
+  }
+
+  void tryToDownload({
+    required LocalHlsModel hls,
+    required DownloadTask? downloadTask,
+    Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)?
+        onDownloadComplete,
+  }) {
+    if (state == HlsDownloaderState.downloading) {
+      addToQueue(hls);
     } else {
-      if (state == HlsDownloaderState.downloading) {
-        addToQueue(hls);
-      } else {
-        changeState(HlsDownloaderState.downloading);
-        await downloadOrContinue(downloadTask: downloadTask, hls: hls);
+      if (hls.downloadTasksFile.existsSync()) {
+        downloadOrContinue(
+          downloadTask:
+              downloadTask ?? DownloadTask.fromFile(hls.downloadTasksFile),
+          hls: hls,
+          onDownloadComplete: onDownloadComplete,
+        );
       }
     }
   }
 
-  Future<void> pauseDownload(LocalHlsModel hls) async {
-    changeState(HlsDownloaderState.notDownloading);
-    ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
-          hls.id,
-          LocalHlsPauseState(
-            progress: hls.downloadProgress,
-          ),
+  Future<void> prepareAndDownloadOrQueue({
+    required MasterPlaylistModel masterPlaylist,
+    required LocalHlsDetailsModel hlsDetails,
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
+    String? posterLink,
+  }) async {
+    final downloadTask = await ref.read(hlsRepositoryProvider).preparePlaylists(
+          master: masterPlaylist,
+          hlsDetails: hlsDetails,
+          posterLink: posterLink,
         );
+    if (downloadTask != null) {
+      await moviesController.refreshMovies();
+      final hls = moviesController.hlsById(hlsDetails.id);
+      if (hls != null) {
+        if (state == HlsDownloaderState.downloading) {
+          addToQueue(hls);
+        } else {
+          if (!isolateRunning) {
+            await downloadOrContinue(
+              downloadTask: downloadTask,
+              hls: hls,
+              onDownloadComplete: onDownloadComplete,
+            );
+          }
+        }
+      }
+    }
   }
 
-  Future<void> cancelDownloadAndDelete(LocalHlsModel hls) async {
-    changeState(HlsDownloaderState.notDownloading);
-    ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
-          hls.id,
-          LocalHlsDeletedState(),
-        );
-  }
-
-  Future<void> checkForNextQueue() async {
-    final nextHls =
-        await ref.read(localHlsMoviesProvider.notifier).findNextInQueue();
+  Future<void> checkForNextQueue({
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
+  }) async {
+    final nextHls = await moviesController.findNextInQueue();
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
-        unawaited(
-          downloadOrContinue(downloadTask: downloadTask, hls: nextHls),
+        await downloadOrContinue(
+          downloadTask: downloadTask,
+          hls: nextHls,
+          onDownloadComplete: onDownloadComplete,
         );
       }
     }
@@ -94,38 +123,51 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
+    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+        onDownloadComplete,
   }) async {
-    changeState(HlsDownloaderState.downloading);
-    ref.read(localHlsMoviesProvider.notifier).updateHlsStatus(
-          hls.id,
-          LocalHlsDownloadingState(
-            progress: hls.downloadProgress,
-          ),
-        );
-    final resultState = await Isolate.run<LocalHlsState>(
-      () {
-        return downloadStart(
-          downloadTask,
-          hls,
-        );
-      },
-    );
-    changeState(HlsDownloaderState.notDownloading);
-    ref
-        .read(localHlsMoviesProvider.notifier)
-        .updateHlsStatus(hls.id, resultState);
-    if (resultState is LocalHlsErrorState) {
-      throw Exception('Something went wrong!');
-    } else if (resultState is LocalHlsDeletedState) {
-      ref.read(localHlsMoviesProvider.notifier).deleteHls(hls);
+    _startDownloading();
+    moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
+    try {
+      isolateRunning = true;
+      final resultState = await Isolate.run<LocalHlsState>(
+        () {
+          return downloadStart(
+            downloadTask,
+            hls,
+          );
+        },
+      );
+      isolateRunning = false;
+      if (resultState is LocalHlsErrorState) {
+        moviesController.updateHlsStatus(hls.id, resultState);
+        _stopDownloading();
+        throw Exception('Download end with error!');
+      } else if (resultState is LocalHlsDeletedState) {
+        _stopDownloading();
+        moviesController.deleteHls(hls: hls);
+      } else {
+        _stopDownloading();
+        moviesController.updateHlsStatus(hls.id, resultState);
+      }
+
+      if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
+        await onDownloadComplete.call(hls, ref);
+      }
+      await checkForNextQueue(
+        onDownloadComplete: onDownloadComplete,
+      );
+    } catch (e) {
+      isolateRunning = false;
+      _stopDownloading();
     }
-    await ref.read(localHlsMoviesProvider.notifier).refreshMovies();
-    unawaited(checkForNextQueue());
   }
 
   static Future<LocalHlsState> downloadStart(
-      DownloadTask task, LocalHlsModel hls,
-      [void Function(double progress)? onProgressChanges]) async {
+    DownloadTask task,
+    LocalHlsModel hls, [
+    void Function(double progress)? onProgressChanges,
+  ]) async {
     final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 5),

@@ -30,6 +30,54 @@ class LocalHlsModel extends Equatable {
 
   LocalHlsId get id => hlsDetails.id;
 
+  HlsPathManager get pathManager {
+    return HlsPathManager(
+      baseDir: baseDir,
+      localHlsId: hlsDetails.id,
+      isRemote: false,
+    );
+  }
+
+  File get videoMasterFile {
+    return pathManager.videoMasterFile(
+      resolutionType: hlsDetails.resolution.resolution,
+    );
+  }
+
+  List<File> get audioMasterFiles {
+    return hlsDetails.audioTracks
+        .map(
+          (e) => pathManager.audioMasterFile(
+            audioTrack: e,
+          ),
+        )
+        .toList();
+  }
+
+  bool get videoMasterExists {
+    return videoMasterFile.existsSync();
+  }
+
+  bool get audioMastersExists {
+    for (final masterFile in audioMasterFiles) {
+      if (!masterFile.existsSync()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool validate() {
+    return baseDir.existsSync() &&
+        masterDir.existsSync() &&
+        posterFile.existsSync() &&
+        masterFile.existsSync() &&
+        localHlsFile.existsSync() &&
+        downloadTasksFile.existsSync() &&
+        audioMastersExists &&
+        videoMasterExists;
+  }
+
   Duration get timeLeft {
     final hoursPassed =
         downloadStatus.creationDate.difference(DateTime.now()).inHours.abs();
@@ -38,61 +86,72 @@ class LocalHlsModel extends Equatable {
     );
   }
 
-  double get downloadProgress {
-    final resolution = hlsDetails.resolution;
-    final audioTracks = hlsDetails.audioTracks;
+  // double get downloadProgress {
+  //   final resolution = hlsDetails.resolution;
+  //   final audioTracks = hlsDetails.audioTracks;
 
-    final pathManager = HlsPathManager(
-      baseDir: baseDir,
-      localHlsId: id,
-      isRemote: false,
-    );
+  //   final pathManager = HlsPathManager(
+  //     baseDir: baseDir,
+  //     localHlsId: id,
+  //     isRemote: false,
+  //   );
 
-    var downloadedSegments = 0;
+  //   var downloadedSegments = 0;
 
-    final resolutionDir = pathManager.videoDir(
-      resolutionType: resolution.resolution,
-    );
+  //   final resolutionDir = pathManager.videoDir(
+  //     resolutionType: resolution.resolution,
+  //   );
 
-    downloadedSegments += resolutionDir.listSync().length - 1;
+  //   if (resolutionDir.existsSync()) {
+  //     downloadedSegments += resolutionDir.listSync().length - 1;
+  //   }
 
-    for (final audioTrack in audioTracks) {
-      final audioDir = pathManager.audioDir(audioTrack: audioTrack);
-      downloadedSegments += audioDir.listSync().length - 1;
-    }
+  //   for (final audioTrack in audioTracks) {
+  //     final audioDir = pathManager.audioDir(audioTrack: audioTrack);
+  //     if (audioDir.existsSync()) {
+  //       downloadedSegments += audioDir.listSync().length - 1;
+  //     }
+  //   }
 
-    return downloadedSegments / totalSegments;
-  }
+  //   return downloadedSegments / totalSegments;
+  // }
 
   LocalHlsState get localHlsState {
+    final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
+    final progress =
+        downloadedSize == null ? 0.0 : downloadedSize / hlsDetails.sizeBytes;
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.inQueue:
         return LocalHlsInQueueState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.paused:
         return LocalHlsPauseState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.complete:
         return LocalHlsCompleteState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.notExist:
-        return LocalHlsDisableState(
-          progress: downloadProgress,
+        return LocalHlsNotExistState(
+          progress: progress,
         );
       case LocalHlsStatusType.downloading:
         return LocalHlsDownloadingState(
-          progress: downloadProgress,
+          progress: progress,
         );
       case LocalHlsStatusType.deleted:
         return LocalHlsDeletedState(
-          progress: downloadProgress,
+          progress: progress,
+        );
+      case LocalHlsStatusType.prepared:
+        return LocalHlsPreparedState(
+          progress: progress,
         );
     }
   }
@@ -162,6 +221,8 @@ class LocalHlsModel extends Equatable {
     LocalHlsDetailsModel? hlsDetails,
     LocalHlsStatus? downloadStatus,
     int? totalSegments,
+    File? mediumThumbnailsFile,
+    File? largeThumbnailsFile,
   }) {
     return LocalHlsModel(
       baseDir: baseDir ?? this.baseDir,

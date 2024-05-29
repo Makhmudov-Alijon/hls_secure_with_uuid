@@ -17,17 +17,29 @@ class HlsLocalRepository {
     final hlsMovies = <LocalHlsModel>[];
 
     for (final file in hlsFiles) {
-      final content = await file.readAsString();
+      if (!file.existsSync()) continue;
+      final content = file.readAsStringSync();
       var hls = LocalHlsModel.fromJson(content);
+      if (hls.localHlsState is LocalHlsDeletedState || !hls.validate()) {
+        deleteHlsDirectory(hls);
+        continue;
+      }
       if (isInitial) {
         if (hls.localHlsState is LocalHlsCompleteState &&
-            hls.timeLeft.inHours < 0) {
-          await deleteHlsDirectory(hls);
+            hls.timeLeft.inHours <= 0) {
+          deleteHlsDirectory(hls);
           continue;
-        } else if (hls.localHlsState is LocalHlsDownloadingState) {
-          hls = updateHlsStatus(hls, LocalHlsErrorState());
-        } else if (hls.localHlsState is LocalHlsInQueueState) {
-          hls = updateHlsStatus(hls, LocalHlsPauseState());
+        } else if (hls.localHlsState is LocalHlsDownloadingState ||
+            hls.localHlsState is LocalHlsInQueueState) {
+          final updatedHls = updateHlsStatus(
+            hls,
+            LocalHlsPauseState(),
+          );
+          if (updatedHls != null) {
+            hls = updatedHls;
+          } else {
+            continue;
+          }
         }
       }
       hlsMovies.add(hls);
@@ -36,25 +48,34 @@ class HlsLocalRepository {
     return hlsMovies;
   }
 
+  /// **Warning** This function throws exception if hls not exists
   void updateHls(LocalHlsModel hls) {
     final hlsFile = hls.localHlsFile;
     if (hlsFile.existsSync()) {
       hlsFile.writeAsStringSync(
         hls.toJson(),
       );
+    } else {
+      throw UnimplementedError('Hls file not exist');
     }
   }
 
-  LocalHlsModel updateHlsStatus(LocalHlsModel hls, LocalHlsState state) {
-    final newHls = hls.copyWith(
-      downloadStatus: state.toLocalHlsStatus(),
-    );
-    updateHls(newHls);
-    return newHls;
+  LocalHlsModel? updateHlsStatus(LocalHlsModel hls, LocalHlsState state) {
+    try {
+      final newHls = hls.copyWith(
+        downloadStatus: state.toLocalHlsStatus(),
+      );
+      updateHls(newHls);
+      return newHls;
+    } catch (e) {
+      return null;
+    }
   }
 
-  Future<void> deleteHlsDirectory(LocalHlsModel hls) async {
-    await hls.masterDir.delete(recursive: true);
+  void deleteHlsDirectory(LocalHlsModel hls) {
+    if (hls.masterDir.existsSync()) {
+      hls.masterDir.delete(recursive: true);
+    }
   }
 
   LocalHlsState fetchHlsState(LocalHlsModel hls) {
