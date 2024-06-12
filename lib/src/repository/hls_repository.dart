@@ -31,6 +31,7 @@ class HlsRepository {
     required String key,
     required LocalHlsId hlsId,
     required bool forWatching,
+    bool isAes = false,
   }) async {
     try {
       final response = await dio.post<dynamic>(
@@ -46,6 +47,7 @@ class HlsRepository {
         token: token,
         url: url,
         key: key,
+        isAes: isAes,
         data: response.data,
       );
 
@@ -162,6 +164,7 @@ class HlsRepository {
     required String token,
     required String key,
     required LocalHlsId hlsId,
+    bool isAes = false,
   }) async {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
@@ -179,6 +182,7 @@ class HlsRepository {
         token: token,
         key: key,
         hlsId: hlsId,
+        isAes: isAes,
         forWatching: isForWatching,
       );
 

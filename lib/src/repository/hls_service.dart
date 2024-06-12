@@ -90,14 +90,24 @@ class HlsService {
     required String token,
     required String url,
     required String key,
+    bool isAes = false,
     dynamic data,
   }) async {
     if (data is String) {
-      final decrypted = await SecurityService().getDTD(
-        data: data,
-        token: token,
-        key: key,
-      );
+      Map<String, dynamic> decrypted;
+      if (isAes) {
+        decrypted = await SecurityService().getDTDs(
+          data: data,
+          token: token,
+          key: key,
+        );
+      } else {
+        decrypted = await SecurityService().getDTD(
+          data: data,
+          token: token,
+          key: key,
+        );
+      }
 
       return HlsFullNonParsedModel.fromJson(decrypted);
     } else if (data is Map<String, dynamic>) {
