@@ -31,6 +31,7 @@ class HlsRepository {
     required String key,
     required LocalHlsId hlsId,
     required bool forWatching,
+    Map<String, dynamic>? headers,
     bool isAes = false,
   }) async {
     try {
@@ -39,6 +40,7 @@ class HlsRepository {
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: 'Bearer $token',
+            if (headers != null) ...headers,
           },
         ),
       );
@@ -164,6 +166,7 @@ class HlsRepository {
     required String token,
     required String key,
     required LocalHlsId hlsId,
+    Map<String, dynamic>? headers,
     bool isAes = false,
   }) async {
     try {
@@ -183,6 +186,7 @@ class HlsRepository {
         key: key,
         hlsId: hlsId,
         isAes: isAes,
+        headers: headers,
         forWatching: isForWatching,
       );
 
