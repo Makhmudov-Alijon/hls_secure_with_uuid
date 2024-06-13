@@ -68,13 +68,11 @@ class SecurityService extends Security {
 
     final keyUtf = Key.fromUtf8(keyStr);
     final enc = Encrypter(AES(keyUtf, mode: AESMode.ecb));
-    final iv = IV.fromLength(16);
 
     final encryptedBytes = base64.decode(data);
-    final dec = enc.decryptBytes(Encrypted(encryptedBytes), iv: iv);
+    final dec = enc.decrypt(Encrypted(encryptedBytes));
 
-    final decryptedString = unpad(utf8.decode(dec));
-    return jsonDecode(decryptedString) as Map<String, dynamic>;
+    return jsonDecode(dec) as Map<String, dynamic>;
   }
 
   String unpad(String source) {
