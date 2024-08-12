@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:splay_tv_player/splay_tv_player.dart';
+// import 'package:splay_tv_player/splay_tv_player.dart';
 
 class LocalBetterPlayer extends StatefulWidget {
   const LocalBetterPlayer({super.key, required this.file});
@@ -16,15 +16,6 @@ class LocalBetterPlayer extends StatefulWidget {
 class _LocalBetterPlayerState extends State<LocalBetterPlayer> {
   @override
   Widget build(BuildContext context) {
-    return SplayTvPlayer(
-      configuration: TvPlayerConfiguration(
-        content: const TvPlayerContent(title: 'Test'),
-        dataSource: BetterPlayerDataSource.file(
-          widget.file.playlistPath,
-          useAsmsSubtitles: true,
-          useAsmsTracks: true,
-        ),
-      ),
-    );
+    return Placeholder();
   }
 }

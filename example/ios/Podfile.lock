@@ -97,7 +97,7 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
-  integration_test: 13825b8a9334a850581300559b8839134b124670
+  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
   media_kit_libs_ios_video: a5fe24bc7875ccd6378a0978c13185e1344651c1
   media_kit_native_event_loop: e6b2ab20cf0746eb1c33be961fcf79667304fa2a
   media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
@@ -113,4 +113,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.15.2

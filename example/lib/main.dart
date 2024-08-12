@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: HomePage(),
     );
   }
@@ -83,7 +84,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final audioTracks = <HlsAudioTrack>{};
     const poster =
         "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=";
-
+                final sg = selectedGroups;
     for (final trackGroup in selectedGroups) {
       for (final track in trackGroup.tracks) {
         if (track.trackType == resolution.trackType) {
