@@ -196,7 +196,7 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
     }
   }
 
-  void updateHlsStatus(LocalHlsId id, LocalHlsState hlsState) {
+  void updateHlsStatuss(LocalHlsId id, LocalHlsState hlsState) {
     if (!state.hasValue) return;
     final hlsIndex = _hlsIndex(id);
     if (hlsIndex != null) {

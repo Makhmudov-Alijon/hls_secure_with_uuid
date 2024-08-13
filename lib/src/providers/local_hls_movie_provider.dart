@@ -47,7 +47,7 @@ class LocalHlsMovieNotifier
   }
 
   void refresh() {
-    state = checkState();
+    state = checkStatee();
   }
 
   void _startListenToProgress() {
@@ -65,7 +65,7 @@ class LocalHlsMovieNotifier
     masterStream = null;
   }
 
-  LocalHlsState checkState() {
+  LocalHlsState checkStatee() {
     ref.onDispose(_stopListenToProgress);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
@@ -114,6 +114,6 @@ class LocalHlsMovieNotifier
 
   @override
   LocalHlsState build(LocalHlsId arg) {
-    return checkState();
+    return checkStatee();
   }
 }

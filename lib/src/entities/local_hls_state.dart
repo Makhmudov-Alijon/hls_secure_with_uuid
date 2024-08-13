@@ -4,7 +4,7 @@ abstract class LocalHlsState {
   const LocalHlsState({this.progress = 0});
   final double progress;
 
-  LocalHlsState copyWith({double? progress});
+  LocalHlsState copyWithh({double? progress});
 
   LocalHlsStatus toLocalHlsStatus() {
     switch (runtimeType) {
@@ -51,7 +51,7 @@ class LocalHlsDownloadingState extends LocalHlsState {
   LocalHlsDownloadingState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsDownloadingState(
       progress: progress ?? this.progress,
     );
@@ -66,7 +66,7 @@ class LocalHlsErrorState extends LocalHlsState {
   });
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsErrorState(
       progress: progress ?? this.progress,
     );
@@ -80,7 +80,7 @@ class LocalHlsPauseState extends LocalHlsState {
   LocalHlsPauseState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsPauseState(
       progress: progress ?? this.progress,
     );
@@ -91,7 +91,7 @@ class LocalHlsInQueueState extends LocalHlsState {
   LocalHlsInQueueState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsInQueueState(
       progress: progress ?? this.progress,
     );
@@ -102,7 +102,7 @@ class LocalHlsNotExistState extends LocalHlsState {
   LocalHlsNotExistState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsNotExistState(
       progress: progress ?? this.progress,
     );
@@ -113,7 +113,7 @@ class LocalHlsCompleteState extends LocalHlsState {
   LocalHlsCompleteState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsCompleteState(
       progress: progress ?? this.progress,
     );
@@ -124,7 +124,7 @@ class LocalHlsDeletedState extends LocalHlsState {
   LocalHlsDeletedState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsDeletedState(
       progress: progress ?? this.progress,
     );
@@ -135,7 +135,7 @@ class LocalHlsPreparedState extends LocalHlsState {
   LocalHlsPreparedState({super.progress});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWithh({double? progress}) {
     return LocalHlsPreparedState(
       progress: progress ?? this.progress,
     );
