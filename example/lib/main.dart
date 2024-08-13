@@ -49,7 +49,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   final link =
-      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48168/';
+      'https://api.splay.glob.uz/en/api/v3/content/hls-json-enc/48315/';
 
   final token =
       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE1MzIxMjQ0LCJpYXQiOjE3MTUzMTU2ODksImp0aSI6ImY3NDVlNzgzMzM2MjQyMDY4ZTI5YmVhYmJhMmM0MGFlIiwidXNlcl9pZCI6Mjc3Njg3MiwicHJvZmlsZV9pZCI6MTAxOTgzMywiYWdlIjoxOCwiYWdlX2dyb3VwIjo0LCJnZW5kZXIiOiJNIiwiY19jb2RlIjoiVVoiLCJtb2RlbF9uYW1lIjoiaVBob25lIiwib3MiOiJpT1MiLCJicm93c2VyIjoiU3BsYXlBcHAiLCJkZXZpY2UiOiJTbWFydHBob25lIiwiYXBwX3R5cGUiOiJhcHAiLCJzaWQiOiJlZDM2NmEzZWNiY2JmZjYxNDA4ODc4N2NlYTIyMGZjMjc4NzRmZDY2In0.knwbF89TzN2TLxNT5wS6wv3BfurO5Cc_I2bwbEALDiU';
@@ -383,7 +383,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 Expanded(
                                   child: LinearProgressIndicator(
-                                    value: movieState.progress,
+                                    value: movieState.progresss,
                                   ),
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
@@ -408,7 +408,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
                                   Text(
-                                    '${(movieState.progress * 100).toStringAsFixed(1)}%',
+                                    '${(movieState.progresss * 100).toStringAsFixed(1)}%',
                                   ),
                               ],
                             ),

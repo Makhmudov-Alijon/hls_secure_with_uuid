@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -144,7 +145,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     try {
       _isolateRunning = true;
 
-      // final DateTime startTime = DateTime.now();
+      final DateTime startTime = DateTime.now();
       // final resultState = await Isolate.run<LocalHlsState>(
       //   () {
       //     return downloadStartOldVersionn(
@@ -160,35 +161,31 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       // );
 
       /// //////////////////////////////////////
+      const threadLimit = 20;
       final hlsLocalRepository = HlsLocalRepository();
-      await Future.wait([
-        for (final item in downloadTask.items) ...[
-          // final receivePort = ReceivePort();
-          Isolate.run<dynamic>(
-            () {
-              return downloadItem(
-                (
-                  item: item,
-                  hls: hls,
-                  // sendPort: receivePort.sendPort,
-                ),
-              );
-            },
-          ),
-          // receivePort.listen((state) {
-          //   print('//// dididing: $state ///////');
-          //   final v = 0;
-          //   if (state is LocalHlsState) {
-          //     // return state as LocalHlsState;
-          //   }
-          // });
-        ],
-      ]);
+      for (int i = 0; i < downloadTask.items.length; i += threadLimit) {
+        final chunk = downloadTask.items.safeGetLimit(i, threadLimit);
+        await Future.wait([
+          for (final item in chunk) ...[
+            Isolate.run<dynamic>(
+              () {
+                return downloadItem(
+                  (
+                    item: item,
+                    hls: hls,
+                    // sendPort: receivePort.sendPort,
+                  ),
+                );
+              },
+            ),
+          ],
+        ]);
+      }
       moviesController.updateHlsStatuss(hls.id, LocalHlsCompleteState());
       final resultState = hlsLocalRepository.fetchHlsState(hls);
 
-      // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
-      // final v = 0;
+      final spentTime = DateTime.now().difference(startTime).inMilliseconds;
+      final v = 0;
 
       // /// ////////////////////////////////////
       _downloadingHls = null;
@@ -257,7 +254,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
     }
     return LocalHlsCompleteState(
-      progress: progress,
+      progresss: progress,
     );
   }
 
@@ -303,17 +300,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             return LocalHlsErrorState(
               message: e.message,
               statusCode: e.response?.statusCode,
-              progress: progress,
+              progresss: progress,
             );
           }
           return LocalHlsErrorState(
-            progress: progress,
+            progresss: progress,
           );
         }
       }
     }
     return LocalHlsCompleteState(
-      progress: progress,
+      progresss: progress,
     );
   }
 }
@@ -347,14 +344,16 @@ dynamic downloadItem(
         final state = hlsLocalRepositoryy.fetchHlsState(data.hls);
         final v = 0;
         if (state is LocalHlsPauseState || state is LocalHlsDeletedState) {
+          // closeFile(item.absolutePath);
           cancelToken.cancel();
         }
       },
     );
-
+    // closeFile(item.absolutePath);
     print(
         'download completed for: ${data.item.url.split(".")[2].split("/").last}');
   } catch (e) {
+    final v = 0;
     if (e is DioException) {
       if (e.type == DioExceptionType.cancel) {
         final hlsState = hlsLocalRepositoryy.fetchHlsState(data.hls);
@@ -373,5 +372,28 @@ dynamic downloadItem(
     //     progress: progress,
     //   ),
     // );
+  }
+}
+
+Future<void> closeFile(String absolutePath) async {
+  File file = File(absolutePath);
+  RandomAccessFile? raf;
+
+  try {
+    // Open the file
+    raf = await file.open();
+
+    // Perform file operations here®
+    // e.g., reading, writing, etc.
+  } catch (e) {
+    final v = 0;
+  } finally {
+    if (raf != null) {
+      await raf.close();
+      return Future.value();
+    }
+    final v = 0;
+
+    return Future.value();
   }
 }

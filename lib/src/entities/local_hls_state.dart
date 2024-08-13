@@ -1,10 +1,10 @@
 import 'package:download_manager/download_manager.dart';
 
 abstract class LocalHlsState {
-  const LocalHlsState({this.progress = 0});
-  final double progress;
+  const LocalHlsState({this.progresss = 0});
+  final double progresss;
 
-  LocalHlsState copyWithh({double? progress});
+  LocalHlsState copyWithh({double? progresss});
 
   LocalHlsStatus toLocalHlsStatus() {
     switch (runtimeType) {
@@ -48,12 +48,12 @@ abstract class LocalHlsState {
 }
 
 class LocalHlsDownloadingState extends LocalHlsState {
-  LocalHlsDownloadingState({super.progress});
+  LocalHlsDownloadingState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsDownloadingState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
@@ -62,13 +62,13 @@ class LocalHlsErrorState extends LocalHlsState {
   LocalHlsErrorState({
     this.statusCode,
     this.message,
-    super.progress,
+    super.progresss,
   });
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsErrorState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 
@@ -77,67 +77,67 @@ class LocalHlsErrorState extends LocalHlsState {
 }
 
 class LocalHlsPauseState extends LocalHlsState {
-  LocalHlsPauseState({super.progress});
+  LocalHlsPauseState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsPauseState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
 
 class LocalHlsInQueueState extends LocalHlsState {
-  LocalHlsInQueueState({super.progress});
+  LocalHlsInQueueState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsInQueueState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
 
 class LocalHlsNotExistState extends LocalHlsState {
-  LocalHlsNotExistState({super.progress});
+  LocalHlsNotExistState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsNotExistState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
 
 class LocalHlsCompleteState extends LocalHlsState {
-  LocalHlsCompleteState({super.progress});
+  LocalHlsCompleteState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsCompleteState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
 
 class LocalHlsDeletedState extends LocalHlsState {
-  LocalHlsDeletedState({super.progress});
+  LocalHlsDeletedState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsDeletedState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }
 
 class LocalHlsPreparedState extends LocalHlsState {
-  LocalHlsPreparedState({super.progress});
+  LocalHlsPreparedState({super.progresss});
 
   @override
-  LocalHlsState copyWithh({double? progress}) {
+  LocalHlsState copyWithh({double? progresss}) {
     return LocalHlsPreparedState(
-      progress: progress ?? this.progress,
+      progresss: progresss ?? this.progresss,
     );
   }
 }

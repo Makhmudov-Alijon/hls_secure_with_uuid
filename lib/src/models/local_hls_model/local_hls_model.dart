@@ -123,35 +123,35 @@ class LocalHlsModel extends Equatable {
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.inQueue:
         return LocalHlsInQueueState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.paused:
         return LocalHlsPauseState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.complete:
         return LocalHlsCompleteState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.notExist:
         return LocalHlsNotExistState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.downloading:
         return LocalHlsDownloadingState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.deleted:
         return LocalHlsDeletedState(
-          progress: progress,
+          progresss: progress,
         );
       case LocalHlsStatusType.prepared:
         return LocalHlsPreparedState(
-          progress: progress,
+          progresss: progress,
         );
     }
   }

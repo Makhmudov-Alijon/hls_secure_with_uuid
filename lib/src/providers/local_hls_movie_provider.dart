@@ -32,18 +32,19 @@ class LocalHlsMovieNotifier
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
   void onFileEvent(WatchEvent event) {
-    if (currentHls != null && sizeToDownload != null) {
-      HlsUtils.getTotalDirectorySize(currentHls!.masterDir).then(
-        (value) {
-          if (state is LocalHlsDownloadingState && value != null) {
-            final progress = value / sizeToDownload!;
-            state = LocalHlsDownloadingState(
-              progress: progress > 99 ? 99 : progress,
-            );
-          }
-        },
-      );
-    }
+    /// todo uncomment
+    // if (currentHls != null && sizeToDownload != null) {
+    //   HlsUtils.getTotalDirectorySize(currentHls!.masterDir).then(
+    //     (value) {
+    //       if (state is LocalHlsDownloadingState && value != null) {
+    //         final progress = value / sizeToDownload!;
+    //         state = LocalHlsDownloadingState(
+    //           progress: progress > 99 ? 99 : progress,
+    //         );
+    //       }
+    //     },
+    //   );
+    // }
   }
 
   void refresh() {
