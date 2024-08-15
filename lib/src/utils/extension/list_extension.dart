@@ -11,7 +11,7 @@ extension ListDynamicX<T> on List<T> {
     return hasItem(currentIndex - 1);
   }
 
-  Iterable<dynamic> safeGetLimit(int i, int limit) {
+  Iterable<T> safeGetLimit(int i, int limit) {
     if (i < 0 || i >= length) {
       // If the start index is out of bounds, return an empty list
       return [];

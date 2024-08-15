@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:isolate';
 
+import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,6 +28,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   LocalHlsMoviesNotifier get moviesController => ref.read(
         localHlsMoviesProvider.notifier,
+      );
+
+  LocalHlsMovieNotifier localHlsMovieController(LocalHlsId hlsId) => ref.read(
+        localHlsMovieProvider(hlsId).notifier,
       );
 
   void _startDownloading() {
@@ -132,6 +136,20 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
+  double unDownloadedLength(int totalLength, int unDownloadedLength) {
+    if (totalLength == 0) {
+      return 0.0; // Avoid division by zero
+    }
+
+    // Calculate the downloaded length
+    int downloadedLength = totalLength - unDownloadedLength;
+
+    // Calculate the progress as a percentage
+    double progress = (downloadedLength / totalLength);
+
+    return progress;
+  }
+
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModel hls,
@@ -161,27 +179,119 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       // );
 
       /// //////////////////////////////////////
-      const threadLimit = 20;
-      final hlsLocalRepository = HlsLocalRepository();
-      for (int i = 0; i < downloadTask.items.length; i += threadLimit) {
-        final chunk = downloadTask.items.safeGetLimit(i, threadLimit);
-        await Future.wait([
-          for (final item in chunk) ...[
-            Isolate.run<dynamic>(
-              () {
-                return downloadItem(
-                  (
-                    item: item,
-                    hls: hls,
-                    // sendPort: receivePort.sendPort,
+      final tasks = [...downloadTask.items];
+      List<DownloadItem> failedTasks = [];
+      final int maxIsolates = 16;
+      final List<Isolate> isolates = [];
+      final List<StreamQueue<dynamic>> streamQueues = [];
+      final Completer<void> allTasksCompleted = Completer<void>();
+
+      int activeTasks = 0;
+
+      // Create the isolates
+      for (var i = 0; i < maxIsolates; i++) {
+        final receivePort = ReceivePort();
+        final isolate = await Isolate.spawn(downloadFile, receivePort.sendPort);
+        isolates.add(isolate);
+
+        final streamQueue = StreamQueue(receivePort);
+        streamQueues.add(streamQueue);
+
+        // Get the SendPort from each isolate
+        final sendPort = await streamQueue.next as SendPort;
+
+        // Distribute the initial tasks to the isolates
+        if (tasks.isNotEmpty) {
+          sendPort.send(tasks.removeAt(0));
+          activeTasks++;
+        }
+
+        // Listen for completion messages from each isolate
+        streamQueue.rest.listen(
+          (message) {
+            if (message is String) {
+              if (message == 'done' && tasks.isNotEmpty) {
+                localHlsMovieController(hls.id).updateProgress(
+                  unDownloadedLength(
+                    downloadTask.items.length,
+                    tasks.length + failedTasks.length,
                   ),
                 );
-              },
-            ),
-          ],
-        ]);
+                final nextTask =
+                    tasks.removeAt(0); // Get the next URL from the list
+                sendPort.send(nextTask); // Send the next URL to the isolate
+              } else if (tasks.isEmpty) {
+                sendPort.send(null); // Signal the isolate to terminate
+                activeTasks--;
+
+                if (activeTasks == 0) {
+                  allTasksCompleted.complete();
+                }
+              }
+            } else if (message is DownloadItem) {
+              failedTasks.add(message);
+            }
+          },
+        );
       }
-      moviesController.updateHlsStatuss(hls.id, LocalHlsCompleteState());
+
+      // Wait until all tasks are completed
+      await allTasksCompleted.future;
+
+      // Clean up all isolates
+      for (final isolate in isolates) {
+        isolate.kill(priority: Isolate.immediate);
+      }
+
+      // Close all stream queues
+      for (final queue in streamQueues) {
+        try {
+          await queue.cancel(immediate: true);
+        } catch (e) {}
+      }
+
+      /// //////////////////////////////////////
+      // final threadLimit = 8;
+      // for (int i = 0; i < downloadTask.items.length; i += threadLimit) {
+      //   final Iterable<DownloadItem> chunk =
+      //   downloadTask.items.safeGetLimit(i, threadLimit);
+      //   // await Future.delayed(Duration(milliseconds: 500));
+      //   await Future.wait([
+      //     for (final item in chunk) ...[
+      //       Isolate.run<dynamic>(
+      //             () {
+      //           /// //////////////////////////////
+      //           // return downloadItemHttp(
+      //           //   (
+      //           //     item: item,
+      //           //     hls: hls,
+      //           //   ),
+      //           // );
+      //           /// ///////////////////////////
+      //           return downloadItem(
+      //             (
+      //             item: item,
+      //             hls: hls,
+      //             sendPort: receivePort.sendPort,
+      //             ),
+      //           );
+      //
+      //           /// /////////////////////////////
+      //         },
+      //       ),
+      //     ],
+      //   ]);
+      // }
+      /// /////////////////////////////////////////////////////
+      moviesController.updateHlsStatuss(
+          hls.id,
+          failedTasks.isEmpty
+              ? LocalHlsCompleteState()
+              : LocalHlsErrorState(
+                  message:
+                      '${failedTasks.length} segments are not downloaded'));
+
+      final hlsLocalRepository = HlsLocalRepository();
       final resultState = hlsLocalRepository.fetchHlsState(hls);
 
       final spentTime = DateTime.now().difference(startTime).inMilliseconds;
@@ -241,7 +351,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           (
             item: item,
             hls: hls,
-            // sendPort: receivePort.sendPort,
+            sendPort: receivePort.sendPort,
           ),
         );
         receivePort.listen((state) {
@@ -319,81 +429,105 @@ dynamic downloadItem(
     ({
       DownloadItem item,
       LocalHlsModel hls,
-// SendPort sendPort,
+      SendPort sendPort,
     }) data) async {
   print('download started for: ${data.item.url.split(".")[2].split("/").last}');
-  final dio = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
-    ),
-  );
-  final cancelToken = CancelToken();
-  final hlsLocalRepositoryy = HlsLocalRepository();
-
-  var progress = 0.0;
-  final item = data.item;
-
-  try {
-    await dio.download(
-      item.url,
-      item.absolutePath,
-      cancelToken: cancelToken,
-      onReceiveProgress: (count, total) {
-        progress = count / total;
-        final state = hlsLocalRepositoryy.fetchHlsState(data.hls);
-        final v = 0;
-        if (state is LocalHlsPauseState || state is LocalHlsDeletedState) {
-          // closeFile(item.absolutePath);
-          cancelToken.cancel();
-        }
-      },
+  bool idf = true;
+  do {
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 5),
+      ),
     );
-    // closeFile(item.absolutePath);
-    print(
-        'download completed for: ${data.item.url.split(".")[2].split("/").last}');
-  } catch (e) {
-    final v = 0;
-    if (e is DioException) {
-      if (e.type == DioExceptionType.cancel) {
-        final hlsState = hlsLocalRepositoryy.fetchHlsState(data.hls);
-        // data.sendPort.send(hlsState);
+    final cancelToken = CancelToken();
+    final hlsLocalRepositoryy = HlsLocalRepository();
+
+    var progress = 0.0;
+    final item = data.item;
+
+    try {
+      await dio.download(
+        item.url,
+        item.absolutePath,
+        cancelToken: cancelToken,
+        onReceiveProgress: (count, total) {
+          progress = count / total;
+          final state = hlsLocalRepositoryy.fetchHlsState(data.hls);
+          final v = 0;
+          if (state is LocalHlsPauseState || state is LocalHlsDeletedState) {
+            // closeFile(item.absolutePath);
+            // cancelToken.cancel();
+          }
+        },
+      );
+      // closeFile(item.absolutePath);
+      print(
+          'download completed for: ${data.item.url.split(".")[2].split("/").last}');
+      idf = false;
+    } on DioException catch (e) {
+      // Dio errors
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        idf = true;
+      } else if (e.type == DioExceptionType.badResponse ||
+          e.type == DioExceptionType.unknown) {
+        print('Unexpected error occurred');
+      } else if (e.type == DioExceptionType.cancel) {
+        idf = false;
+      } else {
+        print('Unhandled DioException: ${e.message}');
       }
-      // data.sendPort.send(
-      //   LocalHlsErrorState(
-      //     message: e.message,
-      //     statusCode: e.response?.statusCode,
-      //     progress: progress,
-      //   ),
-      // );
+    } catch (e) {
+      data.sendPort.send(item);
     }
-    // data.sendPort.send(
-    //   LocalHlsErrorState(
-    //     progress: progress,
-    //   ),
-    // );
-  }
+  } while (idf);
 }
 
-Future<void> closeFile(String absolutePath) async {
-  File file = File(absolutePath);
-  RandomAccessFile? raf;
+// Function that will be run in each isolate to download a file
+Future<void> downloadFile(SendPort sendPort) async {
+  final ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
 
-  try {
-    // Open the file
-    raf = await file.open();
-
-    // Perform file operations here®
-    // e.g., reading, writing, etc.
-  } catch (e) {
-    final v = 0;
-  } finally {
-    if (raf != null) {
-      await raf.close();
-      return Future.value();
+  await for (var item in receivePort) {
+    final v = item;
+    final vv = 0;
+    if (item == null) {
+      break; // Exit loop and isolate when receiving a null value
     }
-    final v = 0;
+    final dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 5),
+        receiveTimeout: const Duration(seconds: 5),
+      ),
+    );
+    final cancelToken = CancelToken();
+    final hlsLocalRepositoryy = HlsLocalRepository();
 
-    return Future.value();
+    print(' *** started for: ${item.url.split(".")[2].split("/").last}');
+    try {
+      await dio.download(
+        item.url as String,
+        item.absolutePath,
+        cancelToken: cancelToken,
+        onReceiveProgress: (count, total) {
+          // progress = count / total;
+          // final state = hlsLocalRepositoryy.fetchHlsState(data.hls);
+          // final v = 0;
+          // if (state is LocalHlsPauseState || state is LocalHlsDeletedState) {
+          //   closeFile(item.absolutePath);
+          //   // cancelToken.cancel();
+          // }
+        },
+      );
+    } catch (e) {
+      sendPort.send(item);
+    }
+
+    // Notify the main isolate that this task is done
+
+    print(' *** done for: ${item.url.split(".")[2].split("/").last}');
+    sendPort.send('done');
   }
 }

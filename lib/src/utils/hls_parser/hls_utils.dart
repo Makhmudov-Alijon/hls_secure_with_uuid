@@ -64,13 +64,13 @@ class HlsUtils {
 
   static Future<int?> getTotalDirectorySize(Directory dir) async {
     var totalSize = 0;
-    if (!dir.existsSync()) return null;
-    await for (final entity in dir.list(recursive: true, followLinks: false)) {
-      if (entity is File) {
-        if (!entity.existsSync()) return null;
-        totalSize += await entity.length();
-      }
-    }
+    // if (!dir.existsSync()) return null;
+    // await for (final entity in dir.list(recursive: true, followLinks: false)) {
+    //   if (entity is File) {
+    //     if (!entity.existsSync()) return null;
+    //     totalSize += await entity.length();
+    //   }
+    // }
 
     return totalSize;
   }

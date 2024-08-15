@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager_example/delete_it/full_gpt_downloader.dart';
 import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final audioTracks = <HlsAudioTrack>{};
     const poster =
         "https://media.istockphoto.com/id/652739682/photo/minor-white-mosque-in-tashkent-uzbekistan.jpg?s=2048x2048&w=is&k=20&c=S1TzQNnjgheb2IvUTWF3gSA261aZUzQh7IZ923e-QXM=";
-                final sg = selectedGroups;
+    final sg = selectedGroups;
     for (final trackGroup in selectedGroups) {
       for (final track in trackGroup.tracks) {
         if (track.trackType == resolution.trackType) {
@@ -415,6 +416,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           ],
                         ),
                       ),
+
                     ].toSlivers.toList(),
                   ),
                 ),
