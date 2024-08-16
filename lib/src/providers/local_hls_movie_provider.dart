@@ -32,7 +32,6 @@ class LocalHlsMovieNotifier
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
   void updateProgress(double progress) {
-
     state = LocalHlsDownloadingState(
       // progresss: 33
       progresss: progress > 99 ? 99 : progress,
@@ -40,6 +39,7 @@ class LocalHlsMovieNotifier
   }
 
   void onFileEvent(WatchEvent event) {
+    ///  it would be
     if (currentHls != null && sizeToDownloadd != null) {
       HlsUtils.getTotalDirectorySize(currentHls!.masterDir).then(
         (value) {
@@ -59,19 +59,19 @@ class LocalHlsMovieNotifier
   }
 
   void _startListenToProgress() {
-    /// progress listener
-    log('start listen to ${currentHls?.hlsDetails.id} hls progress');
-    masterStream = DirectoryWatcher(currentHls!.masterDir.path);
-    masterStreamSub = masterStream?.events.listen(onFileEvent);
+    // /// progress listener
+    // log('start listen to ${currentHls?.hlsDetails.id} hls progress');
+    // masterStream = DirectoryWatcher(currentHls!.masterDir.path);
+    // masterStreamSub = masterStream?.events.listen(onFileEvent);
   }
 
   void _stopListenToProgress() {
-    if (masterStreamSub != null) {
-      log('stop listen to ${currentHls?.hlsDetails.id} hls progress');
-    }
-    masterStreamSub?.cancel();
-    masterStreamSub = null;
-    masterStream = null;
+    // if (masterStreamSub != null) {
+    //   log('stop listen to ${currentHls?.hlsDetails.id} hls progress');
+    // }
+    // masterStreamSub?.cancel();
+    // masterStreamSub = null;
+    // masterStream = null;
   }
 
   LocalHlsState checkStatee() {
@@ -111,6 +111,7 @@ class LocalHlsMovieNotifier
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) {
+
     if (currentHls != null) {
       downloaderController.tryToDownload(
         hls: currentHls!,

@@ -47,6 +47,7 @@ class HomePage extends ConsumerStatefulWidget {
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
+
 // https://api.splay.uz/en/api/v3/content/hls-simple/cuser-agent-for-generating-picture-in-the-middle-of-video/48670/playlist.m3u8
 class _HomePageState extends ConsumerState<HomePage> {
   final link =
@@ -192,7 +193,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  IconData? iconByStatus(LocalHlsState hlsState) {
+  IconData? iconByStatuss(LocalHlsState hlsState) {
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       return Icons.play_circle_fill;
     } else if (hlsState is LocalHlsDownloadingState) {
@@ -206,6 +207,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
+
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       movieContoller.tryContinueDownload(
         onDownloadComplete: null,
@@ -372,7 +374,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           children: [
                             Row(
                               children: [
-                                if (iconByStatus(movieState) != null)
+                                if (iconByStatuss(movieState) != null)
                                   SizedBox(
                                     width: 25,
                                     height: 25,
@@ -380,7 +382,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       padding: EdgeInsets.zero,
                                       onPressed: () =>
                                           onIconPressed(movieState),
-                                      icon: Icon(iconByStatus(movieState)!),
+                                      icon: Icon(iconByStatuss(movieState)!),
                                     ),
                                   ),
                                 Expanded(
@@ -417,7 +419,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                           ],
                         ),
                       ),
-
                     ].toSlivers.toList(),
                   ),
                 ),
