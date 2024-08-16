@@ -4,7 +4,10 @@ import 'dart:isolate';
 import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 enum HlsDownloaderState {
   downloading,
@@ -164,24 +167,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _isolateRunning = true;
 
       final DateTime startTime = DateTime.now();
-      // final resultState = await Isolate.run<LocalHlsState>(
-      //   () {
-      //     return downloadStartOldVersionn(
-      //       downloadTask,
-      //       hls,
-      //
-      //     );
-      //     // return downloadStart(
-      //     //   downloadTask,
-      //     //   hls,
-      //     // );
-      //   },
-      // );
 
-      /// //////////////////////////////////////
-      final tasks = [...downloadTask.items];
-      List<DownloadItem> failedTasks = [];
-      final int maxIsolates = 16;
+      List<DownloadItem> tasks = [...downloadTask.items];
+      List<MapEntry<String, dynamic>> failedTasks = [];
+      // final int maxIsolates = 16;
+      final int maxIsolates = Platform.isIOS ? 2 : 8;
       final List<Isolate> isolates = [];
       final List<StreamQueue<dynamic>> streamQueues = [];
       final Completer<void> allTasksCompleted = Completer<void>();
@@ -191,7 +181,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       // Create the isolates
       for (var i = 0; i < maxIsolates; i++) {
         final receivePort = ReceivePort();
-        final isolate = await Isolate.spawn(downloadFile, receivePort.sendPort);
+        // final isolate = await Isolate.spawn(downloadFile, receivePort.sendPort);
+        final isolate =
+            await Isolate.spawn(downloadFileHttp, receivePort.sendPort);
         isolates.add(isolate);
 
         final streamQueue = StreamQueue(receivePort);
@@ -228,8 +220,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 }
               }
-            } else if (message is DownloadItem) {
+            } else if (message is MapEntry<String, dynamic>) {
               failedTasks.add(message);
+            } else {
+              print(message.runtimeType);
             }
           },
         );
@@ -250,39 +244,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         } catch (e) {}
       }
 
-      /// //////////////////////////////////////
-      // final threadLimit = 8;
-      // for (int i = 0; i < downloadTask.items.length; i += threadLimit) {
-      //   final Iterable<DownloadItem> chunk =
-      //   downloadTask.items.safeGetLimit(i, threadLimit);
-      //   // await Future.delayed(Duration(milliseconds: 500));
-      //   await Future.wait([
-      //     for (final item in chunk) ...[
-      //       Isolate.run<dynamic>(
-      //             () {
-      //           /// //////////////////////////////
-      //           // return downloadItemHttp(
-      //           //   (
-      //           //     item: item,
-      //           //     hls: hls,
-      //           //   ),
-      //           // );
-      //           /// ///////////////////////////
-      //           return downloadItem(
-      //             (
-      //             item: item,
-      //             hls: hls,
-      //             sendPort: receivePort.sendPort,
-      //             ),
-      //           );
-      //
-      //           /// /////////////////////////////
-      //         },
-      //       ),
-      //     ],
-      //   ]);
-      // }
-      /// /////////////////////////////////////////////////////
       moviesController.updateHlsStatuss(
           hls.id,
           failedTasks.isEmpty
@@ -498,8 +459,8 @@ Future<void> downloadFile(SendPort sendPort) async {
     }
     final dio = Dio(
       BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
+        connectTimeout: const Duration(seconds: 35),
+        receiveTimeout: const Duration(seconds: 35),
       ),
     );
     final cancelToken = CancelToken();
@@ -528,6 +489,51 @@ Future<void> downloadFile(SendPort sendPort) async {
     // Notify the main isolate that this task is done
 
     print(' *** done for: ${item.url.split(".")[2].split("/").last}');
+    sendPort.send('done');
+  }
+}
+
+Future<void> downloadFileHttp(SendPort sendPort) async {
+  final ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
+
+  await for (dynamic item in receivePort) {
+    if (item == null) {
+      break; // Exit loop and isolate when receiving a null value
+    }
+
+    print(' *** started for: ${item.url.split(".")[2].split("/").last}');
+
+    try {
+      final response = await http
+          .get(Uri.parse(item.url as String))
+          .timeout(Duration(milliseconds: 70000));
+
+      if (response.statusCode == 200) {
+        // final file = File(item.absolutePath as String);
+        // await file.writeAsBytes(response.bodyBytes);
+        // print(' *** done for: ${item.url.split(".")[2].split("/").last}');
+        final file = File(item.absolutePath as String);
+
+        // Open the file for writing
+        final randomAccessFile = await file.open(mode: FileMode.write);
+
+        // Write the downloaded bytes to the file
+        await randomAccessFile.writeFrom(response.bodyBytes);
+
+        // Close the file
+        await randomAccessFile.close();
+      } else {
+        print('Failed to download ${item.url}: ${response.statusCode}');
+        sendPort.send(MapEntry(response.reasonPhrase ?? 'Reason is null',
+            item)); // Re-send the item for retry
+      }
+    } catch (e) {
+      print('Error downloading ${item.url}: $e');
+      sendPort.send(MapEntry(e.toString(), item)); // Re-send the item for retry
+    }
+
+    // Notify the main isolate that this task is done
     sendPort.send('done');
   }
 }
