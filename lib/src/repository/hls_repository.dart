@@ -144,7 +144,9 @@ class HlsRepository {
         downloadTasksFile: pathManager.downloadTaskFile,
         localHlsFile: pathManager.localHlsFile,
       );
+      final v = localHls.toJson();
 
+      /// create local hls file
       pathManager.localHlsFile
         ..createIfNotExist()
         ..writeAsStringSync(

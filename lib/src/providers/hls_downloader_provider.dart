@@ -50,18 +50,18 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   void addToQueue(LocalHlsModel hls) {
-    moviesController.updateHlsStatuss(hls.id, LocalHlsInQueueState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState());
   }
 
   void pauseDownload(LocalHlsModel hls) {
     if (hls.id == _downloadingHls) {
       _stopDownloading();
     }
-    moviesController.updateHlsStatuss(hls.id, LocalHlsPauseState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsPauseState());
   }
 
   void cancelDownload(LocalHlsModel hls) {
-    moviesController.updateHlsStatuss(hls.id, LocalHlsDeletedState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsDeletedState());
   }
 
   void tryToDownload({
@@ -139,7 +139,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  double unDownloadedLength(int totalLength, int unDownloadedLength) {
+  double calculateProgress(int totalLength, int unDownloadedLength) {
     if (totalLength == 0) {
       return 0.0; // Avoid division by zero
     }
@@ -162,11 +162,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }) async {
     _startDownloading();
     _downloadingHls = hls.id;
-    moviesController.updateHlsStatuss(hls.id, LocalHlsDownloadingState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
     try {
       _isolateRunning = true;
 
-      // final DateTime startTime = DateTime.now();
+      final DateTime startTime = DateTime.now();
 
       List<DownloadItem> tasks = [
         ...downloadTask.items.where((e) => !e.isDownloaded),
@@ -217,7 +217,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   }
                   if (tasks.isNotEmpty) {
                     localHlsMovieController(hls.id).updateProgress(
-                      unDownloadedLength(
+                      calculateProgress(
                         downloadTask.items.length,
                         tasks.length + failedTasks.length,
                       ),
@@ -233,7 +233,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 }
 
                 if (activeTasks == 0) {
-                  moviesController.updateHlsStatuss(
+                  moviesController.updateHlsStatus(
                     hls.id,
                     // hlsState,
                     localHlsState ??
@@ -273,7 +273,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           } catch (e) {}
         }
       } else {
-        moviesController.updateHlsStatuss(
+        moviesController.updateHlsStatus(
           hls.id,
           LocalHlsCompleteState(),
         );
@@ -281,15 +281,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       final resultState = hlsLocalRepository.fetchHlsState(hls);
 
-      // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
+      final spentTime = DateTime.now().difference(startTime).inMilliseconds;
 
-      // final v = 0;
+      final v = 0;
 
       // /// ////////////////////////////////////
       _downloadingHls = null;
       _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
-        moviesController.updateHlsStatuss(hls.id, resultState);
+        moviesController.updateHlsStatus(hls.id, resultState);
         _stopDownloading();
         onError?.call(resultState);
       } else if (resultState is LocalHlsDeletedState) {
@@ -297,7 +297,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         moviesController.deleteHls(hls: hls);
       } else {
         _stopDownloading();
-        moviesController.updateHlsStatuss(hls.id, resultState);
+        moviesController.updateHlsStatus(hls.id, resultState);
       }
 
       if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
@@ -355,17 +355,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             return LocalHlsErrorState(
               message: e.message,
               statusCode: e.response?.statusCode,
-              progresss: progress,
+              progress: progress,
             );
           }
           return LocalHlsErrorState(
-            progresss: progress,
+            progress: progress,
           );
         }
       }
     }
     return LocalHlsCompleteState(
-      progresss: progress,
+      progress: progress,
     );
   }
 }

@@ -116,42 +116,56 @@ class LocalHlsModel extends Equatable {
   //   return downloadedSegments / totalSegments;
   // }
 
+  double get calculateProgress {
+    double result = 0;
+    if (downloadTasksFile.existsSync()) {
+      final task = DownloadTask.fromFile(downloadTasksFile);
+      final downloadedTasks = task.items.where((v) => v.isDownloaded);
+      result = downloadedTasks.length / task.items.length;
+    }
+
+    return result;
+  }
+
+  /// calculate progress
   LocalHlsState get localHlsState {
-    final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
-    final progress =
-        downloadedSize == null ? 0.0 : downloadedSize / hlsDetails.sizeBytes;
+    // final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
+    // final progress =
+    //     downloadedSize == null ? 0.0 : downloadedSize / hlsDetails.sizeBytes;
+    final progress = calculateProgress;
+    final v = 0;
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.inQueue:
         return LocalHlsInQueueState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.paused:
         return LocalHlsPauseState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.complete:
         return LocalHlsCompleteState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.notExist:
         return LocalHlsNotExistState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.downloading:
         return LocalHlsDownloadingState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.deleted:
         return LocalHlsDeletedState(
-          progresss: progress,
+          progress: progress,
         );
       case LocalHlsStatusType.prepared:
         return LocalHlsPreparedState(
-          progresss: progress,
+          progress: progress,
         );
     }
   }
@@ -211,12 +225,12 @@ class LocalHlsModel extends Equatable {
   factory LocalHlsModel.fromJson(String source) =>
       LocalHlsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LocalHlsModel copyWith({
+  LocalHlsModel copyWithh({
     Directory? baseDir,
     Directory? masterDir,
     File? posterFile,
     File? masterFile,
-    File? localHlsFile,
+    File? localHlsFilee,
     File? downloadTasksFile,
     LocalHlsDetailsModel? hlsDetails,
     LocalHlsStatus? downloadStatus,
@@ -229,7 +243,7 @@ class LocalHlsModel extends Equatable {
       masterDir: masterDir ?? this.masterDir,
       posterFile: posterFile ?? this.posterFile,
       masterFile: masterFile ?? this.masterFile,
-      localHlsFile: localHlsFile ?? this.localHlsFile,
+      localHlsFile: localHlsFilee ?? this.localHlsFile,
       downloadTasksFile: downloadTasksFile ?? this.downloadTasksFile,
       hlsDetails: hlsDetails ?? this.hlsDetails,
       downloadStatus: downloadStatus ?? this.downloadStatus,

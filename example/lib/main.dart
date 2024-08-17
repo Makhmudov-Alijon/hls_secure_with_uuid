@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager_example/delete_it/full_gpt_downloader.dart';
 import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
@@ -208,6 +207,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   void onIconPressed(LocalHlsState hlsState) {
     final movieContoller = ref.read(localHlsMovieProvider(hlsId).notifier);
 
+
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       movieContoller.tryContinueDownload(
         onDownloadComplete: null,
@@ -387,7 +387,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 Expanded(
                                   child: LinearProgressIndicator(
-                                    value: movieState.progresss,
+                                    value: movieState.progress,
                                   ),
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
@@ -412,9 +412,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
                                   Text(
-                                    '${(movieState.progresss * 100).toStringAsFixed(1)}%',
+                                    '${(movieState.progress * 100).toStringAsFixed(1)}%',
                                   ),
                               ],
+                            ),
+                            Text(
+                              '${movieState}',
+                            ),
+                            if(movieState is LocalHlsErrorState)
+                            Text(
+                              '${movieState.message}',
                             ),
                           ],
                         ),

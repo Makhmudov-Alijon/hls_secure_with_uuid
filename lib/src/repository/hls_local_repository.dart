@@ -62,7 +62,7 @@ class HlsLocalRepository {
 
   LocalHlsModel? updateHlsStatus(LocalHlsModel hls, LocalHlsState state) {
     try {
-      final newHls = hls.copyWith(
+      final newHls = hls.copyWithh(
         downloadStatus: state.toLocalHlsStatus(),
       );
       updateHls(newHls);

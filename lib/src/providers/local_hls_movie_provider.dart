@@ -19,7 +19,7 @@ class LocalHlsMovieNotifier
   StreamSubscription<WatchEvent>? masterStreamSub;
   LocalHlsModel? currentHls;
   DownloadTask? downloadTask;
-  int? sizeToDownloadd;
+  int? sizeToDownload;
 
   HlsDownloaderNotifier get downloaderController => ref.read(
         hlsDownloaderProvider.notifier,
@@ -33,20 +33,20 @@ class LocalHlsMovieNotifier
 
   void updateProgress(double progress) {
     state = LocalHlsDownloadingState(
-      // progresss: 33
-      progresss: progress > 99 ? 99 : progress,
+      // progress: 33
+      progress: progress > 99 ? 99 : progress,
     );
   }
 
   void onFileEvent(WatchEvent event) {
     ///  it would be
-    if (currentHls != null && sizeToDownloadd != null) {
-      HlsUtils.getTotalDirectorySize(currentHls!.masterDir).then(
+    if (currentHls != null && sizeToDownload != null) {
+      HlsUtils.getTotalDirectorySizee(currentHls!.masterDir).then(
         (value) {
           if (state is LocalHlsDownloadingState && value != null) {
-            final progress = value / sizeToDownloadd!;
+            final progress = value / sizeToDownload!;
             state = LocalHlsDownloadingState(
-              progresss: progress > 99 ? 99 : progress,
+              progress: progress > 99 ? 99 : progress,
             );
           }
         },
@@ -55,11 +55,11 @@ class LocalHlsMovieNotifier
   }
 
   void refresh() {
-    state = checkStatee();
+    state = checkState();
   }
 
   void _startListenToProgress() {
-    // /// progress listener
+    /// progress listener
     // log('start listen to ${currentHls?.hlsDetails.id} hls progress');
     // masterStream = DirectoryWatcher(currentHls!.masterDir.path);
     // masterStreamSub = masterStream?.events.listen(onFileEvent);
@@ -74,11 +74,11 @@ class LocalHlsMovieNotifier
     // masterStream = null;
   }
 
-  LocalHlsState checkStatee() {
+  LocalHlsState checkState() {
     ref.onDispose(_stopListenToProgress);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
-    sizeToDownloadd ??= foundHls?.hlsDetails.sizeBytes;
+    sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     if (foundHls == null) {
       _stopListenToProgress();
       return LocalHlsNotExistState();
@@ -111,7 +111,6 @@ class LocalHlsMovieNotifier
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) {
-
     if (currentHls != null) {
       downloaderController.tryToDownload(
         hls: currentHls!,
@@ -124,6 +123,6 @@ class LocalHlsMovieNotifier
 
   @override
   LocalHlsState build(LocalHlsId arg) {
-    return checkStatee();
+    return checkState();
   }
 }
