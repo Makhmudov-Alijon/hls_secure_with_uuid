@@ -31,6 +31,8 @@ class HlsRepository {
     required String key,
     required LocalHlsId hlsId,
     required bool forWatching,
+    Map<String, dynamic>? headers,
+    bool isAes = false,
   }) async {
     try {
       final response = await dio.post<dynamic>(
@@ -38,6 +40,7 @@ class HlsRepository {
         options: Options(
           headers: {
             HttpHeaders.authorizationHeader: 'Bearer $token',
+            if (headers != null) ...headers,
           },
         ),
       );
@@ -46,6 +49,7 @@ class HlsRepository {
         token: token,
         url: url,
         key: key,
+        isAes: isAes,
         data: response.data,
       );
 
@@ -164,6 +168,8 @@ class HlsRepository {
     required String token,
     required String key,
     required LocalHlsId hlsId,
+    Map<String, dynamic>? headers,
+    bool isAes = false,
   }) async {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
@@ -181,6 +187,8 @@ class HlsRepository {
         token: token,
         key: key,
         hlsId: hlsId,
+        isAes: isAes,
+        headers: headers,
         forWatching: isForWatching,
       );
 

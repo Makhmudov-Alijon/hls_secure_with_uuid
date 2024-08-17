@@ -11,6 +11,12 @@ abstract class Security {
     required String key,
     required String token,
   });
+
+  Future<Map<String, dynamic>> getDTDs({
+    required String data,
+    required String token,
+    required String key,
+  });
 }
 
 class SecurityService extends Security {
@@ -44,6 +50,34 @@ class SecurityService extends Security {
     final $3 = key.substring(key.length - 9);
 
     return '${$1}${$2}${$3}';
+  }
+
+  @override
+  Future<Map<String, dynamic>> getDTDs({
+    required String data,
+    required String token,
+    required String key,
+  }) async {
+    final sKey = await getDTK(key);
+
+    final reversedTokenPart = token.split('.')[2].split('').reversed.join();
+    var keyStr = sKey.substring(0, 8) +
+        reversedTokenPart.substring(0, 27) +
+        sKey.substring(sKey.length - 9);
+    keyStr = keyStr.replaceAll(RegExp('[+-]'), '_').substring(0, 32);
+
+    final keyUtf = Key.fromUtf8(keyStr);
+    final enc = Encrypter(AES(keyUtf, mode: AESMode.ecb));
+
+    final encryptedBytes = base64.decode(data);
+    final dec = enc.decrypt(Encrypted(encryptedBytes));
+
+    return jsonDecode(dec) as Map<String, dynamic>;
+  }
+
+  String unpad(String source) {
+    final padding = source.codeUnitAt(source.length - 1);
+    return source.substring(0, source.length - padding);
   }
 
   @override
