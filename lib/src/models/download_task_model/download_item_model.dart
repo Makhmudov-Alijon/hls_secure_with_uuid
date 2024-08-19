@@ -44,6 +44,14 @@ class DownloadItem extends Equatable {
 
   String toJson() => json.encode(toMap());
 
+  (
+    String url,
+    String absPath,
+  ) get getForIsolate => (
+        url,
+        absolutePath,
+      );
+
   factory DownloadItem.fromJson(String source) =>
       DownloadItem.fromMap(json.decode(source) as Map<String, dynamic>);
 }

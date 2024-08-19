@@ -87,7 +87,7 @@ class LocalHlsMovieNotifier
     } else {
       _stopListenToProgress();
     }
-    return foundHls.localHlsState;
+    return foundHls.localHlsState ;
   }
 
   void pauseDownload() {

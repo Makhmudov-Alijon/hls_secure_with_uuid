@@ -1,3 +1,4 @@
+export  'package:download_manager/src/utils/local_storage/prefs.dart';
 export 'package:download_manager/src/entities/hls_audio.dart';
 export 'package:download_manager/src/entities/hls_enctyption_key.dart';
 export 'package:download_manager/src/entities/hls_playlist_data.dart';

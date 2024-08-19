@@ -24,7 +24,8 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
     for (final hls in state.value!) {
       final key = hls.hlsDetails.id.contentId;
-      if (hls.localHlsState is LocalHlsCompleteState) {
+      if (hls.localHlsState
+          is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
             return [...value, hls];

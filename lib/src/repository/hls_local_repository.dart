@@ -1,4 +1,6 @@
+
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/utils/local_storage/prefs.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final hlsLocalRepositoryProvider = Provider(
@@ -6,6 +8,7 @@ final hlsLocalRepositoryProvider = Provider(
 );
 
 class HlsLocalRepository {
+  /// point
   Future<List<LocalHlsModel>> fetchLocalHlsMovies({
     bool isInitial = false,
   }) async {
@@ -52,9 +55,16 @@ class HlsLocalRepository {
   void updateHls(LocalHlsModel hls) {
     final hlsFile = hls.localHlsFile;
     if (hlsFile.existsSync()) {
-      hlsFile.writeAsStringSync(
-        hls.toJson(),
-      );
+
+      final statusName = hls.downloadStatus.statusType.name;
+
+      Prefs()
+          .putLocalHlsStatusName(hls.id.contentId, statusName)
+          .then((v) {
+        hlsFile.writeAsStringSync(
+          hls.toJson(),
+        );
+      });
     } else {
       throw UnimplementedError('Hls file not exist');
     }
@@ -62,7 +72,7 @@ class HlsLocalRepository {
 
   LocalHlsModel? updateHlsStatus(LocalHlsModel hls, LocalHlsState state) {
     try {
-      final newHls = hls.copyWithh(
+      final newHls = hls.copyWith(
         downloadStatus: state.toLocalHlsStatus(),
       );
       updateHls(newHls);
@@ -79,6 +89,7 @@ class HlsLocalRepository {
   }
 
   LocalHlsState fetchHlsState(LocalHlsModel hls) {
+    /// point
     final hlsFile = hls.localHlsFile;
     if (!hlsFile.existsSync()) {
       return LocalHlsDeletedState();

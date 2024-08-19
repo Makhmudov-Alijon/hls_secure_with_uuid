@@ -4,7 +4,9 @@ import 'dart:isolate';
 import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/utils/local_storage/prefs.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -168,8 +170,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       final DateTime startTime = DateTime.now();
 
-      List<DownloadItem> tasks = [
-        ...downloadTask.items.where((e) => !e.isDownloaded),
+      List<(String url, String absPath)> tasks = [
+        ...downloadTask.items
+            .where((e) => !e.isDownloaded)
+            .map((e) => e.getForIsolate),
       ];
       List<MapEntry<String, dynamic>> failedTasks = [];
 
@@ -182,6 +186,23 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         LocalHlsState? localHlsState;
 
         int activeTasks = 0;
+        Timer? progressUpdateTimer;
+
+        progressUpdateTimer = Timer.periodic(
+          const Duration(milliseconds: 1000),
+          (timer) {
+            final v = calculateProgress(
+              downloadTask.items.length,
+              tasks.length + failedTasks.length,
+            );
+            // This code runs every second and updates the UI
+            if (state == HlsDownloaderState.downloading) {
+              localHlsMovieController(hls.id).updateProgress(
+                v,
+              );
+            }
+          },
+        );
 
         // Create the isolates
         for (var i = 0; i < maxIsolates; i++) {
@@ -203,26 +224,34 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             activeTasks++;
           }
 
+          DateTime lastCheckForPauseOrDeleted = DateTime.now();
           // Listen for completion messages from each isolate
           streamQueue.rest.listen(
             (message) {
               if (message is String) {
                 if (message == 'done') {
-                  final state = hlsLocalRepository.fetchHlsState(hls);
-                  if (state is LocalHlsPauseState ||
-                      state is LocalHlsDeletedState) {
-                    localHlsState = state;
-                    sendPort.send(null);
-                    activeTasks--;
-                  }
-                  if (tasks.isNotEmpty) {
-                    localHlsMovieController(hls.id).updateProgress(
-                      calculateProgress(
+                  if (DateTime.now()
+                          .difference(lastCheckForPauseOrDeleted)
+                          .inMilliseconds >
+                      300) {
+                    // final state = hlsLocalRepository.fetchHlsState(hls);
+                    final state = getHlsDownloadStatusType(
+                      contentId: hls.id.contentId,
+                      progress: calculateProgress(
                         downloadTask.items.length,
-                        tasks.length + failedTasks.length,
+                        tasks.length,
                       ),
                     );
 
+                    if (state is LocalHlsPauseState ||
+                        state is LocalHlsDeletedState) {
+                      localHlsState = state;
+                      sendPort.send(null);
+                      activeTasks--;
+                    }
+                    lastCheckForPauseOrDeleted = DateTime.now();
+                  }
+                  if (tasks.isNotEmpty) {
                     final nextTask =
                         tasks.removeAt(0); // Get the next URL from the list
                     sendPort.send(nextTask);
@@ -233,17 +262,23 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 }
 
                 if (activeTasks == 0) {
-                  moviesController.updateHlsStatus(
-                    hls.id,
-                    // hlsState,
-                    localHlsState ??
-                        (failedTasks.isEmpty
-                            ? LocalHlsCompleteState()
-                            : LocalHlsErrorState(
-                                message:
-                                    '${failedTasks.length} segments are not downloaded',
-                              )),
-                  );
+                  // Exit loop and isolate when receiving a null value
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    // Update the UI here
+                    moviesController.updateHlsStatus(
+                      hls.id,
+                      localHlsState ??
+                          (failedTasks.isEmpty
+                              ? LocalHlsCompleteState()
+                              : LocalHlsErrorState(
+                                  message:
+                                      '${failedTasks.length} segments are not downloaded',
+                                )),
+                    );
+                  });
+
+                  progressUpdateTimer?.cancel();
+                  progressUpdateTimer = null;
                   allTasksCompleted.complete();
                 }
               } else if (message is MapEntry<String, dynamic>) {
@@ -313,60 +348,47 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  static Future<LocalHlsState> downloadStart(
-    DownloadTask task,
-    LocalHlsModel hlss, [
-    void Function(double progress)? onProgressChanges,
-  ]) async {
-    final dio = Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-      ),
-    );
-    final cancelToken = CancelToken();
-    final hlsLocalRepository = HlsLocalRepository();
-
-    var progress = 0.0;
-    for (var i = 0; i < task.items.length; i++) {
-      final item = task.items[i];
-      if (!item.isDownloaded) {
-        try {
-          await dio.download(
-            item.url,
-            item.absolutePath,
-            cancelToken: cancelToken,
-            onReceiveProgress: (count, total) {
-              progress = count / total;
-              onProgressChanges?.call(progress);
-              final state = hlsLocalRepository.fetchHlsState(hlss);
-              if (state is LocalHlsPauseState ||
-                  state is LocalHlsDeletedState) {
-                cancelToken.cancel();
-              }
-            },
-          );
-        } catch (e) {
-          if (e is DioException) {
-            if (e.type == DioExceptionType.cancel) {
-              final hlsState = hlsLocalRepository.fetchHlsState(hlss);
-              return hlsState;
-            }
-            return LocalHlsErrorState(
-              message: e.message,
-              statusCode: e.response?.statusCode,
-              progress: progress,
-            );
-          }
-          return LocalHlsErrorState(
-            progress: progress,
-          );
-        }
-      }
+  LocalHlsState getHlsDownloadStatusType({
+    required int contentId,
+    required double progress,
+  }) {
+    final target =
+        (Prefs().getLocalHlsStatusName(contentId) ?? '').getLocalHlsStatus!;
+    final v = 0;
+    switch (target) {
+      case LocalHlsStatusType.error:
+        return LocalHlsErrorState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.inQueue:
+        return LocalHlsInQueueState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.paused:
+        return LocalHlsPauseState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.complete:
+        return LocalHlsCompleteState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.notExist:
+        return LocalHlsNotExistState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.downloading:
+        return LocalHlsDownloadingState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.deleted:
+        return LocalHlsDeletedState(
+          progress: progress,
+        );
+      case LocalHlsStatusType.prepared:
+        return LocalHlsPreparedState(
+          progress: progress,
+        );
     }
-    return LocalHlsCompleteState(
-      progress: progress,
-    );
   }
 }
 
@@ -421,21 +443,29 @@ Future<void> downloadFileHttp(SendPort sendPort) async {
   final ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
 
-  await for (final item in receivePort) {
-    if (item is! DownloadItem) {
+  await for (final itemm in receivePort) {
+    if (itemm is DownloadItem) {
+      throw Exception(
+        'item is Download item. Instead of to be record<String,String>',
+      );
+    }
+    if (itemm is! (
+      String url,
+      String absPath,
+    )) {
       break; // Exit loop and isolate when receiving a null value
     }
 
     // print(' *** started for: ${item.url.split(".")[2].split("/").last}');
 
     try {
-      final response = await http.get(Uri.parse(item.url));
+      final response = await http.get(Uri.parse(itemm.$1));
 
       if (response.statusCode == 200) {
         // final file = File(item.absolutePath as String);
         // await file.writeAsBytes(response.bodyBytes);
         // print(' *** done for: ${item.url.split(".")[2].split("/").last}');
-        final file = File(item.absolutePath);
+        final file = File(itemm.$2);
 
         // Open the file for writing
         final randomAccessFile = await file.open(mode: FileMode.write);
@@ -447,12 +477,17 @@ Future<void> downloadFileHttp(SendPort sendPort) async {
         await randomAccessFile.close();
       } else {
         // print('Failed to download ${item.url}: ${response.statusCode}');
-        sendPort.send(MapEntry(response.reasonPhrase ?? 'Reason is null',
-            item)); // Re-send the item for retry
+        sendPort.send(
+          MapEntry(
+            response.reasonPhrase ?? 'Reason is null',
+            itemm,
+          ),
+        ); // Re-send the item for retry
       }
     } catch (e) {
       // print('Error downloading ${item.url}: $e');
-      sendPort.send(MapEntry(e.toString(), item)); // Re-send the item for retry
+      sendPort
+          .send(MapEntry(e.toString(), itemm)); // Re-send the item for retry
     }
 
     // Notify the main isolate that this task is done

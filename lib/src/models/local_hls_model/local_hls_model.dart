@@ -127,7 +127,6 @@ class LocalHlsModel extends Equatable {
     return result;
   }
 
-  /// calculate progress
   LocalHlsState get localHlsState {
     // final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
     // final progress =
@@ -225,7 +224,7 @@ class LocalHlsModel extends Equatable {
   factory LocalHlsModel.fromJson(String source) =>
       LocalHlsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LocalHlsModel copyWithh({
+  LocalHlsModel copyWith({
     Directory? baseDir,
     Directory? masterDir,
     File? posterFile,

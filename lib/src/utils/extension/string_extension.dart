@@ -1,5 +1,7 @@
 import 'dart:developer' as developerLog;
 
+import '../../entities/local_hls_status.dart';
+
 extension StringExtension on String {
   void log() {
     developerLog.log(this);
@@ -54,5 +56,28 @@ extension StringExtension on String {
   String capitalize() {
     if (isEmpty) return this;
     return this[0].toUpperCase() + substring(1).toLowerCase();
+  }
+
+  LocalHlsStatusType? get getLocalHlsStatus {
+    switch (this) {
+      case 'complete':
+        return LocalHlsStatusType.complete;
+      case 'downloading':
+        return LocalHlsStatusType.downloading;
+      case 'paused':
+        return LocalHlsStatusType.paused;
+      case 'inQueue':
+        return LocalHlsStatusType.inQueue;
+      case 'notExist':
+        return LocalHlsStatusType.notExist;
+      case 'deleted':
+        return LocalHlsStatusType.deleted;
+      case 'prepared':
+        return LocalHlsStatusType.prepared;
+      case 'error':
+        return LocalHlsStatusType.error;
+      default:
+        return null;
+    }
   }
 }
