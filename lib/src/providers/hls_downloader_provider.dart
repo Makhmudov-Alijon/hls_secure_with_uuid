@@ -283,6 +283,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 }
               } else if (message is MapEntry<String, dynamic>) {
                 failedTasks.add(message);
+                tasks.add(message.value as (String url, String absPath));
                 if (tasks.isNotEmpty) {
                   final nextTask =
                       tasks.removeAt(0); // Get the next URL from the list
