@@ -168,7 +168,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     try {
       _isolateRunning = true;
 
-      final DateTime startTime = DateTime.now();
+      // final DateTime startTime = DateTime.now();
 
       List<(String url, String absPath)> tasks = [
         ...downloadTask.items
@@ -191,15 +191,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         progressUpdateTimer = Timer.periodic(
           const Duration(milliseconds: 1000),
           (timer) {
-            final v = calculateProgress(
-              downloadTask.items.length,
-              tasks.length + failedTasks.length,
-            );
+            final v = calculateProgress(downloadTask.items.length, tasks.length
+                // + failedTasks.length,
+                );
             // This code runs every second and updates the UI
             if (state == HlsDownloaderState.downloading) {
-              localHlsMovieController(hls.id).updateProgress(
-                v,
-              );
+              localHlsMovieController(hls.id).updateProgress(v, activeTasks);
             }
           },
         );
@@ -282,11 +279,18 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 }
               } else if (message is MapEntry<String, dynamic>) {
-                failedTasks.add(message);
+                // final t = [...tasks];
+                // final v = 0;
+                // failedTasks.add(message);
                 tasks.add(message.value as (String url, String absPath));
+                // final tt = [...tasks];
+                // final vv = 0;
                 if (tasks.isNotEmpty) {
-                  final nextTask =
-                      tasks.removeAt(0); // Get the next URL from the list
+                  final nextTask = tasks.removeAt(0);
+                  // final e = message.key;
+                  //
+                  // final vvv = 0;
+                  // Get the next URL from the list
                   sendPort.send(nextTask);
                 }
               }
@@ -317,9 +321,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       final resultState = hlsLocalRepository.fetchHlsState(hls);
 
-      final spentTime = DateTime.now().difference(startTime).inMilliseconds;
-
-      final v = 0;
+      // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
+      //
+      // final v = 0;
 
       // /// ////////////////////////////////////
       _downloadingHls = null;

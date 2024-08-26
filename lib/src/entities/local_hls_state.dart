@@ -1,9 +1,13 @@
 import 'package:download_manager/download_manager.dart';
 
 abstract class LocalHlsState {
-  const LocalHlsState({this.progress = 0});
+  const LocalHlsState({
+    this.progress = 0,
+    this.threadsCount = 0,
+  });
 
   final double progress;
+  final int threadsCount;
 
   LocalHlsState copyWith({double? progress});
 
@@ -49,12 +53,16 @@ abstract class LocalHlsState {
 }
 
 class LocalHlsDownloadingState extends LocalHlsState {
-  LocalHlsDownloadingState({super.progress});
+  LocalHlsDownloadingState({super.progress, super.threadsCount});
 
   @override
-  LocalHlsState copyWith({double? progress}) {
+  LocalHlsState copyWith({
+    double? progress,
+    int? threadsCount,
+  }) {
     return LocalHlsDownloadingState(
       progress: progress ?? this.progress,
+      threadsCount: threadsCount ?? this.threadsCount,
     );
   }
 }

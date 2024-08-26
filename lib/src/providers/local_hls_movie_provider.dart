@@ -31,9 +31,10 @@ class LocalHlsMovieNotifier
 
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
-  void updateProgress(double progress) {
+  void updateProgress(double progress, int threadsCount) {
     state = LocalHlsDownloadingState(
       // progress: 33
+      threadsCount: threadsCount,
       progress: progress > 99 ? 99 : progress,
     );
   }
@@ -87,7 +88,7 @@ class LocalHlsMovieNotifier
     } else {
       _stopListenToProgress();
     }
-    return foundHls.localHlsState ;
+    return foundHls.localHlsState;
   }
 
   void pauseDownload() {

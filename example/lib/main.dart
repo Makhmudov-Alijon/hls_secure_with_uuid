@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:download_manager/download_manager.dart';
 import 'package:download_manager_example/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,13 +11,11 @@ Future<void> main() async {
 
   MediaKit.ensureInitialized();
 
-
   ByteData data = await PlatformAssetBundle().load('assets/ca/client.pem');
 
   SecurityContext.defaultContext.setTrustedCertificatesBytes(
     data.buffer.asUint8List(),
   );
-  await Prefs().init();
   runApp(
     const ProviderScope(
       child: MyApp(),
