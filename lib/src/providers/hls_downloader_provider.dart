@@ -1,14 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/utils/local_storage/prefs.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 
 enum HlsDownloaderState {
