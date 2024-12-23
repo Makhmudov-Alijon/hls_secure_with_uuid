@@ -1,6 +1,5 @@
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/utils/local_storage/prefs.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final hlsLocalRepositoryProvider = Provider(
@@ -55,12 +54,8 @@ class HlsLocalRepository {
   void updateHls(LocalHlsModel hls) {
     final hlsFile = hls.localHlsFile;
     if (hlsFile.existsSync()) {
-
       final statusName = hls.downloadStatus.statusType.name;
-
-      Prefs()
-          .putLocalHlsStatusName(hls.id.contentId, statusName)
-          .then((v) {
+      Prefs().putLocalHlsStatusName(hls.getStatusKey, statusName).then((v) {
         hlsFile.writeAsStringSync(
           hls.toJson(),
         );

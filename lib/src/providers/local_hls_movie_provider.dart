@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -119,6 +118,8 @@ class LocalHlsMovieNotifier
         downloadTask: downloadTask,
         onDownloadComplete: onDownloadComplete,
       );
+    } else {
+      final v = 0;
     }
   }
 

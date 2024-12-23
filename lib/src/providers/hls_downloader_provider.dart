@@ -25,7 +25,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return HlsDownloaderState.notDownloading;
   }
 
-  bool _isolateRunning = false;
+  bool _isolateRunningg = false;
 
   LocalHlsId? _downloadingHls;
 
@@ -82,6 +82,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           onDownloadComplete: onDownloadComplete,
           onError: onError,
         );
+      } else {
+        /// hls download task file does not exists
+        final v = 0;
       }
     }
   }
@@ -99,7 +102,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           hlsDetails: hlsDetails,
           posterLink: posterLink,
         );
-    final v = 0;
     if (downloadTask != null) {
       await moviesController.refreshMovies();
       final hls = moviesController.hlsById(hlsDetails.id);
@@ -107,7 +109,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         if (state == HlsDownloaderState.downloading) {
           addToQueue(hls);
         } else {
-          if (!_isolateRunning) {
+          if (!_isolateRunningg) {
             await downloadOrContinue(
               downloadTask: downloadTask,
               hls: hls,
@@ -164,7 +166,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     _downloadingHls = hls.id;
     moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
     try {
-      _isolateRunning = true;
+      _isolateRunningg = true;
 
       // final DateTime startTime = DateTime.now();
 
@@ -231,7 +233,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                       300) {
                     // final state = hlsLocalRepository.fetchHlsState(hls);
                     final state = getHlsDownloadStatusType(
-                      contentId: hls.id.contentId,
+                      statusStoreKeyy: hls.getStatusKey,
                       progress: calculateProgress(
                         downloadTask.items.length,
                         tasks.length,
@@ -325,7 +327,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       // /// ////////////////////////////////////
       _downloadingHls = null;
-      _isolateRunning = false;
+      _isolateRunningg = false;
       if (resultState is LocalHlsErrorState) {
         moviesController.updateHlsStatus(hls.id, resultState);
         _stopDownloading();
@@ -346,17 +348,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onError: onError,
       );
     } catch (e) {
-      _isolateRunning = false;
+      _isolateRunningg = false;
       _stopDownloading();
     }
   }
 
   LocalHlsState getHlsDownloadStatusType({
-    required int contentId,
+    required int statusStoreKeyy,
     required double progress,
   }) {
-    final target =
-        (Prefs().getLocalHlsStatusName(contentId) ?? '').getLocalHlsStatus!;
+    final target = (Prefs().getLocalHlsStatusNamee(statusStoreKeyy) ?? '')
+        .getLocalHlsStatus!;
     final v = 0;
     switch (target) {
       case LocalHlsStatusType.error:

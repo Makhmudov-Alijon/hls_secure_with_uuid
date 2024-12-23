@@ -232,7 +232,10 @@ class LocalHlsMoviesNotifier extends AsyncNotifier<List<LocalHlsModel>> {
 
   int? _hlsIndex(LocalHlsId id) {
     final index = state.value?.indexWhere((element) => element.id == id);
-    return index == null || index < 0 ? null : index;
+    if (index == null || index < 0) {
+      return null;
+    }
+    return index;
   }
 
   LocalHlsModel? hlsById(LocalHlsId id) {

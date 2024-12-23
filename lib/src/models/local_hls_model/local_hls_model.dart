@@ -86,36 +86,6 @@ class LocalHlsModel extends Equatable {
     );
   }
 
-  // double get downloadProgress {
-  //   final resolution = hlsDetails.resolution;
-  //   final audioTracks = hlsDetails.audioTracks;
-
-  //   final pathManager = HlsPathManager(
-  //     baseDir: baseDir,
-  //     localHlsId: id,
-  //     isRemote: false,
-  //   );
-
-  //   var downloadedSegments = 0;
-
-  //   final resolutionDir = pathManager.videoDir(
-  //     resolutionType: resolution.resolution,
-  //   );
-
-  //   if (resolutionDir.existsSync()) {
-  //     downloadedSegments += resolutionDir.listSync().length - 1;
-  //   }
-
-  //   for (final audioTrack in audioTracks) {
-  //     final audioDir = pathManager.audioDir(audioTrack: audioTrack);
-  //     if (audioDir.existsSync()) {
-  //       downloadedSegments += audioDir.listSync().length - 1;
-  //     }
-  //   }
-
-  //   return downloadedSegments / totalSegments;
-  // }
-
   double get calculateProgress {
     double result = 0;
     if (downloadTasksFile.existsSync()) {
@@ -128,11 +98,8 @@ class LocalHlsModel extends Equatable {
   }
 
   LocalHlsState get localHlsState {
-    // final downloadedSize = HlsUtils.getTotalDirectorySizeSync(masterDir);
-    // final progress =
-    //     downloadedSize == null ? 0.0 : downloadedSize / hlsDetails.sizeBytes;
     final progress = calculateProgress;
-    final v = 0;
+
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
@@ -229,7 +196,7 @@ class LocalHlsModel extends Equatable {
     Directory? masterDir,
     File? posterFile,
     File? masterFile,
-    File? localHlsFilee,
+    File? localHlsFile,
     File? downloadTasksFile,
     LocalHlsDetailsModel? hlsDetails,
     LocalHlsStatus? downloadStatus,
@@ -242,11 +209,21 @@ class LocalHlsModel extends Equatable {
       masterDir: masterDir ?? this.masterDir,
       posterFile: posterFile ?? this.posterFile,
       masterFile: masterFile ?? this.masterFile,
-      localHlsFile: localHlsFilee ?? this.localHlsFile,
+      localHlsFile: localHlsFile ?? this.localHlsFile,
       downloadTasksFile: downloadTasksFile ?? this.downloadTasksFile,
       hlsDetails: hlsDetails ?? this.hlsDetails,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       totalSegments: totalSegments ?? this.totalSegments,
     );
+  }
+
+  int get getStatusKey {
+    try {
+      return hlsDetails.isSerial
+          ? hlsDetails.id.episodeId!
+          : hlsDetails.id.contentId;
+    } catch (e) {
+      return hlsDetails.id.contentId;
+    }
   }
 }
