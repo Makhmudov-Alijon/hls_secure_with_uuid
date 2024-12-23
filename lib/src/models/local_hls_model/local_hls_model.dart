@@ -217,13 +217,10 @@ class LocalHlsModel extends Equatable {
     );
   }
 
-  int get getStatusKey {
-    try {
-      return hlsDetails.isSerial
-          ? hlsDetails.id.episodeId!
-          : hlsDetails.id.contentId;
-    } catch (e) {
-      return hlsDetails.id.contentId;
+  String get getStatusKey {
+    if (hlsDetails.isSerial) {
+      return '${hlsDetails.id.contentId}-${hlsDetails.id.episodeId}';
     }
+    return '${hlsDetails.id.contentId}';
   }
 }

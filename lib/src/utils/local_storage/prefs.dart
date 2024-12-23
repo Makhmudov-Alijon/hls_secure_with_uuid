@@ -25,12 +25,12 @@ class Prefs {
   }
 
   // Method to store a String value
-  Future<void> putLocalHlsStatusName(int key, String value) async {
+  Future<void> putLocalHlsStatusName(String key, String value) async {
     await _box.put(key, value);
   }
 
   // Method to retrieve a String value
-  String? getLocalHlsStatusNamee(int key) {
+  String? getLocalHlsStatusNamee(String key) {
     return _box.get(key) as String?;
   }
 
