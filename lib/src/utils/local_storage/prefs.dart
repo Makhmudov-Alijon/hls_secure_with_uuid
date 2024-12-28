@@ -30,7 +30,7 @@ class Prefs {
   }
 
   // Method to retrieve a String value
-  String? getLocalHlsStatusNamee(String key) {
+  String? getLocalHlsStatusName(String key) {
     return _box.get(key) as String?;
   }
 

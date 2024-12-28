@@ -233,7 +233,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                       300) {
                     // final state = hlsLocalRepository.fetchHlsState(hls);
                     final state = getHlsDownloadStatusType(
-                      statusStoreKey: hls.getStatusKey,
+                      statusStoreKeye: hls.getStatusKey,
                       progress: calculateProgress(
                         downloadTask.items.length,
                         tasks.length,
@@ -354,10 +354,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   LocalHlsState getHlsDownloadStatusType({
-    required String statusStoreKey,
+    required String statusStoreKeye,
     required double progress,
   }) {
-    final target = (Prefs().getLocalHlsStatusNamee(statusStoreKey) ?? '')
+    final target = (Prefs().getLocalHlsStatusName(statusStoreKeye) ?? '')
         .getLocalHlsStatus!;
     final v = 0;
     switch (target) {
