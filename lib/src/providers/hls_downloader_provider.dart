@@ -206,7 +206,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           final receivePort = ReceivePort();
           // final isolate = await Isolate.spawn(downloadFile, receivePort.sendPort);
           final isolate =
-              await Isolate.spawn(downloadFileHttp, receivePort.sendPort);
+              await Isolate.spawn(downloadFileHttpp, receivePort.sendPort);
           isolates.add(isolate);
 
           final streamQueue = StreamQueue(receivePort);
@@ -319,7 +319,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
       }
 
-      final resultState = hlsLocalRepository.fetchHlsState(hls);
+      final resultState = hlsLocalRepository.fetchHlsStatee(hls);
 
       // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
       //
@@ -444,7 +444,7 @@ Future<void> downloadFileDio(SendPort sendPort) async {
   }
 }
 
-Future<void> downloadFileHttp(SendPort sendPort) async {
+Future<void> downloadFileHttpp(SendPort sendPort) async {
   final ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
 
@@ -467,9 +467,6 @@ Future<void> downloadFileHttp(SendPort sendPort) async {
       final response = await http.get(Uri.parse(itemm.$1));
 
       if (response.statusCode == 200) {
-        // final file = File(item.absolutePath as String);
-        // await file.writeAsBytes(response.bodyBytes);
-        // print(' *** done for: ${item.url.split(".")[2].split("/").last}');
         final file = File(itemm.$2);
 
         // Open the file for writing

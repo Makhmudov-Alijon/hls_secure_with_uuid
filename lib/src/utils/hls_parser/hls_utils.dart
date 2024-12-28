@@ -40,7 +40,7 @@ class HlsUtils {
     return '0x${input.codeUnits.map((unit) => unit.toRadixString(16)).join()}';
   }
 
-  static Future<List<File>> searchFilesByNameInDirectory(
+  static Future<List<File>> searchFilesByNameInDirectoryy(
       Directory directory, String fileName) async {
     final foundFiles = <File>[];
 

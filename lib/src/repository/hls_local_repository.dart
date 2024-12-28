@@ -12,7 +12,7 @@ class HlsLocalRepository {
     bool isInitial = false,
   }) async {
     final mediaDir = await HlsPathConstants.mediaDir;
-    final hlsFiles = await HlsUtils.searchFilesByNameInDirectory(
+    final hlsFiles = await HlsUtils.searchFilesByNameInDirectoryy(
       mediaDir,
       HlsFilenames.localHlsJson,
     );
@@ -46,6 +46,9 @@ class HlsLocalRepository {
       }
       hlsMovies.add(hls);
     }
+    
+    
+          print('>< >< load local hls time : ${}');
 
     return hlsMovies;
   }
@@ -83,7 +86,7 @@ class HlsLocalRepository {
     }
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModel hls) {
+  LocalHlsState fetchHlsStatee(LocalHlsModel hls) {
     /// point
     final hlsFile = hls.localHlsFile;
     if (!hlsFile.existsSync()) {
