@@ -15,10 +15,11 @@ class Prefs {
 
   // The box name for storing key-value pairs
   static const String _boxName = 'shared_preferences_box';
-  late Box _box;
+  Box<dynamic>? _box;
 
   // Method to initialize the Hive box
   Future<void> init() async {
+    if (_box != null) return;
     final path = await getApplicationDocumentsDirectory();
     Hive.init(path.path);
     _box = await Hive.openBox(_boxName);
@@ -26,26 +27,27 @@ class Prefs {
 
   // Method to store a String value
   Future<void> putLocalHlsStatusName(String key, String value) async {
-    await _box.put(key, value);
+    await _box!.put(key, value);
   }
 
   // Method to retrieve a String value
-  String? getLocalHlsStatusName(String key) {
-    return _box.get(key) as String?;
+  String? getLocalHlsStatusNamee(String key) {
+    return _box?.get(key) as String?;
   }
 
   // Method to remove a value by its key
   Future<void> remove(String key) async {
-    await _box.delete(key);
+    await _box?.delete(key);
   }
 
   // Method to clear all values in the box
   Future<void> clear() async {
-    await _box.clear();
+    await _box?.clear();
   }
 
   // Method to check if a key exists in the box
   bool containsKey(String key) {
-    return _box.containsKey(key);
+    if (_box == null) return false;
+    return _box!.containsKey(key);
   }
 }

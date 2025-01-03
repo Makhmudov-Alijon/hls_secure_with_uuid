@@ -38,54 +38,16 @@ class LocalHlsMovieNotifier
     );
   }
 
-  void onFileEvent(WatchEvent event) {
-    ///  it would be
-    if (currentHls != null && sizeToDownload != null) {
-      HlsUtils.getTotalDirectorySizee(currentHls!.masterDir).then(
-        (value) {
-          if (state is LocalHlsDownloadingState && value != null) {
-            final progress = value / sizeToDownload!;
-            state = LocalHlsDownloadingState(
-              progress: progress > 99 ? 99 : progress,
-            );
-          }
-        },
-      );
-    }
-  }
-
   void refresh() {
     state = checkState();
   }
 
-  void _startListenToProgress() {
-    /// progress listener
-    // log('start listen to ${currentHls?.hlsDetails.id} hls progress');
-    // masterStream = DirectoryWatcher(currentHls!.masterDir.path);
-    // masterStreamSub = masterStream?.events.listen(onFileEvent);
-  }
-
-  void _stopListenToProgress() {
-    // if (masterStreamSub != null) {
-    //   log('stop listen to ${currentHls?.hlsDetails.id} hls progress');
-    // }
-    // masterStreamSub?.cancel();
-    // masterStreamSub = null;
-    // masterStream = null;
-  }
-
   LocalHlsState checkState() {
-    ref.onDispose(_stopListenToProgress);
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
     sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     if (foundHls == null) {
-      _stopListenToProgress();
       return LocalHlsNotExistState();
-    } else if (foundHls.localHlsState is LocalHlsDownloadingState) {
-      _startListenToProgress();
-    } else {
-      _stopListenToProgress();
     }
     return foundHls.localHlsState;
   }

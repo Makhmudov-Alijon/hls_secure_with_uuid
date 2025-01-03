@@ -1,5 +1,30 @@
 import 'package:download_manager/download_manager.dart';
 
+extension Dibiding on LocalHlsState {
+  int get getOrder {
+    switch (runtimeType) {
+      case LocalHlsDownloadingState:
+        {
+          return 0;
+        }
+      case LocalHlsInQueueState:
+        {
+          return 1;
+        }
+      case LocalHlsPauseState:
+        {
+          return 2;
+        }
+      case LocalHlsErrorState:
+        {
+          return 3;
+        }
+      default:
+        return 3;
+    }
+  }
+}
+
 abstract class LocalHlsState {
   const LocalHlsState({
     this.progress = 0,

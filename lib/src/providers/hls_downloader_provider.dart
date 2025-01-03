@@ -89,6 +89,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
+  /// point
   Future<void> prepareAndDownloadOrQueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
@@ -319,7 +320,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
       }
 
-      final resultState = hlsLocalRepository.fetchHlsStatee(hls);
+      final resultState = hlsLocalRepository.fetchHlsState(hls);
 
       // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
       //
@@ -329,7 +330,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _downloadingHls = null;
       _isolateRunningg = false;
       if (resultState is LocalHlsErrorState) {
-        moviesController.updateHlsStatus(hls.id, resultState);
+        await moviesController.updateHlsStatus(hls.id, resultState);
         _stopDownloading();
         onError?.call(resultState);
       } else if (resultState is LocalHlsDeletedState) {
@@ -337,7 +338,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         moviesController.deleteHls(hls: hls);
       } else {
         _stopDownloading();
-        moviesController.updateHlsStatus(hls.id, resultState);
+        await moviesController.updateHlsStatus(hls.id, resultState);
       }
 
       if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
@@ -357,7 +358,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required String statusStoreKeye,
     required double progress,
   }) {
-    final target = (Prefs().getLocalHlsStatusName(statusStoreKeye) ?? '')
+    final target = (Prefs().getLocalHlsStatusNamee(statusStoreKeye) ?? '')
         .getLocalHlsStatus!;
     final v = 0;
     switch (target) {

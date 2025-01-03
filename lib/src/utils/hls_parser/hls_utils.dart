@@ -40,7 +40,7 @@ class HlsUtils {
     return '0x${input.codeUnits.map((unit) => unit.toRadixString(16)).join()}';
   }
 
-  static Future<List<File>> searchFilesByNameInDirectoryy(
+  static Future<List<File>> searchFilesByNameInDirectory(
       Directory directory, String fileName) async {
     final foundFiles = <File>[];
 
@@ -49,8 +49,16 @@ class HlsUtils {
     }
 
     Future<void> searchDirectory(Directory directory) async {
+      final v = directory.list(followLinks: false);
+      // v.listen((d){
+      //   final dd = d;
+      //   final path = d.path;
+      //   final fd = d.uri;
+      //   final abs = d.absolute;
+      //   final vv = 0;
+      // });
       await for (final entity in directory.list(followLinks: false)) {
-        if (entity is File && entity.path.endsWith('/local_hls.json')) {
+        if (entity is File && entity.path.endsWith('/$fileName')) {
           foundFiles.add(entity);
         } else if (entity is Directory) {
           await searchDirectory(entity);
