@@ -1,8 +1,7 @@
-
 import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-final hlsLocalRepositoryProviderr = Provider(
+final hlsLocalRepositoryProvider = Provider(
   (ref) => HlsLocalRepository(),
 );
 

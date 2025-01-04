@@ -49,7 +49,9 @@ class LocalHlsMovieNotifier
     if (foundHls == null) {
       return LocalHlsNotExistState();
     }
-    return foundHls.localHlsState;
+    final r = foundHls.localHlsState;
+
+    return r;
   }
 
   void pauseDownload() {

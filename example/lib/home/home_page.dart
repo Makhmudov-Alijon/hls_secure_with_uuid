@@ -2,9 +2,8 @@ import 'package:download_manager/download_manager.dart';
 import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:system_files_viewer/system_files_viewer.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -187,6 +186,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(localHlsMoviesProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plugin example app'),
@@ -216,11 +216,11 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ),
-      body: ref.watch(localHlsMoviesProvider).when(
-            skipLoadingOnRefresh: true,
-            skipLoadingOnReload: true,
-            data: (data) {
-              final movieState = ref.watch(localHlsMovieProvider(hlsId));
+      body: Builder(
+        // skipLoadingOnRefresh: true,
+        // skipLoadingOnReload: true,
+        builder: (data) {
+          final movieState = ref.watch(localHlsMovieProvider(hlsId));
               final movieController =
                   ref.watch(localHlsMovieProvider(hlsId).notifier);
               return RefreshIndicator(
@@ -397,18 +397,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               );
             },
-            error: (error, stackTrace) {
-              return Center(
-                child: Text(
-                  "Error: $error",
-                  textAlign: TextAlign.center,
-                ),
-              );
-            },
-            loading: () {
-              return const CircularProgressIndicator();
-            },
-          ),
+        // error: (error, stackTrace) {
+        //   return Center(
+        //     child: Text(
+        //       "Error: $error",
+        //       textAlign: TextAlign.center,
+        //     ),
+        //   );
+        // },
+        // loading: () {
+        //   return const CircularProgressIndicator();
+        // },
+      ),
     );
   }
 }

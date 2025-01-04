@@ -112,7 +112,7 @@ class HlsRepository {
         );
 
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
-        await downloadItem(
+        await downloadItemm(
           DownloadItem(
             groupId: hlsDetails.id.toStringId(),
             url: posterLink,
@@ -226,8 +226,8 @@ class HlsRepository {
     }
   }
 
-  Future<void> downloadItem(DownloadItem downloadItem) async {
-    await dio.download(
+  Future<void> downloadItemm(DownloadItem downloadItem) async {
+      await dio.download(
       downloadItem.url,
       downloadItem.absolutePath,
     );

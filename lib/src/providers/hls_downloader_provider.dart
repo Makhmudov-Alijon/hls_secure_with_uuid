@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:async/async.dart';
-import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/repository/hls_local_repository.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -50,18 +50,21 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   void addToQueue(LocalHlsModel hls) {
-    moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState(),
+        where: 'add to queue 53');
   }
 
   void pauseDownload(LocalHlsModel hls) {
     if (hls.id == _downloadingHls) {
       _stopDownloading();
     }
-    moviesController.updateHlsStatus(hls.id, LocalHlsPauseState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsPauseState(),
+        where: 'pause download 60');
   }
 
   void cancelDownload(LocalHlsModel hls) {
-    moviesController.updateHlsStatus(hls.id, LocalHlsDeletedState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsDeletedState(),
+        where: 'cancel download 64');
   }
 
   void tryToDownload({
@@ -105,7 +108,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
     if (downloadTask != null) {
       await moviesController.refreshMovies();
-      final hls = moviesController.hlsById(hlsDetails.id);
+      LocalHlsModel? hls = moviesController.hlsById(hlsDetails.id);
+      if (hls == null) {
+        await Future.delayed(const Duration(milliseconds: 1000), () {});
+        hls = moviesController.hlsById(hlsDetails.id);
+        final v = 0;
+      }
+
       if (hls != null) {
         if (state == HlsDownloaderState.downloading) {
           addToQueue(hls);
@@ -117,8 +126,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               onDownloadComplete: onDownloadComplete,
               onError: onError,
             );
+          } else {
+            final v = 0;
           }
         }
+      } else {
+        final v = 0;
       }
     }
   }
@@ -165,7 +178,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }) async {
     _startDownloading();
     _downloadingHls = hls.id;
-    moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState());
+    moviesController.updateHlsStatus(hls.id, LocalHlsDownloadingState(),
+        where: 'start downloading 168 ');
     try {
       _isolateRunningg = true;
 
@@ -197,6 +211,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 );
             // This code runs every second and updates the UI
             if (state == HlsDownloaderState.downloading) {
+              print('>< >< $v');
               localHlsMovieController(hls.id).updateProgress(v, activeTasks);
             }
           },
@@ -205,9 +220,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         // Create the isolates
         for (var i = 0; i < maxIsolates; i++) {
           final receivePort = ReceivePort();
-          // final isolate = await Isolate.spawn(downloadFile, receivePort.sendPort);
           final isolate =
-              await Isolate.spawn(downloadFileHttpp, receivePort.sendPort);
+              await Isolate.spawn(downloadFileHttp, receivePort.sendPort);
           isolates.add(isolate);
 
           final streamQueue = StreamQueue(receivePort);
@@ -271,8 +285,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                               : LocalHlsErrorState(
                                   message:
                                       '${failedTasks.length} segments are not downloaded',
-                                )),
-                    );
+                                  )),
+                        where: 'downloader 273');
                   });
 
                   progressUpdateTimer?.cancel();
@@ -314,10 +328,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           } catch (e) {}
         }
       } else {
-        moviesController.updateHlsStatus(
-          hls.id,
-          LocalHlsCompleteState(),
-        );
+        moviesController.updateHlsStatus(hls.id, LocalHlsCompleteState(),
+            where: 'download completed 318');
       }
 
       final resultState = hlsLocalRepository.fetchHlsState(hls);
@@ -330,7 +342,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _downloadingHls = null;
       _isolateRunningg = false;
       if (resultState is LocalHlsErrorState) {
-        await moviesController.updateHlsStatus(hls.id, resultState);
+        await moviesController.updateHlsStatus(hls.id, resultState,
+            where: 'error state 332');
         _stopDownloading();
         onError?.call(resultState);
       } else if (resultState is LocalHlsDeletedState) {
@@ -338,7 +351,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         moviesController.deleteHls(hls: hls);
       } else {
         _stopDownloading();
-        await moviesController.updateHlsStatus(hls.id, resultState);
+        await moviesController.updateHlsStatus(hls.id, resultState,
+            where: 'download provider 340');
       }
 
       if (onDownloadComplete != null && resultState is LocalHlsCompleteState) {
@@ -398,54 +412,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 }
 
-// Function that will be run in each isolate to download a file
-Future<void> downloadFileDio(SendPort sendPort) async {
-  final ReceivePort receivePort = ReceivePort();
-  sendPort.send(receivePort.sendPort);
-
-  await for (var item in receivePort) {
-    final v = item;
-    final vv = 0;
-    if (item == null) {
-      break; // Exit loop and isolate when receiving a null value
-    }
-    final dio = Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 5),
-      ),
-    );
-    final cancelToken = CancelToken();
-    final hlsLocalRepositoryy = HlsLocalRepository();
-
-    // print(' *** started for: ${item.url.split(".")[2].split("/").last}');
-    try {
-      await dio.download(
-        item.url as String,
-        item.absolutePath,
-        cancelToken: cancelToken,
-        onReceiveProgress: (count, total) {
-          // progress = count / total;
-          // final state = hlsLocalRepositoryy.fetchHlsState(data.hls);
-          // final v = 0;
-          // if (state is LocalHlsPauseState || state is LocalHlsDeletedState) {
-          //   closeFile(item.absolutePath);
-          //   // cancelToken.cancel();
-          // }
-        },
-      );
-    } catch (e) {
-      sendPort.send(item);
-    }
-
-    // Notify the main isolate that this task is done
-
-    // print(' *** done for: ${item.url.split(".")[2].split("/").last}');
-    sendPort.send('done');
-  }
-}
-
-Future<void> downloadFileHttpp(SendPort sendPort) async {
+Future<void> downloadFileHttp(SendPort sendPort) async {
   final ReceivePort receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
 
