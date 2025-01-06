@@ -110,9 +110,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       await moviesController.refreshMovies();
       LocalHlsModel? hls = moviesController.hlsById(hlsDetails.id);
       if (hls == null) {
-        await Future.delayed(const Duration(milliseconds: 1000), () {});
-        hls = moviesController.hlsById(hlsDetails.id);
-        final v = 0;
+        final int time = 3;
+        theFor:
+        for (int i = 0; i < time; i++) {
+          await Future.delayed(const Duration(milliseconds: 300), () {});
+          hls = moviesController.hlsById(hlsDetails.id);
+          if (hls != null) {
+            break theFor;
+          }
+        }
       }
 
       if (hls != null) {
@@ -140,8 +146,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required Future<void> Function(LocalHlsModel hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
+    required String where,
   }) async {
-    final nextHls = await moviesController.findNextInQueue();
+    final nextHls = await moviesController.findNextInQueue(where: where);
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
@@ -359,6 +366,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         await onDownloadComplete.call(hls, ref);
       }
       await checkForNextQueue(
+        where: '',
         onDownloadComplete: onDownloadComplete,
         onError: onError,
       );

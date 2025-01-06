@@ -45,8 +45,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     await loadMovies();
   }
 
-  Future<LocalHlsModel?> findNextInQueue() async {
-    if (state.rawItems.isEmpty) {
+  Future<LocalHlsModel?> findNextInQueue({required String where}) async {
+    if (state.total.isEmpty) {
       return null;
     }
     final moviesInQueue = state.rawItems
@@ -108,6 +108,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         _replaceHlsAt(hlsIndex, newHls);
         movieController(id).refresh(); // TODO: check without it
       }
+    } else {
+      final v = 0;
     }
   }
 
@@ -118,7 +120,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         ..removeAt(index)
         ..insert(index, updatedHls);
       updateState(state.copyWith(total: newItems));
-      sort();
     }
   }
 
@@ -128,7 +129,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       final oldState = [...state.total];
       final newState = oldState..removeAt(index);
       updateState(state.copyWith(total: newState));
-      sort();
+      sortt();
     }
   }
 
@@ -165,23 +166,19 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       if (v is List<LocalHlsModel>) {
         print('>< >< the length of the loadeds movies ${v.length}');
         updateState(
-          state.copyWith(
-            total: v,
-          ),
+          state.copyWith(total: v, trigger: !state.trigger),
         );
-        sort();
-        receivePort.close();
+        sortt();
       } else if (v is int) {
         print('>< >< int object gotten $v');
       } else {
-        receivePort.close();
         final v = 0;
       }
     });
   }
 
   /// Sorting threads
-  Future<void> sort() async {
+  Future<void> sortt() async {
     final total = state.total;
     final receivePort = ReceivePort();
     await Isolate.spawn<SortIsolateParams>(
@@ -194,7 +191,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     receivePort.listen(
       (v) {
         if (v is LocaleHlsMoviesState) {
-          updateState(v);
+          updateState(v.copyWith(trigger: !v.trigger));
         } else {
           final v = 0;
         }
@@ -239,7 +236,7 @@ void _loadMoviesWorker(LoadMoviesParams params) {
 void _sortWorker(SortIsolateParams params) {
   try {
     final rawItems = params.data.getItemsInQueueExt;
-    final downloadeds = params.data.getGroupedItemsExt;
+    final downloadeds = params.data.getGroupedItemsExtt;
 
     Isolate.exit(
       params.sendPort,

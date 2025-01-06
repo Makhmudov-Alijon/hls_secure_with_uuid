@@ -37,7 +37,7 @@ extension Dibiding on List<LocalHlsModel> {
     return result;
   }
 
-  List<LocalHlsGroupModel> get getGroupedItemsExt {
+  List<LocalHlsGroupModel> get getGroupedItemsExtt {
     // return [];
     final groupMap = <int, List<LocalHlsModel>>{};
 
