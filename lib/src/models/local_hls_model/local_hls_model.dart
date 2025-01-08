@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
 
-class LocalHlsModel extends Equatable {
+class LocalHlsModell extends Equatable {
   final Directory baseDir;
   final Directory masterDir;
   final File posterFile;
@@ -16,7 +16,7 @@ class LocalHlsModel extends Equatable {
   final LocalHlsStatus downloadStatus;
   final int totalSegments;
 
-  const LocalHlsModel({
+  const LocalHlsModell({
     required this.baseDir,
     required this.hlsDetails,
     required this.posterFile,
@@ -28,19 +28,19 @@ class LocalHlsModel extends Equatable {
     required this.totalSegments,
   });
 
-  LocalHlsId get id => hlsDetails.id;
+  LocalHlsId get id => hlsDetails.localHlsId.target!;
 
   HlsPathManager get pathManager {
     return HlsPathManager(
       baseDir: baseDir,
-      localHlsId: hlsDetails.id,
+      localHlsId: hlsDetails.localHlsId.target!,
       isRemote: false,
     );
   }
 
   File get videoMasterFile {
     return pathManager.videoMasterFile(
-      resolutionType: hlsDetails.resolution.resolution,
+      resolutionType: hlsDetails.resolution.target!.resolution,
     );
   }
 
@@ -98,7 +98,7 @@ class LocalHlsModel extends Equatable {
   }
 
   LocalHlsState get localHlsStateWithoutProgress {
-    final progress = 0.0;
+    const progress = 0.0;
 
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
@@ -202,13 +202,13 @@ class LocalHlsModel extends Equatable {
     };
   }
 
-  factory LocalHlsModel.fromFile(File file) {
+  factory LocalHlsModell.fromFile(File file) {
     final content = file.readAsStringSync();
-    return LocalHlsModel.fromJson(content);
+    return LocalHlsModell.fromJson(content);
   }
 
-  factory LocalHlsModel.fromMap(Map<String, dynamic> map) {
-    return LocalHlsModel(
+  factory LocalHlsModell.fromMap(Map<String, dynamic> map) {
+    return LocalHlsModell(
       totalSegments: map['totalSegments'] as int,
       baseDir: Directory(map['baseDir'] as String),
       masterDir: Directory(map['masterDir'] as String),
@@ -227,10 +227,10 @@ class LocalHlsModel extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory LocalHlsModel.fromJson(String source) =>
-      LocalHlsModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory LocalHlsModell.fromJson(String source) =>
+      LocalHlsModell.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LocalHlsModel copyWith({
+  LocalHlsModell copyWith({
     Directory? baseDir,
     Directory? masterDir,
     File? posterFile,
@@ -243,7 +243,7 @@ class LocalHlsModel extends Equatable {
     File? mediumThumbnailsFile,
     File? largeThumbnailsFile,
   }) {
-    return LocalHlsModel(
+    return LocalHlsModell(
       baseDir: baseDir ?? this.baseDir,
       masterDir: masterDir ?? this.masterDir,
       posterFile: posterFile ?? this.posterFile,
@@ -258,8 +258,8 @@ class LocalHlsModel extends Equatable {
 
   String get getStatusKey {
     if (hlsDetails.isSerial) {
-      return '${hlsDetails.id.contentId}-${hlsDetails.id.episodeId}';
+      return '${hlsDetails.localHlsId.target!.contentId}-${hlsDetails.localHlsId.target!.episodeId}';
     }
-    return '${hlsDetails.id.contentId}';
+    return '${hlsDetails.localHlsId.target!.contentId}';
   }
 }

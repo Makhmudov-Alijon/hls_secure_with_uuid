@@ -1,0 +1,287 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "2:6158588066353997384",
+      "lastPropertyId": "6:5376382881228801299",
+      "name": "HlsAudioTrack",
+      "properties": [
+        {
+          "id": "1:4823984165173974571",
+          "name": "trackName",
+          "type": 9
+        },
+        {
+          "id": "2:4672913815514990516",
+          "name": "trackUrl",
+          "type": 9
+        },
+        {
+          "id": "3:3834485886609361322",
+          "name": "size",
+          "type": 6
+        },
+        {
+          "id": "4:7870256508185769394",
+          "name": "filesCount",
+          "type": 6
+        },
+        {
+          "id": "5:4204983638908409660",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "6:5376382881228801299",
+          "name": "trackType",
+          "type": 2
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:6030514854765093223",
+      "lastPropertyId": "5:5652425236348583086",
+      "name": "HlsResolution",
+      "properties": [
+        {
+          "id": "1:3834679886975090660",
+          "name": "videoPlaylistUrl",
+          "type": 9
+        },
+        {
+          "id": "2:6351829762878573473",
+          "name": "size",
+          "type": 6
+        },
+        {
+          "id": "3:7690294915729399377",
+          "name": "filesCount",
+          "type": 6
+        },
+        {
+          "id": "4:7855110492979372584",
+          "name": "trackType",
+          "type": 2
+        },
+        {
+          "id": "5:5652425236348583086",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:1920721575203457132",
+      "lastPropertyId": "7:7034376142702370322",
+      "name": "LocalHlsDetailsModel",
+      "properties": [
+        {
+          "id": "1:586919594701220786",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "2:7837996822176798751",
+          "name": "isSerial",
+          "type": 1
+        },
+        {
+          "id": "3:6694541042627802612",
+          "name": "episodeNum",
+          "type": 6
+        },
+        {
+          "id": "4:472409185057805469",
+          "name": "seasonNum",
+          "type": 6
+        },
+        {
+          "id": "5:2528536605434853941",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "6:1551615795832273286",
+          "name": "localHlsIdId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "1:4271560646848913464",
+          "relationTarget": "LocalHlsId"
+        },
+        {
+          "id": "7:7034376142702370322",
+          "name": "resolutionId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "2:8264988905739195703",
+          "relationTarget": "HlsResolution"
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:4648657532990831272",
+          "name": "audioTracks",
+          "targetId": "2:6158588066353997384"
+        }
+      ]
+    },
+    {
+      "id": "5:1883576774341417885",
+      "lastPropertyId": "5:8785674527766923268",
+      "name": "LocalHlsId",
+      "properties": [
+        {
+          "id": "1:7730855200681322416",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:6282316206963504050",
+          "name": "contentId",
+          "type": 6
+        },
+        {
+          "id": "3:3105421591139982411",
+          "name": "filmId",
+          "type": 6
+        },
+        {
+          "id": "4:866216707904192234",
+          "name": "seasonId",
+          "type": 6
+        },
+        {
+          "id": "5:8785674527766923268",
+          "name": "episodeId",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:1786159975205794502",
+      "lastPropertyId": "10:2062346253791598618",
+      "name": "LocalHlsModelObj",
+      "properties": [
+        {
+          "id": "1:1773279590518950533",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:4293500028179546017",
+          "name": "baseDirPath",
+          "type": 9
+        },
+        {
+          "id": "3:7438917102782584598",
+          "name": "masterDirPath",
+          "type": 9
+        },
+        {
+          "id": "4:9012038856338220629",
+          "name": "posterFilePath",
+          "type": 9
+        },
+        {
+          "id": "5:1040002158157567055",
+          "name": "masterFilePath",
+          "type": 9
+        },
+        {
+          "id": "6:5693405637769961750",
+          "name": "localHlsFilePath",
+          "type": 9
+        },
+        {
+          "id": "7:8690761501416054643",
+          "name": "downloadTasksFilePath",
+          "type": 9
+        },
+        {
+          "id": "8:8914969684032476901",
+          "name": "totalSegments",
+          "type": 6
+        },
+        {
+          "id": "9:5673524070982975733",
+          "name": "hlsDetailsId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "3:6311889976077726184",
+          "relationTarget": "LocalHlsDetailsModel"
+        },
+        {
+          "id": "10:2062346253791598618",
+          "name": "downloadStatusId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "4:3350661341728734637",
+          "relationTarget": "LocalHlsStatus"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:4771544571162597590",
+      "lastPropertyId": "4:689070590981091857",
+      "name": "LocalHlsStatus",
+      "properties": [
+        {
+          "id": "1:1230799446874597329",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:3674865314219590220",
+          "name": "message",
+          "type": 9
+        },
+        {
+          "id": "3:2431819117583181052",
+          "name": "statusCode",
+          "type": 6
+        },
+        {
+          "id": "4:689070590981091857",
+          "name": "creationDate",
+          "type": 10
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "7:4771544571162597590",
+  "lastIndexId": "4:3350661341728734637",
+  "lastRelationId": "1:4648657532990831272",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [
+    3819721549749415822
+  ],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [
+    6748759074655667351,
+    6272396395290326962,
+    5878271865098870435,
+    1237285350571635672,
+    162007926159988064,
+    1931213599216374524,
+    4052891780090764871,
+    316805490484993840,
+    2433243026140308993
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

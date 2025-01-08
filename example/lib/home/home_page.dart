@@ -24,7 +24,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   final key = 'API_DI_KEY';
 
-  final hlsId = const LocalHlsId(contentId: 123, filmId: 12);
+  final hlsId = LocalHlsId(contentId: 123, filmId: 12);
 
   MasterPlaylistModel? masterPlaylist;
 
@@ -62,15 +62,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
 
     final localHlsDetails = LocalHlsDetailsModel(
-      id: hlsId,
       title: "Название",
       isSerial: false,
       episodeNum: null,
       seasonNum: null,
-      resolution: resolution,
-      audioTracks: audioTracks,
     );
-
+    localHlsDetails.localHlsId.target = hlsId;
+    localHlsDetails.resolution.target = resolution;
+    localHlsDetails.audioTracks.addAll(audioTracks);
     try {
       await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueue(
             masterPlaylist: master,

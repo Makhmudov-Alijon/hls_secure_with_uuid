@@ -7,7 +7,7 @@ final hlsLocalRepositoryProvider = Provider(
 
 class HlsLocalRepository {
   /// point
-  Future<List<LocalHlsModel>> fetchLocalHlsMovies({
+  Future<List<LocalHlsModelObj>> fetchLocalHlsMovies({
     bool isInitial = false,
   }) async {
     final mediaDir = await HlsPathConstants.mediaDir;
@@ -15,12 +15,12 @@ class HlsLocalRepository {
       mediaDir,
       HlsFilenames.localHlsJson,
     );
-    final hlsMovies = <LocalHlsModel>[];
+    final hlsMovies = <LocalHlsModelObj>[];
 
     for (final file in hlsFiles) {
       if (!file.existsSync()) continue;
       final content = file.readAsStringSync();
-      var hls = LocalHlsModel.fromJson(content);
+      var hls = LocalHlsModelObj.fromJson(content);
 
       if (hls.localHlsState is LocalHlsDeletedState || !hls.validate()) {
         deleteHlsDirectory(hls);
@@ -51,10 +51,10 @@ class HlsLocalRepository {
   }
 
   /// **Warning** This function throws exception if hls not exists
-  Future<void> updateHls(LocalHlsModel hls) async {
+  Future<void> updateHls(LocalHlsModelObj hls) async {
     final hlsFile = hls.localHlsFile;
     if (hlsFile.existsSync()) {
-      final statusName = hls.downloadStatus.statusType.name;
+      final statusName = hls.downloadStatus.target!.statusType.name;
       await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName).then((v) {
         final content = hls.toJson();
         hlsFile.writeAsStringSync(
@@ -66,8 +66,8 @@ class HlsLocalRepository {
     }
   }
 
-  Future<LocalHlsModel?> updateHlsStatus(
-      LocalHlsModel hls, LocalHlsState state) async {
+  Future<LocalHlsModelObj?> updateHlsStatus(
+      LocalHlsModelObj hls, LocalHlsState state) async {
     try {
       final status = state.toLocalHlsStatus();
       final newHls = hls.copyWith(
@@ -80,13 +80,13 @@ class HlsLocalRepository {
     }
   }
 
-  void deleteHlsDirectory(LocalHlsModel hls) {
+  void deleteHlsDirectory(LocalHlsModelObj hls) {
     if (hls.masterDir.existsSync()) {
       hls.masterDir.delete(recursive: true);
     }
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModel hls) {
+  LocalHlsState fetchHlsState(LocalHlsModelObj hls) {
     /// point
     final hlsFile = hls.localHlsFile;
     if (!hlsFile.existsSync()) {
@@ -96,7 +96,7 @@ class HlsLocalRepository {
     if (fileContent.isEmpty) {
       return LocalHlsDeletedState();
     }
-    final state = LocalHlsModel.fromJson(fileContent).localHlsState;
+    final state = LocalHlsModelObj.fromJson(fileContent).localHlsState;
     return state;
   }
 }

@@ -46,7 +46,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     loadMovies();
   }
 
-  Future<LocalHlsModel?> findNextInQueue({required String where}) async {
+  Future<LocalHlsModelObj?> findNextInQueue({required String where}) async {
     if (state.total.isEmpty) {
       return null;
     }
@@ -55,8 +55,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         .toList()
       ..sort(
         (a, b) {
-          return a.downloadStatus.creationDate.millisecondsSinceEpoch.compareTo(
-            b.downloadStatus.creationDate.millisecondsSinceEpoch,
+          return a.downloadStatus.target!.creationDate.millisecondsSinceEpoch
+              .compareTo(
+            b.downloadStatus.target!.creationDate.millisecondsSinceEpoch,
           );
         },
       );
@@ -79,13 +80,13 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   void deleteHls({
-    required LocalHlsModel hls,
-    FutureOr<void> Function(LocalHlsModel hls, Ref ref)? onDelete,
+    required LocalHlsModelObj hls,
+    FutureOr<void> Function(LocalHlsModelObj hls, Ref ref)? onDelete,
   }) {
-    final hlsIndex = _hlsIndex(hls.id);
+    final hlsIndex = _hlsIndex(hls.hlsDetails.target!.localHlsId.target!);
     if (hlsIndex != null) {
       _removeHlsAtt(hlsIndex);
-      movieController(hls.id).refresh(); // TODO: check without it
+      movieController(hls.iD).refresh(); // TODO: check without it
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
       onDelete?.call(hls, ref);
     }
@@ -115,7 +116,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
   }
 
-  void _replaceHlsAt(int index, LocalHlsModel updatedHls) {
+  void _replaceHlsAt(int index, LocalHlsModelObj updatedHls) {
     if (state.total.isNotEmpty) {
       final oldItems = [...state.total];
       final newItems = oldItems
@@ -142,7 +143,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   int? _hlsIndex(LocalHlsId id) {
     try {
       final index = state.total.indexWhere((element) {
-        final result = element.id == id;
+        final result = element.hlsDetails.target == id;
         return result;
       });
       return index < 0 ? null : index;
@@ -151,7 +152,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
   }
 
-  LocalHlsModel? hlsByIdd(LocalHlsId id) {
+  LocalHlsModelObj? hlsByIdd(LocalHlsId id) {
     if (state.isEmpty) {
       return null;
     }
@@ -175,14 +176,14 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     );
     receivePort.listen(
       (v) async {
-        if (v is List<LocalHlsModel>) {
+        if (v is List<LocalHlsModelObj>) {
           updateState(
             state.copyWith(total: v, trigger: !state.trigger),
           );
           unawaited(sort('load and sort'));
         } else if (v is List<dynamic>) {
           final port = v[1] as SendPort;
-          final hls = v[0] as LocalHlsModel;
+          final hls = v[0] as LocalHlsModelObj;
           final updatedHls = await updateHlsStatusTopp(
             hls,
             LocalHlsPauseState(),
@@ -242,14 +243,14 @@ void _loadMoviesWorker(LoadMoviesParams params) async {
     mediaDir,
     HlsFilenames.localHlsJson,
   );
-  final hlsMovies = <LocalHlsModel>[];
+  final hlsMovies = <LocalHlsModelObj>[];
 
   for (final file in hlsFiles) {
     if (!file.existsSync()) {
       continue;
     }
     final content = file.readAsStringSync();
-    final hls = LocalHlsModel.fromJson(content);
+    final hls = LocalHlsModelObj.fromJson(content);
     final localeState = hls.localHlsState;
 
     if (localeState is LocalHlsDeletedState || !hls.validate()) {
@@ -266,7 +267,7 @@ void _loadMoviesWorker(LoadMoviesParams params) async {
         params.sendPort.send([hls, receivePort.sendPort]);
 
         receivePort.listen((v) {
-          if (v is LocalHlsModel) {
+          if (v is LocalHlsModelObj) {
             hlsMovies.add(v);
             receivePort.close();
           }

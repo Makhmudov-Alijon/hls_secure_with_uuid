@@ -2,12 +2,12 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:objectbox/objectbox.dart';
 
 enum HlsAudioTrackType {
   low('group_audio_low', 'low'),
   high('group_audio_high', 'high'),
-  defaultTrack('default', 'default'),
-  ;
+  defaultTrack('default', 'default');
 
   const HlsAudioTrackType(this.name, this.shortName);
 
@@ -26,20 +26,25 @@ extension HlsAudioTrackTypeX on HlsAudioTrackType {
   }
 }
 
+@Entity()
 class HlsAudioTrack extends Equatable {
-  const HlsAudioTrack({
+  HlsAudioTrack({
     required this.trackType,
     required this.trackUrl,
     required this.trackName,
     required this.filesCount,
     required this.size,
+    this.id = 0,
   });
 
   final String trackName;
-  final HlsAudioTrackType trackType;
   final String trackUrl;
   final int size;
   final int filesCount;
+  @Id(assignable: true)
+  int id = 0;
+  @Property(type: PropertyType.byte) // Store enum as byte
+  HlsAudioTrackType trackType;
 
   Map<String, dynamic> toMap() {
     return {

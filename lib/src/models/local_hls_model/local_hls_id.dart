@@ -2,14 +2,21 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:objectbox/objectbox.dart';
 
+@Entity()
 class LocalHlsId extends Equatable {
-  const LocalHlsId({
+    LocalHlsId({
     required this.contentId,
     this.filmId,
     this.seasonId,
     this.episodeId,
+
+    this.id = 0,
+    
   });
+   @Id(assignable: true)
+  int id = 0;
 
   final int contentId;
   final int? filmId;

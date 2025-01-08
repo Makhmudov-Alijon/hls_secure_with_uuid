@@ -82,7 +82,7 @@ class HlsRepository {
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
-        localHlsId: hlsDetails.id,
+        localHlsId: hlsDetails.localHlsId.target!,
         isRemote: false,
       );
 
@@ -100,8 +100,8 @@ class HlsRepository {
         pathManager: pathManager,
         master: master,
         isForWatching: false,
-        selectedResolutions: {hlsDetails.resolution},
-        selectedTracks: hlsDetails.audioTracks,
+        selectedResolutions: {hlsDetails.resolution.target!},
+        selectedTracks: hlsDetails.audioTracks.toSet(),
       );
       final content = master.toLocalPlaylist(
         linkExcluder: hlsFullPlaylist.masterLinkExcluder,
@@ -116,7 +116,7 @@ class HlsRepository {
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
         await downloadItemm(
           DownloadItem(
-            groupId: hlsDetails.id.toStringId(),
+            groupId: hlsDetails.localHlsId.target!.toStringId(),
             url: posterLink,
             saveDir: pathManager.masterDir,
             fileName: pathManager.posterFile.fileName,
@@ -137,19 +137,19 @@ class HlsRepository {
           dowloadTaskContent,
         );
 
-      final localHls = LocalHlsModel(
-        baseDir: baseDir,
+      final localHls = LocalHlsModelObj(
+        baseDirPath: baseDir.path,
+        posterFilePath: pathManager.posterFile.path,
+        masterFilePath: masterFile.path,
+        masterDirPath: masterDir.path,
+        downloadTasksFilePath: pathManager.downloadTaskFile.path,
+        localHlsFilePath: pathManager.localHlsFile.path,
         totalSegments: downloadTask.items.length,
-        hlsDetails: hlsDetails,
-        downloadStatus: LocalHlsStatus(
-          statusType: LocalHlsStatusType.prepared,
-          creationDate: DateTime.now(),
-        ),
-        posterFile: pathManager.posterFile,
-        masterFile: masterFile,
-        masterDir: masterDir,
-        downloadTasksFile: pathManager.downloadTaskFile,
-        localHlsFile: pathManager.localHlsFile,
+      );
+      localHls.hlsDetails.target = hlsDetails;
+      localHls.downloadStatus.target = LocalHlsStatus(
+        statusType: LocalHlsStatusType.prepared,
+        creationDate: DateTime.now(),
       );
       final v = localHls.toJson();
 

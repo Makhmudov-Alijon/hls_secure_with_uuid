@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
+import 'package:objectbox/objectbox.dart';
 
 enum HlsResolutionType {
   v240p('240p', 240, '240p'),
@@ -32,20 +33,26 @@ extension HlsResolutionTypeExt on HlsResolutionType {
   }
 }
 
+@Entity()
 class HlsResolution extends Equatable {
-  const HlsResolution({
+    HlsResolution({
     required this.resolution,
     required this.videoPlaylistUrl,
     required this.trackType,
     required this.filesCount,
     required this.size,
-  });
 
+    this.id = 0,
+  });
+ 
   final HlsResolutionType resolution;
-  final String videoPlaylistUrl;
-  final HlsAudioTrackType trackType;
+  final String videoPlaylistUrl; 
   final int size;
   final int filesCount;
+   @Property(type: PropertyType.byte) // Store enum as byte
+  HlsAudioTrackType trackType;
+  @Id(assignable: true)
+  int id = 0;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

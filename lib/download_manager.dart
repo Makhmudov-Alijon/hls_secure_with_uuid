@@ -1,4 +1,3 @@
-export  'package:download_manager/src/utils/local_storage/prefs.dart';
 export 'package:download_manager/src/entities/hls_audio.dart';
 export 'package:download_manager/src/entities/hls_enctyption_key.dart';
 export 'package:download_manager/src/entities/hls_playlist_data.dart';
@@ -17,6 +16,7 @@ export 'package:download_manager/src/models/hls_playlist_details_model/hls_playl
 export 'package:download_manager/src/models/local_hls_model/local_hls_details_model.dart';
 export 'package:download_manager/src/models/local_hls_model/local_hls_id.dart';
 export 'package:download_manager/src/models/local_hls_model/local_hls_model.dart';
+export 'package:download_manager/src/models/locale_hls_obj/locale_hls_model_obj.dart';
 export 'package:download_manager/src/models/master_playlist_model/master_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
@@ -38,3 +38,4 @@ export 'package:download_manager/src/utils/hls_parser/hls_parser.dart';
 export 'package:download_manager/src/utils/hls_parser/hls_path_constants.dart';
 export 'package:download_manager/src/utils/hls_parser/hls_path_manager.dart';
 export 'package:download_manager/src/utils/hls_parser/hls_utils.dart';
+export  'package:download_manager/src/utils/local_storage/prefs.dart';

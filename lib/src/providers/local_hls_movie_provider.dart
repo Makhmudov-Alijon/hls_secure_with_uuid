@@ -16,7 +16,7 @@ class LocalHlsMovieNotifier
     extends AutoDisposeFamilyNotifier<LocalHlsState, LocalHlsId> {
   DirectoryWatcher? masterStream;
   StreamSubscription<WatchEvent>? masterStreamSub;
-  LocalHlsModel? currentHls;
+  LocalHlsModelObj? currentHls;
   DownloadTask? downloadTask;
   int? sizeToDownload;
 
@@ -45,7 +45,7 @@ class LocalHlsMovieNotifier
   LocalHlsState checkState() {
     final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsByIdd(arg);
     currentHls = foundHls;
-    sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
+    sizeToDownload ??= foundHls?.hlsDetails.target!.sizeBytes;
     if (foundHls == null) {
       return LocalHlsNotExistState();
     }
@@ -71,7 +71,7 @@ class LocalHlsMovieNotifier
   }
 
   void tryContinueDownload({
-    required Future<void> Function(LocalHlsModel, Ref<Object?>)?
+    required Future<void> Function(LocalHlsModelObj, Ref<Object?>)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) {

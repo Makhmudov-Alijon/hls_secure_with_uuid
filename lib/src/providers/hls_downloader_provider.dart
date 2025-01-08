@@ -49,32 +49,32 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  void addToQueue(LocalHlsModel hls) {
-    moviesController.updateHlsStatus(hls.id, LocalHlsInQueueState(),
+  void addToQueue(LocalHlsModelObj hls) {
+    moviesController.updateHlsStatus(hls.iD, LocalHlsInQueueState(),
       where: 'add to queue 53',
     );
   }
 
-  void pauseDownload(LocalHlsModel hls) {
+  void pauseDownload(LocalHlsModelObj hls) {
     if (hls.id == _downloadingHls) {
       _stopDownloading();
     }
-    moviesController.updateHlsStatus(hls.id, LocalHlsPauseState(),
+    moviesController.updateHlsStatus(hls.iD, LocalHlsPauseState(),
       where: 'pause download 60',
     );
   }
 
-  void cancelDownload(LocalHlsModel hls) {
-    moviesController.updateHlsStatus(hls.id, LocalHlsDeletedState(),
+  void cancelDownload(LocalHlsModelObj hls) {
+    moviesController.updateHlsStatus(hls.iD, LocalHlsDeletedState(),
       where: 'cancel download 64',
     );
   }
 
   void tryToDownload({
-    required LocalHlsModel hls,
+    required LocalHlsModelObj hls,
     required DownloadTask? downloadTask,
     required void Function(LocalHlsErrorState error)? onError,
-    required Future<void> Function(LocalHlsModel hls, Ref<Object?> ref)?
+    required Future<void> Function(LocalHlsModelObj hls, Ref<Object?> ref)?
         onDownloadComplete,
   }) {
     if (state == HlsDownloaderState.downloading) {
@@ -98,7 +98,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> prepareAndDownloadOrQueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
-    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
     String? posterLink,
@@ -110,13 +110,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
     if (downloadTask != null) {
       await moviesController.refreshMovies();
-      LocalHlsModel? hls = moviesController.hlsByIdd(hlsDetails.id);
+      LocalHlsModelObj? hls = moviesController.hlsByIdd(
+        hlsDetails.localHlsId.target!,
+      );
 
       final int time = 10;
 
       for (int i = 0; i < time && hls == null; i++) {
         await Future.delayed(const Duration(milliseconds: 300), () {});
-        hls = moviesController.hlsByIdd(hlsDetails.id);
+        hls = moviesController.hlsByIdd(hlsDetails.localHlsId.target!);
       }
 
       if (hls != null) {
@@ -139,7 +141,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         var dibiding;
         for (int i = 0; i < time && dibiding == null; i++) {
           await Future.delayed(const Duration(milliseconds: 300), () {});
-          dibiding = moviesController.hlsByIdd(hlsDetails.id);
+          dibiding = moviesController.hlsByIdd(hlsDetails.localHlsId.target!);
         }
         if (dibiding != null) {
           return prepareAndDownloadOrQueue(
@@ -156,7 +158,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   Future<void> checkForNextQueue({
-    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
     required String where,
@@ -200,16 +202,16 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
-    required LocalHlsModel hls,
-    required Future<void> Function(LocalHlsModel hls, Ref ref)?
+    required LocalHlsModelObj hls,
+    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
     _startDownloading();
-    _downloadingHls = hls.id;
+    _downloadingHls = hls.iD;
 
     LocalHlsState? theState = await moviesController.updateHlsStatus(
-      hls.id,
+      hls.iD,
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
     );
@@ -245,7 +247,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             );
             // This code runs every second and updates the UI
             if (state == HlsDownloaderState.downloading) {
-              localHlsMovieController(hls.id).updateProgress(v, activeTasks);
+              localHlsMovieController(hls.iD).updateProgress(v, activeTasks);
             }
           },
         );
@@ -311,7 +313,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   SchedulerBinding.instance.addPostFrameCallback((_) async {
                     // Update the UI here
                     theState = await moviesController.updateHlsStatus(
-                      hls.id,
+                      hls.iD,
                       localHlsState ??
                           (failedTasks.isEmpty
                               ? LocalHlsCompleteState()
@@ -363,7 +365,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         }
       } else {
         theState = await moviesController.updateHlsStatus(
-          hls.id,
+          hls.iD,
           LocalHlsCompleteState(),
           where: 'download completed 318',
         );
@@ -389,7 +391,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _downloadingHls = null;
       _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
-        await moviesController.updateHlsStatus(hls.id, resultState,
+        await moviesController.updateHlsStatus(hls.iD, resultState,
           where: 'error state 332',
         );
         _stopDownloading();
@@ -399,7 +401,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         moviesController.deleteHls(hls: hls);
       } else {
         _stopDownloading();
-        await moviesController.updateHlsStatus(hls.id, resultState,
+        await moviesController.updateHlsStatus(hls.iD, resultState,
           where: 'download provider 340',
         );
       }

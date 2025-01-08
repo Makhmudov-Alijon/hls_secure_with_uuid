@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:objectbox/objectbox.dart';
 
 enum LocalHlsStatusType {
   complete,
@@ -14,6 +15,7 @@ enum LocalHlsStatusType {
   error;
 }
 
+@Entity()
 class LocalHlsStatus extends Equatable {
   LocalHlsStatus({
     required this.statusType,
@@ -28,6 +30,8 @@ class LocalHlsStatus extends Equatable {
     }
   }
 
+  @Id(assignable: true)
+  int id = 0;
   final LocalHlsStatusType statusType;
   final String? message;
   final int? statusCode;

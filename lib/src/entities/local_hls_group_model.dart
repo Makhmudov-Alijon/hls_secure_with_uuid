@@ -17,13 +17,13 @@ class LocalHlsGroupModel extends Equatable {
   final String title;
   final int? season;
   final bool isSerial;
-  final List<LocalHlsModel> movies;
+  final List<LocalHlsModelObj> movies;
   final File posterFile;
 
   int get totalSizeInBytes {
     var temp = 0;
     for (final movie in movies) {
-      temp += movie.hlsDetails.sizeBytes;
+      temp += movie.hlsDetails.target!.sizeBytes;
     }
     return temp;
   }

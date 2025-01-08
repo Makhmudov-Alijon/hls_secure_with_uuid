@@ -1,7 +1,7 @@
 import 'package:download_manager/download_manager.dart';
 
-extension Dibiding on List<LocalHlsModel> {
-  List<LocalHlsModel> get getItemsInQueueExt {
+extension Dibiding on List<LocalHlsModelObj> {
+  List<LocalHlsModelObj> get getItemsInQueueExt {
     // final start = DateTime.now();
     if (isEmpty) {
       return [];
@@ -25,8 +25,8 @@ extension Dibiding on List<LocalHlsModel> {
               bOrder,
             );
           } else {
-            return b.downloadStatus.creationDate.compareTo(
-              a.downloadStatus.creationDate,
+            return b.downloadStatus.target!.creationDate.compareTo(
+              a.downloadStatus.target!.creationDate,
             );
           }
         },
@@ -39,7 +39,7 @@ extension Dibiding on List<LocalHlsModel> {
 
   List<LocalHlsGroupModel> get getGroupedItemsExt {
     // return [];
-    final groupMap = <int, List<LocalHlsModel>>{};
+    final groupMap = <int, List<LocalHlsModelObj>>{};
 
     // final start = DateTime.now();
     if (isEmpty) {
@@ -47,7 +47,7 @@ extension Dibiding on List<LocalHlsModel> {
     }
 
     for (final hls in this) {
-      final key = hls.hlsDetails.id.contentId;
+      final key = hls.hlsDetails.target!.localHlsId.target!.contentId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
@@ -62,30 +62,33 @@ extension Dibiding on List<LocalHlsModel> {
     }
 
     final groups = groupMap.values.map((items) {
-      if (items.first.hlsDetails.isSerial) {
+      if (items.first.hlsDetails.target!.isSerial) {
         items = items
           ..sort(
             (a, b) {
-              if (a.hlsDetails.seasonNum == null ||
-                  b.hlsDetails.seasonNum == null ||
-                  a.hlsDetails.episodeNum == null ||
-                  b.hlsDetails.episodeNum == null) {
+              final aDetail = a.hlsDetails.target!;
+              final bDetail = b.hlsDetails.target!;
+
+              if (aDetail.seasonNum == null ||
+                  bDetail.seasonNum == null ||
+                  aDetail.episodeNum == null ||
+                  bDetail.episodeNum == null) {
                 return 1;
-              } else if (a.hlsDetails.seasonNum == b.hlsDetails.seasonNum) {
-                return a.hlsDetails.episodeNum!.compareTo(
-                  b.hlsDetails.episodeNum!,
+              } else if (aDetail.seasonNum == bDetail.seasonNum) {
+                return aDetail.episodeNum!.compareTo(
+                  bDetail.episodeNum!,
                 );
               }
-              return a.hlsDetails.seasonNum!.compareTo(b.hlsDetails.seasonNum!);
+              return aDetail.seasonNum!.compareTo(bDetail.seasonNum!);
             },
           );
       }
-
+      final details = items.first.hlsDetails.target!;
       return LocalHlsGroupModel(
-        id: items.first.hlsDetails.id.contentId,
-        title: items.first.hlsDetails.title,
-        season: items.first.hlsDetails.seasonNum,
-        isSerial: items.first.hlsDetails.isSerial,
+        id: details.localHlsId.target!.contentId,
+        title: details.title,
+        season: details.seasonNum,
+        isSerial: details.isSerial,
         posterFile: items.first.posterFile,
         movies: items,
       );

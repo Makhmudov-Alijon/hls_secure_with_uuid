@@ -3,25 +3,28 @@ import 'dart:convert';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
+import 'package:objectbox/objectbox.dart';
 
+@Entity()
 class LocalHlsDetailsModel extends Equatable {
-  const LocalHlsDetailsModel({
-    required this.id,
+  LocalHlsDetailsModel({
     required this.title,
     required this.isSerial,
     required this.episodeNum,
     required this.seasonNum,
-    required this.resolution,
-    required this.audioTracks,
+    this.id = 0,
   });
 
-  final LocalHlsId id;
   final String title;
   final bool isSerial;
   final int? episodeNum;
   final int? seasonNum;
-  final HlsResolution resolution;
-  final Set<HlsAudioTrack> audioTracks;
+  @Id(assignable: true)
+  int id = 0;
+
+  final ToOne<LocalHlsId> localHlsId = ToOne<LocalHlsId>();
+  final ToOne<HlsResolution> resolution = ToOne<HlsResolution>();
+  final ToMany<HlsAudioTrack> audioTracks = ToMany<HlsAudioTrack>();
 
   String fullTitle({String? episodeTitle, String? seasonTitle}) {
     if (isSerial) {
@@ -45,17 +48,17 @@ class LocalHlsDetailsModel extends Equatable {
     for (final audio in audioTracks) {
       audioSize += audio.size;
     }
-    return resolution.size + audioSize;
+    return resolution.target!.size + audioSize;
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id.toMap(),
+      'id': localHlsId.target!.toMap(),
       'title': title,
       'isSerial': isSerial,
       'episodeNum': episodeNum,
       'seasonNum': seasonNum,
-      'resolution': resolution.toMap(),
+      'resolution': resolution.target!.toMap(),
       'audioTracks': audioTracks.map((e) => e.toMap()).toList(),
     };
   }
@@ -63,16 +66,20 @@ class LocalHlsDetailsModel extends Equatable {
   factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
     final audioTracks =
         List<Map<String, dynamic>>.from(map['audioTracks'] as List<dynamic>);
-    return LocalHlsDetailsModel(
-      id: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
+    final model = LocalHlsDetailsModel(
       title: map['title'] as String,
       isSerial: map['isSerial'] as bool,
       episodeNum: map['episodeNum'] != null ? map['episodeNum'] as int : null,
       seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
-      resolution:
-          HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
-      audioTracks: audioTracks.map(HlsAudioTrack.fromMap).toSet(),
     );
+    model.localHlsId.target =
+        LocalHlsId.fromMap(map['id'] as Map<String, dynamic>);
+    model.resolution.target =
+        HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>);
+    model.audioTracks.addAll(
+      audioTracks.map(HlsAudioTrack.fromMap).toSet(),
+    );
+    return model;
   }
 
   String toJson() => json.encode(toMap());
@@ -82,7 +89,7 @@ class LocalHlsDetailsModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
+        localHlsId,
         title,
         isSerial,
         episodeNum,

@@ -26,8 +26,12 @@ mixin _$HlsPlaylistDetailsModel {
   int get size => throw _privateConstructorUsedError;
   int get filesCount => throw _privateConstructorUsedError;
 
+  /// Serializes this HlsPlaylistDetailsModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of HlsPlaylistDetailsModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $HlsPlaylistDetailsModelCopyWith<HlsPlaylistDetailsModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -52,6 +56,8 @@ class _$HlsPlaylistDetailsModelCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of HlsPlaylistDetailsModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -103,6 +109,8 @@ class __$$HlsPlaylistDetailsModelImplCopyWithImpl<$Res>
       $Res Function(_$HlsPlaylistDetailsModelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of HlsPlaylistDetailsModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -170,11 +178,13 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
                 other.filesCount == filesCount));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, path, data, size, filesCount);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HlsPlaylistDetailsModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$HlsPlaylistDetailsModelImplCopyWith<_$HlsPlaylistDetailsModelImpl>
@@ -207,8 +217,11 @@ abstract class _HlsPlaylistDetailsModel implements HlsPlaylistDetailsModel {
   int get size;
   @override
   int get filesCount;
+
+  /// Create a copy of HlsPlaylistDetailsModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HlsPlaylistDetailsModelImplCopyWith<_$HlsPlaylistDetailsModelImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
