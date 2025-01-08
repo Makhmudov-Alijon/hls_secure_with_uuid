@@ -61,11 +61,12 @@ class HlsRepository {
         isRemote: forWatching,
       );
 
-      return MasterPlaylistModel.parse(
+      final result = MasterPlaylistModel.parse(
         playlist: hlsData.master,
         hlsData: hlsData,
         pathManager: pathManager,
       );
+      return result;
     } catch (e) {
       rethrow;
     }
@@ -102,13 +103,14 @@ class HlsRepository {
         selectedResolutions: {hlsDetails.resolution},
         selectedTracks: hlsDetails.audioTracks,
       );
+      final content = master.toLocalPlaylist(
+        linkExcluder: hlsFullPlaylist.masterLinkExcluder,
+      );
 
       final masterFile = pathManager.masterFile
         ..createIfNotExist()
         ..writeAsStringSync(
-          master.toLocalPlaylist(
-            linkExcluder: hlsFullPlaylist.masterLinkExcluder,
-          ),
+          content,
         );
 
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
@@ -127,11 +129,12 @@ class HlsRepository {
         videoPlaylist: hlsFullPlaylist.videoPlaylists.first,
         pathManager: pathManager,
       );
+      final dowloadTaskContent = downloadTask.toJson();
 
       pathManager.downloadTaskFile
         ..createIfNotExist()
         ..writeAsStringSync(
-          downloadTask.toJson(),
+          dowloadTaskContent,
         );
 
       final localHls = LocalHlsModel(

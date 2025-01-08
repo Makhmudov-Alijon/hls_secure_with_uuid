@@ -10,7 +10,6 @@ class HlsLocalRepository {
   Future<List<LocalHlsModel>> fetchLocalHlsMovies({
     bool isInitial = false,
   }) async {
-    final start = DateTime.now();
     final mediaDir = await HlsPathConstants.mediaDir;
     final hlsFiles = await HlsUtils.searchFilesByNameInDirectory(
       mediaDir,
@@ -22,7 +21,7 @@ class HlsLocalRepository {
       if (!file.existsSync()) continue;
       final content = file.readAsStringSync();
       var hls = LocalHlsModel.fromJson(content);
-      final v = 0;
+
       if (hls.localHlsState is LocalHlsDeletedState || !hls.validate()) {
         deleteHlsDirectory(hls);
         continue;
@@ -48,9 +47,6 @@ class HlsLocalRepository {
       hlsMovies.add(hls);
     }
 
-    print(
-        '>< >< load local hls time: ${DateTime.now().difference(start).inMilliseconds}');
-
     return hlsMovies;
   }
 
@@ -59,9 +55,8 @@ class HlsLocalRepository {
     final hlsFile = hls.localHlsFile;
     if (hlsFile.existsSync()) {
       final statusName = hls.downloadStatus.statusType.name;
-      await Prefs()
-          .putLocalHlsStatusName(hls.getStatusKey, statusName)
-          .then((v) {
+      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName).then((v) {
+        final content = hls.toJson();
         hlsFile.writeAsStringSync(
           hls.toJson(),
         );
@@ -74,8 +69,9 @@ class HlsLocalRepository {
   Future<LocalHlsModel?> updateHlsStatus(
       LocalHlsModel hls, LocalHlsState state) async {
     try {
+      final status = state.toLocalHlsStatus();
       final newHls = hls.copyWith(
-        downloadStatus: state.toLocalHlsStatus(),
+        downloadStatus: status,
       );
       await updateHls(newHls);
       return newHls;
@@ -100,6 +96,7 @@ class HlsLocalRepository {
     if (fileContent.isEmpty) {
       return LocalHlsDeletedState();
     }
-    return LocalHlsModel.fromJson(fileContent).localHlsState;
+    final state = LocalHlsModel.fromJson(fileContent).localHlsState;
+    return state;
   }
 }

@@ -2,7 +2,7 @@ import 'package:download_manager/download_manager.dart';
 
 extension Dibiding on List<LocalHlsModel> {
   List<LocalHlsModel> get getItemsInQueueExt {
-    final start = DateTime.now();
+    // final start = DateTime.now();
     if (isEmpty) {
       return [];
     }
@@ -31,17 +31,17 @@ extension Dibiding on List<LocalHlsModel> {
           }
         },
       );
-    final end = DateTime.now();
-
-    print('>< >< the queue spent : ${end.difference(start).inMilliseconds}');
+    // final end = DateTime.now();
+    //
+    // print('>< >< the queue spent : ${end.difference(start).inMilliseconds}');
     return result;
   }
 
-  List<LocalHlsGroupModel> get getGroupedItemsExtt {
+  List<LocalHlsGroupModel> get getGroupedItemsExt {
     // return [];
     final groupMap = <int, List<LocalHlsModel>>{};
 
-    final start = DateTime.now();
+    // final start = DateTime.now();
     if (isEmpty) {
       return [];
     }
@@ -90,10 +90,10 @@ extension Dibiding on List<LocalHlsModel> {
         movies: items,
       );
     }).toList();
-    final end = DateTime.now();
-
-    print(
-        '>< >< the downloadeds spent : ${end.difference(start).inMilliseconds}');
+    // final end = DateTime.now();
+    //
+    // print(
+    //     '>< >< the downloadeds spent : ${end.difference(start).inMilliseconds}');
 
     return groups;
   }

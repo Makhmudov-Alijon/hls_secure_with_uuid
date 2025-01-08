@@ -43,7 +43,7 @@ class LocalHlsMovieNotifier
   }
 
   LocalHlsState checkState() {
-    final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
+    final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsByIdd(arg);
     currentHls = foundHls;
     sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     if (foundHls == null) {

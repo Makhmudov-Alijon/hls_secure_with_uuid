@@ -1,0 +1,43 @@
+{
+  "masterDir": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents/media/local/movies/43897_10407/",
+  "posterFile": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents/media/local/movies/43897_10407/poster.png",
+  "masterFile": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents/media/local/movies/43897_10407/master.m3u8",
+  "hlsDetails": {
+    "id": {
+      "filmId": 10407,
+      "seasonId": null,
+      "episodeId": null,
+      "contentId": 43897
+    },
+    "title": "Мама",
+    "isSerial": false,
+    "episodeNum": null,
+    "seasonNum": null,
+    "resolution": {
+      "resolution": "480p",
+      "videoPlaylistUrl": "video/480p/stream.m3u8",
+      "trackType": "group_audio_low",
+      "filesCount": 52,
+      "size": 89870893
+    },
+    "audioTracks": [
+      {
+        "trackType": "group_audio_low",
+        "trackName": "Uz-Ru",
+        "trackUrl": "audio/English/low/stream.m3u8",
+        "filesCount": 53,
+        "size": 4350422
+      }
+    ]
+  },
+  "downloadStatus": {
+    "statusType": "downloading",
+    "message": null,
+    "statusCode": null,
+    "creationDate": "2025-01-08T05:47:59.941678Z"
+  },
+  "downloadTaskFile": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents/media/local/movies/43897_10407/download_task.json",
+  "localHlsFile": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents/media/local/movies/43897_10407/local_hls.json",
+  "baseDir": "/Users/macbook/Library/Developer/CoreSimulator/Devices/8D433D99-A6D9-4BB4-906F-0CD102CAE5A4/data/Containers/Data/Application/574403D1-E1FC-4B24-85DB-CF7712D3DF56/Documents",
+  "totalSegments": 103
+}

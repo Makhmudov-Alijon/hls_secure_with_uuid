@@ -53,9 +53,11 @@ class LoadMoviesParams {
     required this.isInitial,
     required this.sendPort,
     required this.mediaDir,
+    required this.token,
   });
 
   final SendPort sendPort;
   final bool isInitial;
   final Directory mediaDir;
+  final RootIsolateToken token;
 }

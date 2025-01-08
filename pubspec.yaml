@@ -24,6 +24,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   riverpod: ^2.5.1
   hive: ^2.2.3
+  hive_flutter: ^1.1.0
 #  watcher: ^1.1.0
 
 dev_dependencies:
