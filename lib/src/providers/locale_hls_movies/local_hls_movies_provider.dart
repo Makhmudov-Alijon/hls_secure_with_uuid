@@ -143,7 +143,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   int? _hlsIndex(LocalHlsId id) {
     try {
       final index = state.total.indexWhere((element) {
-        final result = element.hlsDetails.target == id;
+        final result = element.hlsDetails.target!.localHlsId.target == id;
         return result;
       });
       return index < 0 ? null : index;

@@ -4,25 +4,25 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:objectbox/objectbox.dart';
 
-enum HlsAudioTrackType {
+enum HlsAudioTrackTypee {
   low('group_audio_low', 'low'),
   high('group_audio_high', 'high'),
   defaultTrack('default', 'default');
 
-  const HlsAudioTrackType(this.name, this.shortName);
+  const HlsAudioTrackTypee(this.name, this.shortName);
 
   final String name;
   final String shortName;
 }
 
-extension HlsAudioTrackTypeX on HlsAudioTrackType {
-  HlsAudioTrackType fromString(String name) {
-    for (final trackType in HlsAudioTrackType.values) {
+extension HlsAudioTrackTypeX on HlsAudioTrackTypee {
+  HlsAudioTrackTypee fromString(String name) {
+    for (final trackType in HlsAudioTrackTypee.values) {
       if (trackType.name == name) {
         return trackType;
       }
     }
-    return HlsAudioTrackType.defaultTrack;
+    return HlsAudioTrackTypee.defaultTrack;
   }
 }
 
@@ -43,8 +43,20 @@ class HlsAudioTrack extends Equatable {
   final int filesCount;
   @Id(assignable: true)
   int id = 0;
-  @Property(type: PropertyType.byte) // Store enum as byte
-  HlsAudioTrackType trackType;
+  @Property(type: PropertyType.byte)
+  HlsAudioTrackTypee trackType;
+
+// @Property(type: PropertyType.int,)
+//   int tcType = 2;
+//
+//   @Transient()
+//   HlsAudioTrackType get trackType {
+//     return HlsAudioTrackType.values[tcType];
+//   }
+//
+//   set trackType(HlsAudioTrackType value) {
+//     tcType = value.index;
+//   }
 
   Map<String, dynamic> toMap() {
     return {
@@ -60,7 +72,7 @@ class HlsAudioTrack extends Equatable {
     return HlsAudioTrack(
       filesCount: json['filesCount'] as int,
       size: json['size'] as int,
-      trackType: HlsAudioTrackType.values.first
+      trackType: HlsAudioTrackTypee.values.first
           .fromString(json['trackType'] as String),
       trackUrl: json['trackUrl'] as String,
       trackName: json['trackName'] as String,
@@ -78,7 +90,13 @@ class HlsAudioTrack extends Equatable {
   }
 
   @override
-  List<Object?> get props => [trackType, trackUrl, trackName, size, filesCount];
+  List<Object?> get props => [
+        trackType,
+        trackUrl,
+        trackName,
+        size,
+        filesCount,
+      ];
 }
 
 class HlsAudioTrackGroup extends Equatable {

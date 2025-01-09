@@ -19,6 +19,7 @@ enum LocalHlsStatusType {
 class LocalHlsStatus extends Equatable {
   LocalHlsStatus({
     required this.statusType,
+
     DateTime? creationDate,
     this.message,
     this.statusCode,
@@ -32,9 +33,11 @@ class LocalHlsStatus extends Equatable {
 
   @Id(assignable: true)
   int id = 0;
+  @Property(type: PropertyType.byte)
   final LocalHlsStatusType statusType;
   final String? message;
   final int? statusCode;
+  @Property(type: PropertyType.dateNano)
   late final DateTime creationDate;
 
   @override

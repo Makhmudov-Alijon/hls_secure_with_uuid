@@ -24,6 +24,7 @@ class Prefs {
     if (_box == null) {
       await init();
     }
+
     await _box!.put(key, value);
   }
 

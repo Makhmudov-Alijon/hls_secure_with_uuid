@@ -254,25 +254,43 @@ class LocalHlsModelObj extends Equatable {
   }
 
   factory LocalHlsModelObj.fromMap(Map<String, dynamic> json) {
+    final baseDirPat = json['baseDir'] as String?;
+    final masterDirPat = json['masterDir'] as String?;
+    final posterFilePat = json['posterFile'] as String?;
+    final masterFilePat = json['masterFile'] as String?;
+    final localHlsFilePat = json['localHlsFile'] as String?;
+    final downloadTasksFilePat = json['downloadTaskFile'] as String?;
+    final totalSegment = json['totalSegments'] as int?;
+
+    final v = 0;
     final model = LocalHlsModelObj(
       id: (json['id'] as int?) ?? 0,
-      baseDirPath: json['baseDir'] as String,
-      masterDirPath: json['masterDir'] as String,
-      posterFilePath: json['posterFile'] as String,
-      masterFilePath: json['masterFile'] as String,
-      localHlsFilePath: json['localHlsFile'] as String,
-      downloadTasksFilePath: json['downloadTasksFile'] as String,
-      totalSegments: json['totalSegments'] as int,
+      baseDirPath: baseDirPat!,
+      masterDirPath: masterDirPat!,
+      posterFilePath: posterFilePat!,
+      masterFilePath: masterFilePat!,
+      localHlsFilePath: localHlsFilePat!,
+      downloadTasksFilePath: downloadTasksFilePat!,
+      totalSegments: totalSegment!,
     );
+    final hlsDt = json['hlsDetails'];
+    final ds = json['downloadStatus'];
+    final vv = 0;
     // Deserialize relationships
-    if (json['hlsDetails'] != null) {
-      model.hlsDetails.target = LocalHlsDetailsModel.fromMap(
-          json['hlsDetails'] as Map<String, dynamic>);
+    if (hlsDt != null) {
+      model.hlsDetails.target = LocalHlsDetailsModel.fromJson(hlsDt as String);
+    } else {
+      final v = 0;
     }
 
-    if (json['downloadStatus'] != null) {
-      model.downloadStatus.target = LocalHlsStatus.fromMap(
-          json['downloadStatus'] as Map<String, dynamic>);
+    if (ds != null) {
+      if (ds is String) {
+        model.downloadStatus.target = LocalHlsStatus.fromJson(ds);
+      }
+      if (ds is Map) {
+        model.downloadStatus.target =
+            LocalHlsStatus.fromMap(ds as Map<String, dynamic>);
+      }
     }
     return model;
   }
@@ -310,15 +328,21 @@ class LocalHlsModelObj extends Equatable {
     // Deserialize relationships
     if (hlsDetails != null) {
       model.hlsDetails.target = hlsDetails;
+    } else {
+      model.hlsDetails.target = this.hlsDetails.target;
     }
 
     if (downloadStatus != null) {
       model.downloadStatus.target = downloadStatus;
+    } else {
+      model.downloadStatus.target = this.downloadStatus.target;
     }
     return model;
   }
 
   String get getStatusKey {
+    final hd = hlsDetails.target;
+
     if (hlsDetails.target!.isSerial) {
       return '${hlsDetails.target!.localHlsId.target!.contentId}-${hlsDetails.target!.localHlsId.target!.episodeId}';
     }

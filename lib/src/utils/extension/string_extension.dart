@@ -77,7 +77,7 @@ extension StringExtension on String {
       case 'error':
         return LocalHlsStatusType.error;
       default:
-        return null;
+        return LocalHlsStatusType.error;
     }
   }
 }

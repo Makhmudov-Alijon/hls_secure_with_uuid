@@ -44,13 +44,14 @@ class HlsResolution extends Equatable {
 
     this.id = 0,
   });
- 
+
+  @Property(type: PropertyType.byte)
   final HlsResolutionType resolution;
   final String videoPlaylistUrl; 
   final int size;
   final int filesCount;
-   @Property(type: PropertyType.byte) // Store enum as byte
-  HlsAudioTrackType trackType;
+  @Property(type: PropertyType.byte) // Store enum as byte
+  HlsAudioTrackTypee trackType;
   @Id(assignable: true)
   int id = 0;
 
@@ -72,7 +73,7 @@ class HlsResolution extends Equatable {
           .fromString(map['resolution'] as String),
       videoPlaylistUrl: map['videoPlaylistUrl'] as String,
       trackType:
-          HlsAudioTrackType.values.first.fromString(map['trackType'] as String),
+          HlsAudioTrackTypee.values.first.fromString(map['trackType'] as String),
     );
   }
 
