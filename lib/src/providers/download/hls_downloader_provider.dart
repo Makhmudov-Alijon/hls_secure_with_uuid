@@ -4,10 +4,14 @@ import 'dart:isolate';
 
 import 'package:async/async.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/models/locale_hls/locale_hls_obj/locale_hls_model_obj.dart';
+import 'package:download_manager/src/providers/download/top_level_functions/download.dart';
+import 'package:download_manager/src/providers/download/top_level_functions/store_to_file.dart';
 import 'package:download_manager/src/repository/hls_local_repository.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:http/http.dart' as http;
+
+import '../../models/locale_hls/local_hls_model/local_hls_id.dart';
 
 enum HlsDownloaderState {
   downloading,
@@ -200,6 +204,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return progress;
   }
 
+  Future<void> storeToFile(StoreFileData data, ReceivePort receivePort) async {
+    await Isolate.spawn(
+      storeToFileWorker,
+      data.copyWith(sendPort: receivePort.sendPort),
+    );
+  }
+
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
     required LocalHlsModelObj hls,
@@ -207,6 +218,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
+    final DateTime start = DateTime.now();
     _startDownloading();
     _downloadingHls = hls.iD;
 
@@ -228,7 +240,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       List<MapEntry<String, dynamic>> failedTasks = [];
 
       final hlsLocalRepository = HlsLocalRepository();
+
+      print('>< >< TOTAL TASKS  : ${tasks.length}');
       if (tasks.isNotEmpty) {
+        final ReceivePort storeToFileReceivePort = ReceivePort();
         final int maxIsolates = Platform.isIOS ? 2 : 8;
         final List<Isolate> isolates = [];
         final List<StreamQueue<dynamic>> streamQueues = [];
@@ -251,12 +266,23 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             }
           },
         );
+        int count = 0;
+        storeToFileReceivePort.listen((v) {
+          if (v is bool && v) {
+            print('>< >< storeFile : ${count++}');
+            ;
+          } else {
+            print('>< >< store file isNot bool : ${count++}');
+          }
+        });
 
         // Create the isolates
         for (var i = 0; i < maxIsolates; i++) {
           final receivePort = ReceivePort();
           final isolate =
               await Isolate.spawn(downloadFileHttp, receivePort.sendPort);
+          // await Isolate.spawn(
+          //     downloadWithFlutterDownloaderr, receivePort.sendPort);
           isolates.add(isolate);
 
           final streamQueue = StreamQueue(receivePort);
@@ -275,8 +301,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           // Listen for completion messages from each isolate
           streamQueue.rest.listen(
             (message) async {
-              if (message is String) {
-                if (message == 'done') {
+              if (message is StoreFileData) {
+                if (message.bytes.isNotEmpty) {
+                  unawaited(storeToFile(message, storeToFileReceivePort));
                   if (DateTime.now()
                           .difference(lastCheckForPauseOrDeleted)
                           .inMilliseconds >
@@ -324,7 +351,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                       where: 'downloader 273',
                     );
                   });
-
+                  print(
+                      '>< >< downloading ended in: ${DateTime.now().difference(start).inMilliseconds} millisseconds');
                   progressUpdateTimer?.cancel();
                   progressUpdateTimer = null;
                   allTasksCompleted.complete();
@@ -466,50 +494,4 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 }
 
-Future<void> downloadFileHttp(SendPort sendPort) async {
-  final ReceivePort receivePort = ReceivePort();
-  sendPort.send(receivePort.sendPort);
 
-  await for (final itemm in receivePort) {
-    if (itemm is! (
-      String url,
-      String absPath,
-    )) {
-      break; // Exit loop and isolate when receiving a null value
-    }
-
-    // print(' *** started for: ${item.url.split(".")[2].split("/").last}');
-
-    try {
-      final response = await http.get(Uri.parse(itemm.$1));
-
-      if (response.statusCode == 200) {
-        final file = File(itemm.$2);
-
-        // Open the file for writing
-        final randomAccessFile = await file.open(mode: FileMode.write);
-
-        // Write the downloaded bytes to the file
-        await randomAccessFile.writeFrom(response.bodyBytes);
-
-        // Close the file
-        await randomAccessFile.close();
-      } else {
-        // print('Failed to download ${item.url}: ${response.statusCode}');
-        sendPort.send(
-          MapEntry(
-            response.reasonPhrase ?? 'Reason is null',
-            itemm,
-          ),
-        ); // Re-send the item for retry
-      }
-    } catch (e) {
-      // print('Error downloading ${item.url}: $e');
-      sendPort
-          .send(MapEntry(e.toString(), itemm)); // Re-send the item for retry
-    }
-
-    // Notify the main isolate that this task is done
-    sendPort.send('done');
-  }
-}

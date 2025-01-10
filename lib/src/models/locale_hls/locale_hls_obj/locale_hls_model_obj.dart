@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:objectbox/objectbox.dart';
 
-import '../../../download_manager.dart';
+import '../../../../download_manager.dart';
+import '../local_hls_model/local_hls_details_model.dart';
+import '../local_hls_model/local_hls_id.dart';
+
 
 @Entity()
 class LocalHlsModelObj extends Equatable {

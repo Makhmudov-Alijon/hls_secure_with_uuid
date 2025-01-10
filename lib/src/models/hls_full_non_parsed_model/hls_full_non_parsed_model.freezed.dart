@@ -31,12 +31,8 @@ mixin _$HlsFullNonParsedModel {
       throw _privateConstructorUsedError;
   String? get enc => throw _privateConstructorUsedError;
 
-  /// Serializes this HlsFullNonParsedModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of HlsFullNonParsedModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $HlsFullNonParsedModelCopyWith<HlsFullNonParsedModel> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -66,8 +62,6 @@ class _$HlsFullNonParsedModelCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of HlsFullNonParsedModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -128,8 +122,6 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
       $Res Function(_$HlsFullNonParsedModelImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of HlsFullNonParsedModel
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -230,7 +222,7 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
             (identical(other.enc, enc) || other.enc == enc));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -240,9 +232,7 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
       const DeepCollectionEquality().hash(_thumbsPlaylists),
       enc);
 
-  /// Create a copy of HlsFullNonParsedModel
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>
@@ -279,11 +269,8 @@ abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
   List<ThumbsPlaylist> get thumbsPlaylists;
   @override
   String? get enc;
-
-  /// Create a copy of HlsFullNonParsedModel
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
