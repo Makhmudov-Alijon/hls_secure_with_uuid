@@ -2,49 +2,48 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:objectbox/objectbox.dart';
+import 'package:isar/isar.dart';
 
-enum HlsAudioTrackTypee {
+part 'hls_audio.g.dart';
+
+enum HlsAudioTrackType {
   low('group_audio_low', 'low'),
   high('group_audio_high', 'high'),
   defaultTrack('default', 'default');
 
-  const HlsAudioTrackTypee(this.name, this.shortName);
+  const HlsAudioTrackType(this.name, this.shortName);
 
   final String name;
   final String shortName;
 }
 
-extension HlsAudioTrackTypeX on HlsAudioTrackTypee {
-  HlsAudioTrackTypee fromString(String name) {
-    for (final trackType in HlsAudioTrackTypee.values) {
+extension HlsAudioTrackTypeX on HlsAudioTrackType {
+  HlsAudioTrackType fromString(String name) {
+    for (final trackType in HlsAudioTrackType.values) {
       if (trackType.name == name) {
         return trackType;
       }
     }
-    return HlsAudioTrackTypee.defaultTrack;
+    return HlsAudioTrackType.defaultTrack;
   }
 }
 
-@Entity()
-class HlsAudioTrack extends Equatable {
+@embedded
+class HlsAudioTrack extends Equatable{
   HlsAudioTrack({
-    required this.trackType,
-    required this.trackUrl,
-    required this.trackName,
-    required this.filesCount,
-    required this.size,
-    this.id = 0,
+    this.trackType = HlsAudioTrackType.defaultTrack,
+    this.trackUrl = '',
+    this.trackName = '',
+    this.filesCount = 0,
+    this.size = 0,
   });
 
   final String trackName;
   final String trackUrl;
   final int size;
   final int filesCount;
-  @Id(assignable: true)
-  int id = 0;
-  @Property(type: PropertyType.byte)
-  HlsAudioTrackTypee trackType;
+  @enumerated
+  HlsAudioTrackType trackType;
 
 // @Property(type: PropertyType.int,)
 //   int tcType = 2;
@@ -72,7 +71,7 @@ class HlsAudioTrack extends Equatable {
     return HlsAudioTrack(
       filesCount: json['filesCount'] as int,
       size: json['size'] as int,
-      trackType: HlsAudioTrackTypee.values.first
+      trackType: HlsAudioTrackType.values.first
           .fromString(json['trackType'] as String),
       trackUrl: json['trackUrl'] as String,
       trackName: json['trackName'] as String,
@@ -89,7 +88,7 @@ class HlsAudioTrack extends Equatable {
     );
   }
 
-  @override
+@override
   List<Object?> get props => [
         trackType,
         trackUrl,

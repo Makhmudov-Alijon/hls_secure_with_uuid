@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:objectbox/objectbox.dart';
+import 'package:isar/isar.dart';
+
+part 'hls_resolution.g.dart';
 
 enum HlsResolutionType {
   v240p('240p', 240, '240p'),
@@ -33,27 +35,23 @@ extension HlsResolutionTypeExt on HlsResolutionType {
   }
 }
 
-@Entity()
+@embedded
 class HlsResolution extends Equatable {
-    HlsResolution({
-    required this.resolution,
-    required this.videoPlaylistUrl,
-    required this.trackType,
-    required this.filesCount,
-    required this.size,
-
-    this.id = 0,
+  const HlsResolution({
+    this.resolution = HlsResolutionType.v480p,
+    this.videoPlaylistUrl = '',
+    this.trackType = HlsAudioTrackType.defaultTrack,
+    this.filesCount = 0,
+    this.size = 0,
   });
 
-  @Property(type: PropertyType.byte)
+  @enumerated
   final HlsResolutionType resolution;
   final String videoPlaylistUrl; 
   final int size;
   final int filesCount;
-  @Property(type: PropertyType.byte) // Store enum as byte
-  HlsAudioTrackTypee trackType;
-  @Id(assignable: true)
-  int id = 0;
+  @enumerated // Store enum as byte
+  final HlsAudioTrackType trackType;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -73,7 +71,7 @@ class HlsResolution extends Equatable {
           .fromString(map['resolution'] as String),
       videoPlaylistUrl: map['videoPlaylistUrl'] as String,
       trackType:
-          HlsAudioTrackTypee.values.first.fromString(map['trackType'] as String),
+          HlsAudioTrackType.values.first.fromString(map['trackType'] as String),
     );
   }
 

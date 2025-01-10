@@ -44,7 +44,7 @@ class MasterPlaylistModel extends Equatable {
                     filesCount: resolutionDetails.filesCount,
                     size: resolutionDetails.size,
                     trackType:
-                        HlsAudioTrackTypee.values.first.fromString(trackType),
+                        HlsAudioTrackType.values.first.fromString(trackType),
                   ),
                 );
               }
@@ -75,7 +75,7 @@ class MasterPlaylistModel extends Equatable {
             final track = HlsAudioTrack(
               filesCount: trackDetails.filesCount,
               size: trackDetails.size,
-              trackType: HlsAudioTrackTypee.values.first.fromString(trackType),
+              trackType: HlsAudioTrackType.values.first.fromString(trackType),
               trackUrl: trackUrl,
               trackName: trackName,
             );

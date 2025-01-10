@@ -2,7 +2,9 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:objectbox/objectbox.dart';
+import 'package:isar/isar.dart';
+
+part 'local_hls_status.g.dart';
 
 enum LocalHlsStatusType {
   complete,
@@ -15,30 +17,27 @@ enum LocalHlsStatusType {
   error;
 }
 
-@Entity()
+@embedded
 class LocalHlsStatus extends Equatable {
   LocalHlsStatus({
-    required this.statusType,
-
-    DateTime? creationDate,
+    this.statusType = LocalHlsStatusType.notExist,
+    int creationDate = -1,
     this.message,
     this.statusCode,
   }) {
-    if (creationDate == null) {
-      this.creationDate = DateTime.now();
+    if (creationDate == -1) {
+      this.creationDate = DateTime.now().millisecondsSinceEpoch;
     } else {
       this.creationDate = creationDate;
     }
   }
 
-  @Id(assignable: true)
-  int id = 0;
-  @Property(type: PropertyType.byte)
+  @enumerated
   final LocalHlsStatusType statusType;
   final String? message;
   final int? statusCode;
-  @Property(type: PropertyType.dateNano)
-  late final DateTime creationDate;
+
+  late int creationDate;
 
   @override
   List<Object?> get props => [statusType, message, statusCode];
@@ -48,9 +47,12 @@ class LocalHlsStatus extends Equatable {
       'statusType': statusType.name,
       'message': message,
       'statusCode': statusCode,
-      'creationDate': creationDate.toUtc().toIso8601String(),
+      'creationDate': getCreationDate.toUtc().toIso8601String(),
     };
   }
+
+  DateTime get getCreationDate =>
+      DateTime.fromMillisecondsSinceEpoch(creationDate);
 
   factory LocalHlsStatus.fromMap(Map<String, dynamic> map) {
     return LocalHlsStatus(
@@ -59,7 +61,7 @@ class LocalHlsStatus extends Equatable {
       ),
       message: map['message'] != null ? map['message'] as String : null,
       statusCode: map['statusCode'] as int?,
-      creationDate: DateTime.parse(map['creationDate'] as String).toLocal(),
+      // creationDate: DateTime.parse(map['creationDate'] as String).toLocal(),
     );
   }
 
@@ -78,7 +80,7 @@ class LocalHlsStatus extends Equatable {
       statusType: statusType ?? this.statusType,
       message: message ?? this.message,
       statusCode: statusCode ?? this.statusCode,
-      creationDate: creationDate ?? this.creationDate,
+      // creationDate: creationDate ?? this.creationDate,
     );
   }
 }

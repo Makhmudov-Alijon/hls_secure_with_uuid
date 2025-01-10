@@ -2,16 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:async/async.dart';
+import 'package:async/async.dart' show StreamQueue;
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/locale_hls/locale_hls_obj/locale_hls_model_obj.dart';
-import 'package:download_manager/src/providers/download/top_level_functions/download.dart';
 import 'package:download_manager/src/providers/download/top_level_functions/store_to_file.dart';
 import 'package:download_manager/src/repository/hls_local_repository.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../models/locale_hls/local_hls_model/local_hls_id.dart';
+import 'top_level_functions/download_and_store_to_file.dart';
 
 enum HlsDownloaderState {
   downloading,
@@ -53,13 +51,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  void addToQueue(LocalHlsModelObj hls) {
+  void addToQueue(LocalHlsModelIsar hls) {
     moviesController.updateHlsStatus(hls.iD, LocalHlsInQueueState(),
       where: 'add to queue 53',
     );
   }
 
-  void pauseDownload(LocalHlsModelObj hls) {
+  void pauseDownload(LocalHlsModelIsar hls) {
     if (hls.id == _downloadingHls) {
       _stopDownloading();
     }
@@ -68,17 +66,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     );
   }
 
-  void cancelDownload(LocalHlsModelObj hls) {
+  void cancelDownload(LocalHlsModelIsar hls) {
     moviesController.updateHlsStatus(hls.iD, LocalHlsDeletedState(),
       where: 'cancel download 64',
     );
   }
 
   void tryToDownload({
-    required LocalHlsModelObj hls,
+    required LocalHlsModelIsar hls,
     required DownloadTask? downloadTask,
     required void Function(LocalHlsErrorState error)? onError,
-    required Future<void> Function(LocalHlsModelObj hls, Ref<Object?> ref)?
+    required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
         onDownloadComplete,
   }) {
     if (state == HlsDownloaderState.downloading) {
@@ -102,7 +100,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   Future<void> prepareAndDownloadOrQueue({
     required MasterPlaylistModel masterPlaylist,
     required LocalHlsDetailsModel hlsDetails,
-    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
+    required Future<void> Function(LocalHlsModelIsar hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
     String? posterLink,
@@ -114,15 +112,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
     if (downloadTask != null) {
       await moviesController.refreshMovies();
-      LocalHlsModelObj? hls = moviesController.hlsByIdd(
-        hlsDetails.localHlsId.target!,
+      LocalHlsModelIsar? hls = moviesController.hlsByIdd(
+        hlsDetails.localHlsId,
       );
 
       final int time = 10;
 
       for (int i = 0; i < time && hls == null; i++) {
         await Future.delayed(const Duration(milliseconds: 300), () {});
-        hls = moviesController.hlsByIdd(hlsDetails.localHlsId.target!);
+        hls = moviesController.hlsByIdd(hlsDetails.localHlsId);
       }
 
       if (hls != null) {
@@ -145,7 +143,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         var dibiding;
         for (int i = 0; i < time && dibiding == null; i++) {
           await Future.delayed(const Duration(milliseconds: 300), () {});
-          dibiding = moviesController.hlsByIdd(hlsDetails.localHlsId.target!);
+          dibiding = moviesController.hlsByIdd(hlsDetails.localHlsId);
         }
         if (dibiding != null) {
           return prepareAndDownloadOrQueue(
@@ -162,7 +160,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   }
 
   Future<void> checkForNextQueue({
-    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
+    required Future<void> Function(LocalHlsModelIsar hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
     required String where,
@@ -213,12 +211,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   Future<void> downloadOrContinue({
     required DownloadTask downloadTask,
-    required LocalHlsModelObj hls,
-    required Future<void> Function(LocalHlsModelObj hls, Ref ref)?
+    required LocalHlsModelIsar hls,
+    required Future<void> Function(LocalHlsModelIsar hls, Ref ref)?
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
-    final DateTime start = DateTime.now();
     _startDownloading();
     _downloadingHls = hls.iD;
 
@@ -230,7 +227,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     try {
       _isolateRunning = true;
 
-      // final DateTime startTime = DateTime.now();
+      final DateTime startTime = DateTime.now();
 
       List<(String url, String absPath)> tasks = [
         ...downloadTask.items
@@ -240,6 +237,28 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       List<MapEntry<String, dynamic>> failedTasks = [];
 
       final hlsLocalRepository = HlsLocalRepository();
+      // final ReceivePort fullPort = ReceivePort();
+      // await Isolate.spawn(
+      //   downloadFull,
+      //   DownloadFullTask(
+      //     tasks: tasks,
+      //     sendPort: fullPort.sendPort,
+      //   ),
+      // );
+      // fullPort.listen((v) {
+      //   if (v is String) {
+      //     if (v == 'done') {
+      //       print(
+      //         '>< >< start tasks : ${DateTime.now().difference(start).inMilliseconds}',
+      //       );
+      //     }
+      //     if (v == 'done-full') {
+      //       print(
+      //         '>< >< full isolate done : ${DateTime.now().difference(start).inMilliseconds}',
+      //       );
+      //     }
+      //   }
+      // });
 
       print('>< >< TOTAL TASKS  : ${tasks.length}');
       if (tasks.isNotEmpty) {
@@ -270,7 +289,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         storeToFileReceivePort.listen((v) {
           if (v is bool && v) {
             print('>< >< storeFile : ${count++}');
-            ;
           } else {
             print('>< >< store file isNot bool : ${count++}');
           }
@@ -279,10 +297,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         // Create the isolates
         for (var i = 0; i < maxIsolates; i++) {
           final receivePort = ReceivePort();
-          final isolate =
-              await Isolate.spawn(downloadFileHttp, receivePort.sendPort);
-          // await Isolate.spawn(
-          //     downloadWithFlutterDownloaderr, receivePort.sendPort);
+          final isolate = await Isolate.spawn(
+            // downloadFileHttp,
+            downloadAndStoreToFile,
+            receivePort.sendPort,
+          );
           isolates.add(isolate);
 
           final streamQueue = StreamQueue(receivePort);
@@ -303,7 +322,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             (message) async {
               if (message is StoreFileData) {
                 if (message.bytes.isNotEmpty) {
-                  unawaited(storeToFile(message, storeToFileReceivePort));
+                  // unawaited(storeToFile(message, storeToFileReceivePort));
                   if (DateTime.now()
                           .difference(lastCheckForPauseOrDeleted)
                           .inMilliseconds >
@@ -352,7 +371,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                     );
                   });
                   print(
-                      '>< >< downloading ended in: ${DateTime.now().difference(start).inMilliseconds} millisseconds');
+                      '>< >< downloading ended in: ${DateTime.now().difference(startTime).inMilliseconds} millisseconds');
                   progressUpdateTimer?.cancel();
                   progressUpdateTimer = null;
                   allTasksCompleted.complete();
@@ -411,11 +430,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         final v = 0;
       }
 
-      // final spentTime = DateTime.now().difference(startTime).inMilliseconds;
-      //
-      // final v = 0;
+      final spentTime = DateTime.now().difference(startTime).inMilliseconds;
 
-      // /// ////////////////////////////////////
+      final v = 0;
+
+      /// ////////////////////////////////////
       _downloadingHls = null;
       _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
@@ -493,5 +512,3 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 }
-
-

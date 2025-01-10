@@ -66,10 +66,11 @@ class _HomePageState extends ConsumerState<HomePage> {
       isSerial: false,
       episodeNum: null,
       seasonNum: null,
+      localHlsId: hlsId,
+      resolution: resolution,
+      audioTracks: audioTracks.toSet().toList(),
     );
-    localHlsDetails.localHlsId.target = hlsId;
-    localHlsDetails.resolution.target = resolution;
-    localHlsDetails.audioTracks.addAll(audioTracks);
+
     try {
       await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueue(
             masterPlaylist: master,

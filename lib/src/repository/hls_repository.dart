@@ -6,6 +6,8 @@ import 'package:download_manager/download_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
+import 'locale_hls_store/locale_hls_store_repository_impl.dart';
+
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
     dio: ref.read(managerClientProvider),
@@ -82,7 +84,7 @@ class HlsRepository {
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
-        localHlsId: hlsDetails.localHlsId.target!,
+        localHlsId: hlsDetails.localHlsId,
         isRemote: false,
       );
 
@@ -100,7 +102,7 @@ class HlsRepository {
         pathManager: pathManager,
         master: master,
         isForWatching: false,
-        selectedResolutions: {hlsDetails.resolution.target!},
+        selectedResolutions: {hlsDetails.resolution},
         selectedTracks: hlsDetails.audioTracks.toSet(),
       );
       final content = master.toLocalPlaylist(
@@ -116,7 +118,7 @@ class HlsRepository {
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
         await downloadItemm(
           DownloadItem(
-            groupId: hlsDetails.localHlsId.target!.toStringId(),
+            groupId: hlsDetails.localHlsId.toStringId(),
             url: posterLink,
             saveDir: pathManager.masterDir,
             fileName: pathManager.posterFile.fileName,
@@ -137,7 +139,7 @@ class HlsRepository {
           dowloadTaskContent,
         );
 
-      final localHls = LocalHlsModelObj(
+      final localHls = LocalHlsModelIsar(
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: masterFile.path,
@@ -145,13 +147,15 @@ class HlsRepository {
         downloadTasksFilePath: pathManager.downloadTaskFile.path,
         localHlsFilePath: pathManager.localHlsFile.path,
         totalSegments: downloadTask.items.length,
-      );
-      localHls.hlsDetails.target = hlsDetails;
-      localHls.downloadStatus.target = LocalHlsStatus(
-        statusType: LocalHlsStatusType.prepared,
-        creationDate: DateTime.now(),
+        hlsDetails: hlsDetails,
+        downloadStatus: LocalHlsStatus(
+          statusType: LocalHlsStatusType.prepared,
+          // creationDate: DateTime.now(),
+        ),
       );
       final v = localHls.toJson();
+
+      await ref.read(localeHlsStoreRepositoryProvider).add(localHls);
 
       /// create local hls file
       pathManager.localHlsFile

@@ -26,20 +26,24 @@ Future<void> storeToFileWorker(StoreFileData v) async {
   // await file.writeAsBytes(v.bytes, flush: true);
 
   /// gpt two
-  final file = File(v.filePath);
-  final raf = await file.open(mode: FileMode.write);
+  try {
+    final file = File(v.filePath);
+    final raf = await file.open(mode: FileMode.write);
 
-  const int chunkSize = 8192; // 8 KB
-  int offset = 0;
-  final data = v.bytes;
-  while (offset < data.length) {
-    int end =
-        (offset + chunkSize > data.length) ? data.length : offset + chunkSize;
-    await raf.writeFrom(data, offset, end);
-    offset = end;
+    const int chunkSize = 8192; // 8 KB
+    int offset = 0;
+    final data = v.bytes;
+    while (offset < data.length) {
+      int end =
+          (offset + chunkSize > data.length) ? data.length : offset + chunkSize;
+      await raf.writeFrom(data, offset, end);
+      offset = end;
+    }
+
+    await raf.close();
+  } catch (e) {
+    Isolate.exit(v.sendPort, false);
   }
-
-  await raf.close();
 
   Isolate.exit(v.sendPort, true);
 }

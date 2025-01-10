@@ -1,10 +1,11 @@
 import 'package:download_manager/download_manager.dart';
 
 /// **Warning** This function throws exception if hls not exists
-Future<void> updateHlss(LocalHlsModelObj hls) async {
-  final hlsFile = hls.localHlsFile;
+Future<void> updateHls(LocalHlsModelIsar hls) async {
+  /// todo: locale hls update top
+  final hlsFile = hls.localHlsFilee;
   if (hlsFile.existsSync()) {
-    final statusName = hls.downloadStatus.target!.statusType.name;
+    final statusName = hls.downloadStatus.statusType.name;
     await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName).then((v) {
       hlsFile.writeAsStringSync(
         hls.toJson(),
@@ -15,22 +16,22 @@ Future<void> updateHlss(LocalHlsModelObj hls) async {
   }
 }
 
-Future<LocalHlsModelObj?> updateHlsStatusTopp(
-    LocalHlsModelObj hls,
+Future<LocalHlsModelIsar?> updateHlsStatusTop(
+  LocalHlsModelIsar hls,
   LocalHlsState state,
 ) async {
   try {
     final newHls = hls.copyWith(
       downloadStatus: state.toLocalHlsStatus(),
     );
-    await updateHlss(newHls);
+    await updateHls(newHls);
     return newHls;
   } catch (e) {
     return null;
   }
 }
 
-void deleteHlsDirectory(LocalHlsModelObj hls) {
+void deleteHlsDirectory(LocalHlsModelIsar hls) {
   if (hls.masterDir.existsSync()) {
     hls.masterDir.delete(recursive: true);
   } else {
@@ -38,9 +39,10 @@ void deleteHlsDirectory(LocalHlsModelObj hls) {
   }
 }
 
-LocalHlsState fetchHlsState(LocalHlsModelObj hls) {
+LocalHlsState fetchHlsState(LocalHlsModelIsar hls) {
   /// point
-  final hlsFile = hls.localHlsFile;
+  /// todo: locale hls fetch top
+  final hlsFile = hls.localHlsFilee;
   if (!hlsFile.existsSync()) {
     return LocalHlsDeletedState();
   }
@@ -48,5 +50,5 @@ LocalHlsState fetchHlsState(LocalHlsModelObj hls) {
   if (fileContent.isEmpty) {
     return LocalHlsDeletedState();
   }
-  return LocalHlsModelObj.fromJson(fileContent).localHlsState;
+  return LocalHlsModelIsar.fromJson(fileContent).localHlsState;
 }

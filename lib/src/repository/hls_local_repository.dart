@@ -7,7 +7,7 @@ final hlsLocalRepositoryProvider = Provider(
 
 class HlsLocalRepository {
   /// point
-  Future<List<LocalHlsModelObj>> fetchLocalHlsMovies({
+  Future<List<LocalHlsModelIsar>> fetchLocalHlsMovies({
     bool isInitial = false,
   }) async {
     final mediaDir = await HlsPathConstants.mediaDir;
@@ -15,12 +15,12 @@ class HlsLocalRepository {
       mediaDir,
       HlsFilenames.localHlsJson,
     );
-    final hlsMovies = <LocalHlsModelObj>[];
+    final hlsMovies = <LocalHlsModelIsar>[];
 
     for (final file in hlsFiles) {
       if (!file.existsSync()) continue;
       final content = file.readAsStringSync();
-      var hls = LocalHlsModelObj.fromJson(content);
+      var hls = LocalHlsModelIsar.fromJson(content);
 
       if (hls.localHlsState is LocalHlsDeletedState || !hls.validate()) {
         deleteHlsDirectory(hls);
@@ -51,12 +51,15 @@ class HlsLocalRepository {
   }
 
   /// **Warning** This function throws exception if hls not exists
-  Future<void> updateHls(LocalHlsModelObj hls) async {
-    final hlsFile = hls.localHlsFile;
+  Future<void> updateHls(LocalHlsModelIsar hls) async {
+    final hlsFile = hls.localHlsFilee;
     if (hlsFile.existsSync()) {
-      final statusName = hls.downloadStatus.target!.statusType.name;
-      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName).then((v) {
+      final statusName = hls.downloadStatus.statusType.name;
+      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName)
+          .then((v) async {
         final content = hls.toJson();
+
+        /// todo: locale hls write
         hlsFile.writeAsStringSync(
           hls.toJson(),
         );
@@ -66,8 +69,8 @@ class HlsLocalRepository {
     }
   }
 
-  Future<LocalHlsModelObj?> updateHlsStatus(
-      LocalHlsModelObj hls, LocalHlsState state) async {
+  Future<LocalHlsModelIsar?> updateHlsStatus(
+      LocalHlsModelIsar hls, LocalHlsState state) async {
     try {
       final status = state.toLocalHlsStatus();
       final newHls = hls.copyWith(
@@ -80,23 +83,24 @@ class HlsLocalRepository {
     }
   }
 
-  void deleteHlsDirectory(LocalHlsModelObj hls) {
+  void deleteHlsDirectory(LocalHlsModelIsar hls) {
     if (hls.masterDir.existsSync()) {
       hls.masterDir.delete(recursive: true);
     }
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModelObj hls) {
+  LocalHlsState fetchHlsState(LocalHlsModelIsar hls) {
     /// point
-    final hlsFile = hls.localHlsFile;
+    final hlsFile = hls.localHlsFilee;
     if (!hlsFile.existsSync()) {
       return LocalHlsDeletedState();
     }
+    /// todo: locale hls get
     final fileContent = hlsFile.readAsStringSync();
     if (fileContent.isEmpty) {
       return LocalHlsDeletedState();
     }
-    final state = LocalHlsModelObj.fromJson(fileContent).localHlsState;
+    final state = LocalHlsModelIsar.fromJson(fileContent).localHlsState;
     return state;
   }
 }

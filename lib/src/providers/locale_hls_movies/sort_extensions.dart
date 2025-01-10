@@ -1,7 +1,7 @@
 import 'package:download_manager/download_manager.dart';
 
-extension Dibiding on List<LocalHlsModelObj> {
-  List<LocalHlsModelObj> get getItemsInQueueExt {
+extension Dibiding on List<LocalHlsModelIsar> {
+  List<LocalHlsModelIsar> get getItemsInQueueExt {
     // final start = DateTime.now();
     if (isEmpty) {
       return [];
@@ -25,8 +25,8 @@ extension Dibiding on List<LocalHlsModelObj> {
               bOrder,
             );
           } else {
-            return b.downloadStatus.target!.creationDate.compareTo(
-              a.downloadStatus.target!.creationDate,
+            return b.downloadStatus.creationDate.compareTo(
+              a.downloadStatus.creationDate,
             );
           }
         },
@@ -39,7 +39,7 @@ extension Dibiding on List<LocalHlsModelObj> {
 
   List<LocalHlsGroupModel> get getGroupedItemsExt {
     // return [];
-    final groupMap = <int, List<LocalHlsModelObj>>{};
+    final groupMap = <int, List<LocalHlsModelIsar>>{};
 
     // final start = DateTime.now();
     if (isEmpty) {
@@ -47,7 +47,7 @@ extension Dibiding on List<LocalHlsModelObj> {
     }
 
     for (final hls in this) {
-      final key = hls.hlsDetails.target!.localHlsId.target!.contentId;
+      final key = hls.hlsDetails.localHlsId.contentId;
       if (hls.localHlsState is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
@@ -62,12 +62,12 @@ extension Dibiding on List<LocalHlsModelObj> {
     }
 
     final groups = groupMap.values.map((items) {
-      if (items.first.hlsDetails.target!.isSerial) {
+      if (items.first.hlsDetails.isSerial) {
         items = items
           ..sort(
             (a, b) {
-              final aDetail = a.hlsDetails.target!;
-              final bDetail = b.hlsDetails.target!;
+              final aDetail = a.hlsDetails;
+              final bDetail = b.hlsDetails;
 
               if (aDetail.seasonNum == null ||
                   bDetail.seasonNum == null ||
@@ -83,9 +83,9 @@ extension Dibiding on List<LocalHlsModelObj> {
             },
           );
       }
-      final details = items.first.hlsDetails.target!;
+      final details = items.first.hlsDetails;
       return LocalHlsGroupModel(
-        id: details.localHlsId.target!.contentId,
+        id: details.localHlsId.contentId,
         title: details.title,
         season: details.seasonNum,
         isSerial: details.isSerial,

@@ -10,8 +10,8 @@ class LocaleHlsMoviesState extends Equatable {
 
   LocaleHlsMoviesState copyWith({
     List<LocalHlsGroupModel>? downloadedS,
-    List<LocalHlsModelObj>? rawItems,
-    List<LocalHlsModelObj>? total,
+    List<LocalHlsModelIsar>? rawItems,
+    List<LocalHlsModelIsar>? total,
     bool? trigger,
   }) =>
       LocaleHlsMoviesState(
@@ -22,8 +22,8 @@ class LocaleHlsMoviesState extends Equatable {
       );
 
   final List<LocalHlsGroupModel> downloadedS;
-  final List<LocalHlsModelObj> rawItems;
-  final List<LocalHlsModelObj> total;
+  final List<LocalHlsModelIsar> rawItems;
+  final List<LocalHlsModelIsar> total;
   final bool trigger;
 
   bool get isEmpty => total.isEmpty;
@@ -45,7 +45,7 @@ class SortIsolateParams {
   });
 
   final SendPort sendPort;
-  final List<LocalHlsModelObj> data;
+  final List<LocalHlsModelIsar> data;
 }
 
 class LoadMoviesParams {

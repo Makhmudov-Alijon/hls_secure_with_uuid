@@ -28,19 +28,19 @@ class LocalHlsModell extends Equatable {
     required this.totalSegments,
   });
 
-  LocalHlsId get id => hlsDetails.localHlsId.target!;
+  LocalHlsId get id => hlsDetails.localHlsId;
 
   HlsPathManager get pathManager {
     return HlsPathManager(
       baseDir: baseDir,
-      localHlsId: hlsDetails.localHlsId.target!,
+      localHlsId: hlsDetails.localHlsId,
       isRemote: false,
     );
   }
 
   File get videoMasterFile {
     return pathManager.videoMasterFile(
-      resolutionType: hlsDetails.resolution.target!.resolution,
+      resolutionType: hlsDetails.resolution.resolution,
     );
   }
 
@@ -80,7 +80,7 @@ class LocalHlsModell extends Equatable {
 
   Duration get timeLeft {
     final hoursPassed =
-        downloadStatus.creationDate.difference(DateTime.now()).inHours.abs();
+        downloadStatus.getCreationDate.difference(DateTime.now()).inHours.abs();
     return Duration(
       hours: AppConstants.hlsLifeHours.inHours - hoursPassed,
     );
@@ -220,8 +220,12 @@ class LocalHlsModell extends Equatable {
       downloadStatus: LocalHlsStatus.fromMap(
         map['downloadStatus'] as Map<String, dynamic>,
       ),
-      downloadTasksFile: File(map['downloadTaskFile'] as String),
-      localHlsFile: File(map['localHlsFile'] as String),
+      downloadTasksFile: File(
+        map['downloadTaskFile'] as String,
+      ),
+      localHlsFile: File(
+        map['localHlsFile'] as String,
+      ),
     );
   }
 
@@ -258,8 +262,8 @@ class LocalHlsModell extends Equatable {
 
   String get getStatusKey {
     if (hlsDetails.isSerial) {
-      return '${hlsDetails.localHlsId.target!.contentId}-${hlsDetails.localHlsId.target!.episodeId}';
+      return '${hlsDetails.localHlsId.contentId}-${hlsDetails.localHlsId.episodeId}';
     }
-    return '${hlsDetails.localHlsId.target!.contentId}';
+    return '${hlsDetails.localHlsId.contentId}';
   }
 }

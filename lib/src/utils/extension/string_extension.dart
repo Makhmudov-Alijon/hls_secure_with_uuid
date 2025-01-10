@@ -1,6 +1,6 @@
 import 'dart:developer' as developerLog;
 
-import '../../entities/local_hls_status.dart';
+import '../../entities/locale_hls_status/local_hls_status.dart';
 
 extension StringExtension on String {
   void log() {
