@@ -1,11 +1,23 @@
+import 'dart:async';
+
 import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'locale_hls_store/locale_hls_store_repository.dart';
+
 final hlsLocalRepositoryProvider = Provider(
-  (ref) => HlsLocalRepository(),
+  (ref) => HlsLocalRepository(
+    localeHlsStorage: ref.read(localeHlsStoreRepositoryProvider),
+  ),
 );
 
 class HlsLocalRepository {
+  const HlsLocalRepository({
+    required this.localeHlsStorage,
+  });
+
+  final LocaleHlsStoreRepository localeHlsStorage;
+
   /// point
   Future<List<LocalHlsModelIsar>> fetchLocalHlsMovies({
     bool isInitial = false,
@@ -33,10 +45,8 @@ class HlsLocalRepository {
           continue;
         } else if (hls.localHlsState is LocalHlsDownloadingState ||
             hls.localHlsState is LocalHlsInQueueState) {
-          final updatedHls = await updateHlsStatus(
-            hls,
-            LocalHlsPauseState(),
-          );
+          final updatedHls = await updateHlsStatus(hls, LocalHlsPauseState(),
+              where: 'hls local repository 51');
           if (updatedHls != null) {
             hls = updatedHls;
           } else {
@@ -51,33 +61,27 @@ class HlsLocalRepository {
   }
 
   /// **Warning** This function throws exception if hls not exists
-  Future<void> updateHls(LocalHlsModelIsar hls) async {
-    final hlsFile = hls.localHlsFilee;
-    if (hlsFile.existsSync()) {
+  Future<void> updateHlss(LocalHlsModelIsar hls) async {
+    try {
       final statusName = hls.downloadStatus.statusType.name;
-      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName)
-          .then((v) async {
-        final content = hls.toJson();
-
-        /// todo: locale hls write
-        hlsFile.writeAsStringSync(
-          hls.toJson(),
-        );
-      });
-    } else {
-      throw UnimplementedError('Hls file not exist');
+      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName);
+    } catch (e) {
+      final v = 0;
     }
   }
 
   Future<LocalHlsModelIsar?> updateHlsStatus(
-      LocalHlsModelIsar hls, LocalHlsState state) async {
+    LocalHlsModelIsar hls,
+    LocalHlsState state, {
+    required String where,
+  }) async {
     try {
-      final status = state.toLocalHlsStatus();
-      final newHls = hls.copyWith(
-        downloadStatus: status,
+      final v = await localeHlsStorage.updateDownloadStatuss(
+        hls: hls.id,
+        status: state.toLocalHlsStatus(),
       );
-      await updateHls(newHls);
-      return newHls;
+
+      return v;
     } catch (e) {
       return null;
     }
@@ -89,18 +93,5 @@ class HlsLocalRepository {
     }
   }
 
-  LocalHlsState fetchHlsState(LocalHlsModelIsar hls) {
-    /// point
-    final hlsFile = hls.localHlsFilee;
-    if (!hlsFile.existsSync()) {
-      return LocalHlsDeletedState();
-    }
-    /// todo: locale hls get
-    final fileContent = hlsFile.readAsStringSync();
-    if (fileContent.isEmpty) {
-      return LocalHlsDeletedState();
-    }
-    final state = LocalHlsModelIsar.fromJson(fileContent).localHlsState;
-    return state;
-  }
+
 }

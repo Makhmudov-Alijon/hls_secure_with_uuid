@@ -3,11 +3,10 @@ import 'dart:convert';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:isar/isar.dart';
 
 part 'local_hls_details_model.g.dart';
 
-@embedded
+@Embedded(inheritance: false)
 class LocalHlsDetailsModel extends Equatable {
   const LocalHlsDetailsModel({
     this.localHlsId = const LocalHlsId(),
@@ -23,6 +22,7 @@ class LocalHlsDetailsModel extends Equatable {
   final bool isSerial;
   final int? episodeNum;
   final int? seasonNum;
+
 
   final LocalHlsId localHlsId;
 
@@ -91,6 +91,7 @@ class LocalHlsDetailsModel extends Equatable {
       LocalHlsDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
+  @ignore
   List<Object?> get props => [
         localHlsId,
         title,

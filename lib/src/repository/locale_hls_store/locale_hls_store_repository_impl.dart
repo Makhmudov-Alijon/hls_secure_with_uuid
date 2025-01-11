@@ -15,19 +15,34 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   final Isar isar;
 
   @override
-  Future<void> add(LocalHlsModelIsar hls) {
+  Future<Id> add(LocalHlsModelIsar hls) {
     return isar.writeTxn(
       () async {
-        await isar.localHlsModelIsars.put(hls);
+        final v = await isar.localHlsModelIsars.put(hls);
+        final theItem = await isar.localHlsModelIsars.get(v);
+
+        final vv = 0;
+        return v;
       },
     );
   }
 
   @override
-  Future<void> update(LocalHlsModelIsar hls) {
+  Future<LocalHlsModelIsar?> updateDownloadStatuss({
+    required Id hls,
+    required LocalHlsStatus status,
+  }) {
     return isar.writeTxn(
       () async {
-        await isar.localHlsModelIsars.put(hls);
+        try {
+          final target = await isar.localHlsModelIsars.get(hls);
+          target!.downloadStatus = status;
+          await isar.localHlsModelIsars.put(target);
+
+          return target;
+        } catch (e) {
+          return null;
+        }
       },
     );
   }
@@ -37,6 +52,30 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
     return isar.writeTxn(
       () async {
         await isar.localHlsModelIsars.delete(hls.id);
+      },
+    );
+  }
+
+  @override
+  Future<LocalHlsModelIsar?> getByLocaleHlsId({required LocalHlsId id}) {
+    return isar.writeTxn(
+      () async {
+        try {
+          final all = await isar.localHlsModelIsars.where().findAll();
+          final result = all.firstWhere((e) => e.hlsDetails.localHlsId == id);
+          return result;
+        } catch (e) {
+          return null;
+        }
+      },
+    );
+  }
+
+  @override
+  Future<void> clear() {
+    return isar.writeTxn(
+      () async {
+        return isar.localHlsModelIsars.clear();
       },
     );
   }

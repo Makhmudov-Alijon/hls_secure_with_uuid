@@ -6,7 +6,7 @@ import 'package:isar/isar.dart';
 
 part 'local_hls_id.g.dart';
 
-@embedded
+@Embedded(inheritance: false)
 class LocalHlsId extends Equatable {
   const LocalHlsId({
     this.contentId = -1,
@@ -48,10 +48,16 @@ class LocalHlsId extends Equatable {
       LocalHlsId.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
+  @ignore
   List<Object?> get props => [
         contentId,
         filmId,
         seasonId,
         episodeId,
       ];
+
+  @override
+  String toString() {
+    return '''>< >< $contentId, $filmId, $seasonId, $episodeId''';
+  }
 }

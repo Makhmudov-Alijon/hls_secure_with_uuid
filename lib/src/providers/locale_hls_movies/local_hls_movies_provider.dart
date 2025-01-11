@@ -5,12 +5,11 @@ import 'dart:isolate';
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/providers/locale_hls_movies/sort_extensions.dart';
 import 'package:download_manager/src/repository/hls_local_repository.dart';
-import 'package:download_manager/src/repository/hls_local_repository_functions_on_top_level.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../repository/locale_hls_store/locale_hls_store_repository_impl.dart';
+import '../../repository/locale_hls_store/locale_hls_store_repository.dart';
 
 part 'locale_hls_movies_state.dart';
 
@@ -22,8 +21,11 @@ NotifierProvider<LocalHlsMoviesNotifier, LocaleHlsMoviesState>(
 class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   bool isInitial = true;
 
+  LocaleHlsStoreRepository get hlsIsarRepo =>
+      ref.read(localeHlsStoreRepositoryProvider);
+
   LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
-    return ref.read(localHlsMovieProvider(hlsId).notifier);
+    return ref.read(localHlsMovieProviderr(hlsId).notifier);
   }
 
   LocalHlsGroupModel? getGroupById(int contentId) {
@@ -45,7 +47,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   Future<void> refreshMovies() async {
-    loadMovies();
+    await loadMoviesIsar(false);
   }
 
   Future<LocalHlsModelIsar?> findNextInQueue({required String where}) async {
@@ -86,7 +88,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }) {
     final hlsIndex = _hlsIndex(hls.hlsDetails.localHlsId);
     if (hlsIndex != null) {
-      _removeHlsAtt(hlsIndex);
+      _removeHlsAt(hlsIndex);
       movieController(hls.iD).refresh(); // TODO: check without it
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
       ref.read(localeHlsStoreRepositoryProvider).delete(hls);
@@ -94,43 +96,30 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
   }
 
-  Future<LocalHlsState?> updateHlsStatus(
+  Future<LocalHlsModelIsar?> updateHlsStatus(
     LocalHlsId id,
     LocalHlsState hlsState, {
     required String where,
   }) async {
-    if (state.total.isEmpty) {
-      return null;
-    }
     final hlsIndex = _hlsIndex(id);
     if (hlsIndex != null) {
       final oldHls = state.total[hlsIndex];
-      final newHls = await ref
-          .read(hlsLocalRepositoryProvider)
-          .updateHlsStatus(oldHls, hlsState);
+      final newHls = await ref.read(hlsLocalRepositoryProvider).updateHlsStatus(
+            oldHls,
+            hlsState,
+            where: 'local_hls_movies_provider 110 $where',
+          );
       if (newHls != null) {
-        await ref.read(localeHlsStoreRepositoryProvider).update(newHls);
-        _replaceHlsAt(hlsIndex, newHls);
+        await refreshMovies();
         movieController(id).refresh(); // TODO: check without it
       }
-      return hlsState;
+      return newHls;
     } else {
       return null;
     }
   }
 
-  void _replaceHlsAt(int index, LocalHlsModelIsar updatedHls) {
-    if (state.total.isNotEmpty) {
-      final oldItems = [...state.total];
-      final newItems = oldItems
-        ..removeAt(index)
-        ..insert(index, updatedHls);
-      updateState(state.copyWith(total: newItems));
-      sort('_replaceHlsAt');
-    }
-  }
-
-  void _removeHlsAtt(int index) {
+  void _removeHlsAt(int index) {
     if (state.total.isNotEmpty) {
       final oldState = [...state.total];
       final newState = oldState..removeAt(index);
@@ -147,6 +136,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     try {
       final index = state.total.indexWhere((element) {
         final result = element.hlsDetails.localHlsId == id;
+        print(element.hlsDetails.localHlsId);
+        print(id);
+        print('>< >< $result');
         return result;
       });
       return index < 0 ? null : index;
@@ -155,52 +147,59 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
   }
 
-  LocalHlsModelIsar? hlsByIdd(LocalHlsId id) {
-    if (state.isEmpty) {
-      return null;
-    }
-    final index = _hlsIndex(id);
-    return index == null ? null : state.total[index];
+  Future<LocalHlsModelIsar?> hlsById(LocalHlsId id) async {
+    return ref.read(localeHlsStoreRepositoryProvider).getByLocaleHlsId(id: id);
   }
 
   /// Load the movies thread
-  Future<void> loadMovies() async {
-    final token = RootIsolateToken.instance!;
-    final mediaDir = await HlsPathConstants.mediaDir;
-    final receivePort = ReceivePort();
-    await Isolate.spawn<LoadMoviesParams>(
-      _loadMoviesWorker,
-      LoadMoviesParams(
-        token: token,
-        sendPort: receivePort.sendPort,
-        isInitial: _checkInitial(),
-        mediaDir: mediaDir,
-      ),
-    );
-    receivePort.listen(
-      (v) async {
-        if (v is List<LocalHlsModelIsar>) {
-          updateState(
-            state.copyWith(total: v, trigger: !state.trigger),
+  Future<void> loadMoviesIsar(bool isInitial) async {
+    final DateTime start = DateTime.now();
+    final total =
+        await ref.read(isarProvider).localHlsModelIsars.where().findAll();
+    final hlsMovies = <LocalHlsModelIsar>[];
+    for (var hls in total) {
+      final localeState = hls.localHlsState;
+      final rtt = localeState.runtimeType;
+      final v = localeState is LocalHlsDownloadingState ||
+          localeState is LocalHlsInQueueState;
+      if (localeState is LocalHlsDeletedState || !hls.validate()) {
+        await hlsIsarRepo.delete(hls);
+
+        ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+        continue;
+      }
+      if (isInitial) {
+        final v = 0;
+        if (localeState is LocalHlsCompleteState && hls.timeLeft.inHours <= 0) {
+          ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+          continue;
+        } else if (localeState is LocalHlsDownloadingState ||
+            localeState is LocalHlsInQueueState) {
+          final updatedHls = await hlsIsarRepo.updateDownloadStatuss(
+            hls: hls.id,
+            status: LocalHlsPauseState().toLocalHlsStatus(),
           );
-          unawaited(sort('load and sort'));
-        } else if (v is List<dynamic>) {
-          final port = v[1] as SendPort;
-          final hls = v[0] as LocalHlsModelIsar;
-          final updatedHls = await updateHlsStatusTop(
-            hls,
-            LocalHlsPauseState(),
-          );
+          final vv = 0;
           if (updatedHls != null) {
-            port.send(updatedHls);
+            hls = updatedHls;
           } else {
-            final v = 0;
+            continue;
           }
         } else {
-          final v = 0;
+          print(
+              '>< >< is initial but else : name => ${localeState.toLocalHlsStatus().statusType.name}  ');
+          print('progress:${localeState.progress}  ');
         }
-      },
+      }
+      hlsMovies.add(hls);
+    }
+    updateState(
+      state.copyWith(total: hlsMovies),
     );
+
+    print(
+        '>< >< load spend time : ${DateTime.now().difference(start).inMilliseconds}');
+    unawaited(sort('load and sort'));
   }
 
   /// Sorting threads
@@ -220,7 +219,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         if (v is LocaleHlsMoviesState) {
           updateState(v.copyWith(trigger: !v.trigger));
         } else {
-          final v = 0;
+          final rtt = v.runtimeType;
+          final ff = 0;
         }
       },
     );
@@ -232,63 +232,10 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   @override
   LocaleHlsMoviesState build() {
-    loadMovies();
+    loadMoviesIsar(_checkInitial());
 
     return const LocaleHlsMoviesState();
   }
-}
-
-void _loadMoviesWorker(LoadMoviesParams params) async {
-  BackgroundIsolateBinaryMessenger.ensureInitialized(params.token);
-  final DateTime start = DateTime.now();
-  final mediaDir = params.mediaDir;
-  final hlsFiles = await HlsUtils.searchFilesByNameInDirectory(
-    mediaDir,
-    HlsFilenames.localHlsJson,
-  );
-  final hlsMovies = <LocalHlsModelIsar>[];
-
-  for (final file in hlsFiles) {
-    if (!file.existsSync()) {
-      continue;
-    }
-    final content = file.readAsStringSync();
-    final hls = LocalHlsModelIsar.fromJson(content);
-    final localeState = hls.localHlsState;
-
-    if (localeState is LocalHlsDeletedState || !hls.validate()) {
-      deleteHlsDirectory(hls);
-      continue;
-    }
-    if (params.isInitial) {
-      if (localeState is LocalHlsCompleteState && hls.timeLeft.inHours <= 0) {
-        deleteHlsDirectory(hls);
-        continue;
-      } else if (localeState is LocalHlsDownloadingState ||
-          localeState is LocalHlsInQueueState) {
-        final receivePort = ReceivePort();
-        params.sendPort.send([hls, receivePort.sendPort]);
-
-        receivePort.listen((v) {
-          if (v is LocalHlsModelIsar) {
-            hlsMovies.add(v);
-            receivePort.close();
-          }
-        });
-        continue;
-      } else {
-        print(
-            '>< >< is initial but else : name => ${localeState.toLocalHlsStatus().statusType.name}  ');
-        print('progress:${localeState.progress}  ');
-      }
-    }
-    hlsMovies.add(hls);
-  }
-
-  print(
-      '>< >< spent time to load from file : ${DateTime.now().difference(start).inMilliseconds}');
-
-  params.sendPort.send(hlsMovies);
 }
 
 /// SORT

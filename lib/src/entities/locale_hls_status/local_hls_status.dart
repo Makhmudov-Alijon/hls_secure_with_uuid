@@ -17,7 +17,7 @@ enum LocalHlsStatusType {
   error;
 }
 
-@embedded
+@Embedded(inheritance: false)
 class LocalHlsStatus extends Equatable {
   LocalHlsStatus({
     this.statusType = LocalHlsStatusType.notExist,
@@ -40,6 +40,7 @@ class LocalHlsStatus extends Equatable {
   late int creationDate;
 
   @override
+  @ignore
   List<Object?> get props => [statusType, message, statusCode];
 
   Map<String, dynamic> toMap() {

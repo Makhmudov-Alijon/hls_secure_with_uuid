@@ -35,7 +35,7 @@ extension HlsResolutionTypeExt on HlsResolutionType {
   }
 }
 
-@embedded
+@Embedded(inheritance: false)
 class HlsResolution extends Equatable {
   const HlsResolution({
     this.resolution = HlsResolutionType.v480p,
@@ -81,6 +81,7 @@ class HlsResolution extends Equatable {
       HlsResolution.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
+  @ignore
   List<Object?> get props => [
         resolution,
         videoPlaylistUrl,

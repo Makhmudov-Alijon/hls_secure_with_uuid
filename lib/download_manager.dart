@@ -25,11 +25,12 @@ export 'package:download_manager/src/models/segment_playlist_model/video_segment
 export 'package:download_manager/src/providers/client_provider.dart';
 export 'package:download_manager/src/providers/download/hls_downloader_provider.dart';
 export 'package:download_manager/src/providers/isar/isar_provider.dart';
-export 'package:download_manager/src/providers/local_hls_movie_provider.dart';
+export 'package:download_manager/src/providers/locale_hls_movie/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movies/local_hls_movies_provider.dart';
 export 'package:download_manager/src/providers/network_connection/network_connection_provider.dart';
 export 'package:download_manager/src/repository/hls_repository.dart';
 export 'package:download_manager/src/repository/hls_service.dart';
+export 'package:download_manager/src/repository/locale_hls_store/locale_hls_store_repository_impl.dart';
 export 'package:download_manager/src/repository/stat_repository_api/remote_stat_repository_api.dart';
 export 'package:download_manager/src/repository/stat_repository_api/the_client_provider/the_end_point_provider.dart';
 export 'package:download_manager/src/utils/app_constants.dart';
@@ -49,4 +50,4 @@ export 'package:isar/isar.dart';
 
 export 'src/models/isar_models/local_hls_stat_models/hls_downloaded_stat_model/hls_downloaded_stat_model.dart';
 
-// final  v =theEndPointsProvider ;
+// final  v =localeHlsStoreRepositoryProvider ;

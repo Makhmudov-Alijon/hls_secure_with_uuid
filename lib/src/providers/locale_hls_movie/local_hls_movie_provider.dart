@@ -4,7 +4,7 @@ import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:watcher/watcher.dart';
 
-final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
+final localHlsMovieProviderr = AutoDisposeAsyncNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
   LocalHlsMovieNotifier.new,
   dependencies: [
@@ -13,7 +13,7 @@ final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
 );
 
 class LocalHlsMovieNotifier
-    extends AutoDisposeFamilyNotifier<LocalHlsState, LocalHlsId> {
+    extends AutoDisposeFamilyAsyncNotifier<LocalHlsState, LocalHlsId> {
   DirectoryWatcher? masterStream;
   StreamSubscription<WatchEvent>? masterStreamSub;
   LocalHlsModelIsar? currentHls;
@@ -31,20 +31,26 @@ class LocalHlsMovieNotifier
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
   void updateProgress(double progress, int threadsCount) {
-    state = LocalHlsDownloadingState(
-      // progress: 33
-      threadsCount: threadsCount,
-      progress: progress > 99 ? 99 : progress,
+    state = AsyncData(
+      LocalHlsDownloadingState(
+        // progress: 33
+        threadsCount: threadsCount,
+        progress: progress > 99 ? 99 : progress,
+      ),
     );
   }
 
   void refresh() {
-    state = checkState();
+    checkState().then((v) {
+      state = AsyncData(v);
+    });
   }
 
-  LocalHlsState checkState() {
-    final foundHls = ref.read(localHlsMoviesProvider.notifier).hlsByIdd(arg);
+  Future<LocalHlsState> checkState() async {
+    final foundHls =
+        await ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
+    sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     if (foundHls == null) {
       return LocalHlsNotExistState();
@@ -57,6 +63,8 @@ class LocalHlsMovieNotifier
   void pauseDownload() {
     if (currentHls != null) {
       downloaderController.pauseDownload(currentHls!);
+    } else {
+      final v = 0;
     }
   }
 
@@ -88,7 +96,12 @@ class LocalHlsMovieNotifier
   }
 
   @override
-  LocalHlsState build(LocalHlsId arg) {
+  FutureOr<LocalHlsState> build(LocalHlsId arg) {
     return checkState();
   }
+
+// @override
+// LocalHlsState build(LocalHlsId arg) {
+//   // return checkState();
+// }
 }

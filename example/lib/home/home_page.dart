@@ -1,6 +1,7 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -24,7 +25,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   final key = 'API_DI_KEY';
 
-  final hlsId = LocalHlsId(contentId: 123, filmId: 12);
+  final hlsIdd = LocalHlsId(contentId: 123, filmId: 12);
 
   MasterPlaylistModel? masterPlaylist;
 
@@ -66,7 +67,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       isSerial: false,
       episodeNum: null,
       seasonNum: null,
-      localHlsId: hlsId,
+      localHlsId: hlsIdd,
       resolution: resolution,
       audioTracks: audioTracks.toSet().toList(),
     );
@@ -106,7 +107,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             url: link,
             token: token,
             key: key,
-            hlsId: hlsId,
+            hlsId: hlsIdd,
           );
     } catch (e) {
       showSnackBar('Просмотр невозможен');
@@ -121,7 +122,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             url: link,
             key: key,
             token: token,
-            hlsId: hlsId,
+            hlsId: hlsIdd,
             forWatching: false,
           );
       setState(() {
@@ -171,7 +172,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   void onIconPressed(LocalHlsState hlsState) {
-    final movieController = ref.read(localHlsMovieProvider(hlsId).notifier);
+    final movieController = ref.read(localHlsMovieProviderr(hlsIdd).notifier);
 
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       movieController.tryContinueDownload(
@@ -220,15 +221,17 @@ class _HomePageState extends ConsumerState<HomePage> {
         // skipLoadingOnRefresh: true,
         // skipLoadingOnReload: true,
         builder: (data) {
-          final movieState = ref.watch(localHlsMovieProvider(hlsId));
-              final movieController =
-                  ref.watch(localHlsMovieProvider(hlsId).notifier);
+          final movieState = ref.watch(localHlsMovieProviderr(hlsIdd));
+          final movieController =
+              ref.watch(localHlsMovieProviderr(hlsIdd).notifier);
+          return movieState.when(
+            data: (data) {
               return RefreshIndicator(
                 onRefresh: () async {
                   await ref
                       .read(localHlsMoviesProvider.notifier)
                       .refreshMovies();
-                  ref.invalidate(localHlsMovieProvider);
+                  ref.invalidate(localHlsMovieProviderr);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -340,20 +343,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                           children: [
                             Row(
                               children: [
-                                if (iconByStatus(movieState) != null)
+                                if (iconByStatus(data) != null)
                                   SizedBox(
                                     width: 25,
                                     height: 25,
                                     child: IconButton(
                                       padding: EdgeInsets.zero,
-                                      onPressed: () =>
-                                          onIconPressed(movieState),
-                                      icon: Icon(iconByStatus(movieState)!),
+                                      onPressed: () => onIconPressed(data),
+                                      icon: Icon(iconByStatus(data)!),
                                     ),
                                   ),
                                 Expanded(
                                   child: LinearProgressIndicator(
-                                    value: movieState.progress,
+                                    value: data.progress,
                                   ),
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
@@ -374,11 +376,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  getStatusBy(movieState),
+                                  getStatusBy(data),
                                 ),
                                 if (movieState is! LocalHlsCompleteState)
                                   Text(
-                                    '${(movieState.progress * 100).toStringAsFixed(1)}%',
+                                    '${(data.progress * 100).toStringAsFixed(1)}%',
                                   ),
                               ],
                             ),
@@ -387,7 +389,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                             if (movieState is LocalHlsDownloadingState)
                               Text(
-                                'active threads count: ${movieState.threadsCount}',
+                                'active threads count: ${data.threadsCount}',
                               ),
                           ],
                         ),
@@ -397,6 +399,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               );
             },
+            error: (err, stackTrace) {
+              return Center(
+                child: Text(err.toString()),
+              );
+            },
+            loading: () => Center(
+              child: CupertinoActivityIndicator(),
+            ),
+          );
+        },
         // error: (error, stackTrace) {
         //   return Center(
         //     child: Text(

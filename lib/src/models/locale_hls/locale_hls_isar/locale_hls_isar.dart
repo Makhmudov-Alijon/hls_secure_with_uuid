@@ -7,7 +7,7 @@ import '../../../../download_manager.dart';
 
 part 'locale_hls_isar.g.dart';
 
-@collection
+@Collection(inheritance: false)
 class LocalHlsModelIsar extends Equatable {
   LocalHlsModelIsar({
     required this.baseDirPath,
@@ -32,10 +32,9 @@ class LocalHlsModelIsar extends Equatable {
 
   int totalSegments;
 
-  // Relationships
-  final LocalHlsDetailsModel hlsDetails;
+  late LocalHlsDetailsModel hlsDetails;
 
-  final LocalHlsStatus downloadStatus;
+  LocalHlsStatus downloadStatus;
 
   /// transients
   @ignore
@@ -58,10 +57,7 @@ class LocalHlsModelIsar extends Equatable {
 
   set masterFile(File file) => masterFilePath = file.path;
 
-  @ignore
-  File get localHlsFilee => File(localHlsFilePath);
 
-  set localHlsFilee(File file) => localHlsFilePath = file.path;
 
   @ignore
   File get downloadTasksFile => File(downloadTasksFilePath);
@@ -122,7 +118,6 @@ class LocalHlsModelIsar extends Equatable {
         masterDir.existsSync() &&
         posterFile.existsSync() &&
         masterFile.existsSync() &&
-        localHlsFilee.existsSync() &&
         downloadTasksFile.existsSync() &&
         audioMastersExists &&
         videoMasterExists;
@@ -151,8 +146,6 @@ class LocalHlsModelIsar extends Equatable {
 
   @ignore
   LocalHlsState get localHlsStateWithoutProgress {
-    const progress = 0.0;
-
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState();
@@ -213,6 +206,7 @@ class LocalHlsModelIsar extends Equatable {
     }
   }
 
+  @ignore
   @override
   List<Object?> get props => [
         hlsDetails,
@@ -222,7 +216,6 @@ class LocalHlsModelIsar extends Equatable {
         masterDir,
         downloadStatus,
         downloadTasksFile,
-        localHlsFilee,
         totalSegments,
       ];
 
@@ -276,40 +269,9 @@ class LocalHlsModelIsar extends Equatable {
   factory LocalHlsModelIsar.fromJson(String source) =>
       LocalHlsModelIsar.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LocalHlsModelIsar copyWith({
-    Directory? baseDir,
-    Directory? masterDir,
-    File? posterFile,
-    File? masterFile,
-    File? localHlsFile,
-    File? downloadTasksFile,
-    LocalHlsDetailsModel? hlsDetails,
-    LocalHlsStatus? downloadStatus,
-    int? totalSegments,
-    File? mediumThumbnailsFile,
-    File? largeThumbnailsFile,
-  }) {
-    final model = LocalHlsModelIsar(
-      baseDirPath: baseDir == null ? baseDirPath : baseDir.path,
-      masterDirPath: masterDir != null ? masterDir.path : masterDirPath,
-      posterFilePath: posterFile != null ? posterFile.path : posterFilePath,
-      masterFilePath: masterFile != null ? masterFile.path : masterFilePath,
-      localHlsFilePath:
-          localHlsFile != null ? localHlsFile.path : localHlsFilePath,
-      downloadTasksFilePath: downloadTasksFile != null
-          ? downloadTasksFile.path
-          : downloadTasksFilePath,
-      totalSegments: totalSegments ?? this.totalSegments,
-      hlsDetails: hlsDetails ?? this.hlsDetails,
-      downloadStatus: downloadStatus ?? this.downloadStatus,
-    );
 
-    return model;
-  }
 
   String get getStatusKey {
-    final hd = hlsDetails;
-
     if (hlsDetails.isSerial) {
       return '${hlsDetails.localHlsId.contentId}-${hlsDetails.localHlsId.episodeId}';
     }

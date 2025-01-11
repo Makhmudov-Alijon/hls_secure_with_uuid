@@ -74,6 +74,7 @@ class HlsRepository {
     }
   }
 
+  /// prepare playlists
   Future<DownloadTask?> preparePlaylists({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
@@ -139,13 +140,13 @@ class HlsRepository {
           dowloadTaskContent,
         );
 
-      final localHls = LocalHlsModelIsar(
+      final localHlss = LocalHlsModelIsar(
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: masterFile.path,
         masterDirPath: masterDir.path,
         downloadTasksFilePath: pathManager.downloadTaskFile.path,
-        localHlsFilePath: pathManager.localHlsFile.path,
+        localHlsFilePath: pathManager.localHlsFilee.path,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -153,16 +154,9 @@ class HlsRepository {
           // creationDate: DateTime.now(),
         ),
       );
-      final v = localHls.toJson();
+      final v = localHlss.toJson();
 
-      await ref.read(localeHlsStoreRepositoryProvider).add(localHls);
-
-      /// create local hls file
-      pathManager.localHlsFile
-        ..createIfNotExist()
-        ..writeAsStringSync(
-          localHls.toJson(),
-        );
+      await ref.read(localeHlsStoreRepositoryProvider).add(localHlss);
 
       return downloadTask;
     } catch (e) {

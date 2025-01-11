@@ -28,7 +28,7 @@ extension HlsAudioTrackTypeX on HlsAudioTrackType {
   }
 }
 
-@embedded
+@Embedded(inheritance: false)
 class HlsAudioTrack extends Equatable{
   HlsAudioTrack({
     this.trackType = HlsAudioTrackType.defaultTrack,
@@ -89,6 +89,7 @@ class HlsAudioTrack extends Equatable{
   }
 
 @override
+@ignore
   List<Object?> get props => [
         trackType,
         trackUrl,
