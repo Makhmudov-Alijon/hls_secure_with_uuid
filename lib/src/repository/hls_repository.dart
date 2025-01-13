@@ -6,8 +6,6 @@ import 'package:download_manager/download_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'locale_hls_store/locale_hls_store_repository_impl.dart';
-
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
     dio: ref.read(managerClientProvider),

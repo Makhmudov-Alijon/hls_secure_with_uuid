@@ -20,7 +20,7 @@ class Prefs {
   }
 
   // Method to store a String value
-  static Future<void> putLocalHlsStatusName(String key, String value) async {
+  static Future<void> putLocalHlsStatusNamee(String key, String value) async {
     if (_box == null) {
       await init();
     }

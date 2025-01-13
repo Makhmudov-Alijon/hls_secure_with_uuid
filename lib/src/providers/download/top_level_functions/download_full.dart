@@ -1,20 +1,17 @@
-import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
-Future<void> downloadFull(DownloadFullTask full) async {
-  print('>< >< length : ${full.tasks.length}');
+void downloadFull(DownloadFullTask full) {
   int count = 0;
   for (final task in full.tasks.indexed) {
-    unawaited(
-      http
-          .get(
-        Uri.parse(
-          task.$2.$1,
-          // 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        ),
+    http
+        .get(
+      Uri.parse(
+        task.$2.$1,
+      ),
       )
           .then(
         (response) async {
@@ -36,19 +33,25 @@ Future<void> downloadFull(DownloadFullTask full) async {
               DownloadFullHintEnum.doneFor.index,
             );
           } else {
-            print('>< >< fail for : $count <> ${task.$1}');
-            full.sendPort.send(
-              DownloadFullHintEnum.failFor.index,
-            );
-          }
+          print(
+              '>< >< fail for else : $count <> ${task.$1} Exception: ${jsonDecode(response.body)}');
+          full.sendPort.send(
+            DownloadFullHintEnum.failFor.index,
+          );
+        }
           if (count >= full.tasks.length) {
             full.sendPort.send(
               DownloadFullHintEnum.doneFull.index,
             );
           }
         },
-      ),
-    );
+    ).catchError((error) {
+      print(
+          '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}');
+      full.sendPort.send(
+        DownloadFullHintEnum.failFor.index,
+      );
+    });
   }
   full.sendPort.send(
     DownloadFullHintEnum.startingTaskCompleted.index,

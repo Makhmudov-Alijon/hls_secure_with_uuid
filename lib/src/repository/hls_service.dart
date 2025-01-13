@@ -169,8 +169,10 @@ class HlsService {
     required VideoSegmentPlaylistModel videoPlaylist,
     required HlsPathManager pathManager,
   }) {
+    int size = 0;
     final downloadItems = <DownloadItem>[];
     for (final audioPlaylist in audioPlaylists) {
+      size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
         downloadItems.add(
           DownloadItem(
@@ -207,6 +209,7 @@ class HlsService {
 
     final downloadTask = DownloadTask(
       items: downloadItems,
+      size: size + videoPlaylist.resolution.size,
     );
 
     return downloadTask;

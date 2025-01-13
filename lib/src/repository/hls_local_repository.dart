@@ -61,10 +61,10 @@ class HlsLocalRepository {
   }
 
   /// **Warning** This function throws exception if hls not exists
-  Future<void> updateHlss(LocalHlsModelIsar hls) async {
+  Future<void> updateHls(LocalHlsModelIsar hls) async {
     try {
       final statusName = hls.downloadStatus.statusType.name;
-      await Prefs.putLocalHlsStatusName(hls.getStatusKey, statusName);
+      await Prefs.putLocalHlsStatusNamee(hls.getStatusKey, statusName);
     } catch (e) {
       final v = 0;
     }

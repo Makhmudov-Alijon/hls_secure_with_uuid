@@ -199,8 +199,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       state.copyWith(total: hlsMovies),
     );
 
-    print(
-        '>< >< load spend time : ${DateTime.now().difference(start).inMilliseconds}');
     unawaited(sort('load and sort'));
   }
 

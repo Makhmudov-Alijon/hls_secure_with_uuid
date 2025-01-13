@@ -48,7 +48,7 @@ extension Dibiding on List<LocalHlsModelIsar> {
 
     for (final hls in this) {
       final key = hls.hlsDetails.localHlsId.contentId;
-      if (hls.localHlsState is LocalHlsCompleteState) {
+      if (hls.localHlsStateWithoutProgress is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
             return [...value, hls];
