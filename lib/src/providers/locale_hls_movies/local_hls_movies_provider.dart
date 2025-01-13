@@ -177,8 +177,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
           continue;
         } else if (localeState is LocalHlsDownloadingState ||
             localeState is LocalHlsInQueueState) {
-          final updatedHls = await hlsIsarRepo.updateDownloadStatuss(
-            hls: hls.id,
+          final updatedHls = await hlsIsarRepo.updateDownloadStatus(
+            hls: hls,
             status: LocalHlsPauseState().toLocalHlsStatus(),
           );
           final vv = 0;

@@ -221,10 +221,10 @@ class _HomePageState extends ConsumerState<HomePage> {
         // skipLoadingOnRefresh: true,
         // skipLoadingOnReload: true,
         builder: (data) {
-          final movieState = ref.watch(localHlsMovieProviderr(hlsIdd));
+          final movieStatee = ref.watch(localHlsMovieProviderr(hlsIdd));
           final movieController =
               ref.watch(localHlsMovieProviderr(hlsIdd).notifier);
-          return movieState.when(
+          return movieStatee.when(
             data: (data) {
               return RefreshIndicator(
                 onRefresh: () async {
@@ -358,7 +358,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     value: data.progress,
                                   ),
                                 ),
-                                if (movieState is! LocalHlsCompleteState)
+                                if (data is! LocalHlsCompleteState)
                                   SizedBox(
                                     width: 25,
                                     height: 25,
@@ -378,18 +378,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 Text(
                                   getStatusBy(data),
                                 ),
-                                if (movieState is! LocalHlsCompleteState)
+                                if (data is! LocalHlsCompleteState)
                                   Text(
                                     '${(data.progress * 100).toStringAsFixed(1)}%',
                                   ),
                               ],
                             ),
                             Text(
-                              '${movieState}',
+                              '${data.progress}',
                             ),
-                            if (movieState is LocalHlsDownloadingState)
+                            if (data is LocalHlsDownloadingState)
                               Text(
-                                'active threads count: ${data.threadsCount}',
+                                'speed: ${data.speed}',
                               ),
                           ],
                         ),

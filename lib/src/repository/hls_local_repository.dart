@@ -60,24 +60,14 @@ class HlsLocalRepository {
     return hlsMovies;
   }
 
-  /// **Warning** This function throws exception if hls not exists
-  Future<void> updateHls(LocalHlsModelIsar hls) async {
-    try {
-      final statusName = hls.downloadStatus.statusType.name;
-      await Prefs.putLocalHlsStatusNamee(hls.getStatusKey, statusName);
-    } catch (e) {
-      final v = 0;
-    }
-  }
-
   Future<LocalHlsModelIsar?> updateHlsStatus(
     LocalHlsModelIsar hls,
     LocalHlsState state, {
     required String where,
   }) async {
     try {
-      final v = await localeHlsStorage.updateDownloadStatuss(
-        hls: hls.id,
+      final v = await localeHlsStorage.updateDownloadStatus(
+        hls: hls,
         status: state.toLocalHlsStatus(),
       );
 

@@ -28,11 +28,9 @@ extension Dibiding on LocalHlsState {
 abstract class LocalHlsState {
   const LocalHlsState({
     this.progress = 0,
-    this.threadsCount = 0,
   });
 
   final double progress;
-  final int threadsCount;
 
   LocalHlsState copyWith({double? progress});
 
@@ -78,16 +76,16 @@ abstract class LocalHlsState {
 }
 
 class LocalHlsDownloadingState extends LocalHlsState {
-  LocalHlsDownloadingState({super.progress, super.threadsCount});
-
-  @override
-  LocalHlsState copyWith({
+  LocalHlsDownloadingState({
+    this.speed,
     double? progress,
-    int? threadsCount,
-  }) {
+  }) : super(progress: progress ?? 0.0);
+
+  double? speed;
+  @override
+  LocalHlsState copyWith({double? progress}) {
     return LocalHlsDownloadingState(
       progress: progress ?? this.progress,
-      threadsCount: threadsCount ?? this.threadsCount,
     );
   }
 }

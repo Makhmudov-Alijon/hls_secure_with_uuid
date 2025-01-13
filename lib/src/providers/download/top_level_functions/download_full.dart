@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
-void downloadFull(DownloadFullTask full) {
+void downloadFull(DownloadFullTask full) async{
   int count = 0;
   for (final task in full.tasks.indexed) {
-    http
+  await  http
         .get(
       Uri.parse(
         task.$2.$1,
@@ -34,7 +33,7 @@ void downloadFull(DownloadFullTask full) {
             );
           } else {
           print(
-              '>< >< fail for else : $count <> ${task.$1} Exception: ${jsonDecode(response.body)}');
+              '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}');
           full.sendPort.send(
             DownloadFullHintEnum.failFor.index,
           );

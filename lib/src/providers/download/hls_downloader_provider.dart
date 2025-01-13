@@ -168,18 +168,29 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  double calculateProgress(int totalLength, int unDownloadedLength) {
-    if (totalLength == 0) {
+  double calculateDownloadSpeed({
+    required DateTime startTime,
+    required int totalSegments,
+    required int totalBytes,
+    required int downloadedSegments,
+  }) {
+    if (downloadedSegments == 0) {
+      return 0.0; // No segments downloaded yet
+    }
+
+    // Calculate the elapsed time in seconds
+    final elapsedTime = DateTime.now().difference(startTime).inSeconds;
+
+    if (elapsedTime <= 0) {
       return 0.0; // Avoid division by zero
     }
 
-    // Calculate the downloaded length
-    final downloadedLength = totalLength - unDownloadedLength;
+    final segmentPerSecond = downloadedSegments / elapsedTime;
+    final sizeInMegaBytes = totalBytes / (1024 * 1024);
 
-    // Calculate the progress as a percentage
-    final progress = downloadedLength / totalLength;
+    final megabytePerSegmentProximate = sizeInMegaBytes / totalSegments;
 
-    return progress;
+    return segmentPerSecond * megabytePerSegmentProximate;
   }
 
   double calculateProgressNew({
@@ -226,7 +237,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             .map((e) => e.getForIsolate),
       ];
       final failedTasks = <MapEntry<String, dynamic>>[];
-      var count = downloadTask.items.length - tasks.length;
+      final totalSize = downloadTask.size;
+      final preloadedTasksCount = downloadTask.items.length - tasks.length;
+      var count = preloadedTasksCount;
 
       if (tasks.isNotEmpty) {
         Timer? progressUpdateTimer;
@@ -234,13 +247,22 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         progressUpdateTimer = Timer.periodic(
           const Duration(milliseconds: 1000),
           (timer) {
-            final v = calculateProgressNew(
+            final progress = calculateProgressNew(
               totalLength: downloadTask.items.length, doneLength: count,
               // + failedTasks.length,
             );
+            final speed = calculateDownloadSpeed(
+              startTime: startTime,
+              totalSegments: downloadTask.items.length,
+              totalBytes: downloadTask.size,
+              downloadedSegments: count - preloadedTasksCount,
+            );
             // This code runs every second and updates the UI
             if (state == HlsDownloaderState.downloading) {
-              localHlsMovieController(hls.iD).updateProgress(v, 2);
+              localHlsMovieController(hls.iD).updateProgress(
+                progress: progress,
+                speed: speed,
+              );
             }
           },
         );
@@ -265,14 +287,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                             .difference(lastCheckForPauseOrDeleted)
                             .inMilliseconds >
                         300) {
-                      // final state = hlsLocalRepository.fetchHlsState(hls);
-                      final state = await getHlsDownloadStatusType(
-                        statusStoreKey: hls.getStatusKey,
-                        progress: calculateProgress(
-                          downloadTask.items.length,
-                          tasks.length,
-                        ),
-                      );
+                      final state = await ref
+                          .read(localeHlsStoreRepositoryProvider)
+                          .getHlsDownloadStatusType(
+                            hlsId: hls.id,
+                          );
                       final v = 0;
 
                       if (state is LocalHlsPauseState ||
@@ -384,46 +403,5 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
   }
 
-  Future<LocalHlsState> getHlsDownloadStatusType({
-    required String statusStoreKey,
-    required double progress,
-  }) async {
-    final target = (await Prefs.getLocalHlsStatusNamee(statusStoreKey) ?? '')
-        .getLocalHlsStatus!;
 
-    switch (target) {
-      case LocalHlsStatusType.error:
-        return LocalHlsErrorState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.inQueue:
-        return LocalHlsInQueueState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.paused:
-        return LocalHlsPauseState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.complete:
-        return LocalHlsCompleteState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.notExist:
-        return LocalHlsNotExistState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.downloading:
-        return LocalHlsDownloadingState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.deleted:
-        return LocalHlsDeletedState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.prepared:
-        return LocalHlsPreparedState(
-          progress: progress,
-        );
-    }
-  }
 }
