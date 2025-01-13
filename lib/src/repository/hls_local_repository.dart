@@ -90,6 +90,8 @@ class HlsLocalRepository {
   void deleteHlsDirectory(LocalHlsModelIsar hls) {
     if (hls.masterDir.existsSync()) {
       hls.masterDir.delete(recursive: true);
+    } else {
+      final v = 0;
     }
   }
 

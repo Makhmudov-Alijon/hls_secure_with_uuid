@@ -89,10 +89,12 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     final hlsIndex = _hlsIndex(hls.hlsDetails.localHlsId);
     if (hlsIndex != null) {
       _removeHlsAt(hlsIndex);
-      movieController(hls.iD).refresh(); // TODO: check without it
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
       ref.read(localeHlsStoreRepositoryProvider).delete(hls);
+      movieController(hls.iD).refresh(); // TODO: check without it
       onDelete?.call(hls, ref);
+    } else {
+      final v = 0;
     }
   }
 
