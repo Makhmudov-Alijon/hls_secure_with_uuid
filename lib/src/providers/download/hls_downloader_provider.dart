@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/providers/download/top_level_functions/download_full.dart';
+import 'package:download_manager/src/providers/download/top_level_functions/download.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -207,6 +207,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
+    final startTime = DateTime.now();
     _startDownloading();
     _downloadingHls = hls.iD;
     LocalHlsModelIsar? theTarget;
@@ -217,8 +218,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       where: 'start downloading 168 ',
     );
 
+    print(
+        '>< >< update hls to downloading : ${DateTime.now().difference(startTime).inMilliseconds}');
+
     try {
-      final startTime = DateTime.now();
 
       final allTasksCompleted = Completer<void>();
       LocalHlsState? localHlsState;
@@ -258,7 +261,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
         final thePort = ReceivePort();
         final theIsolate = await Isolate.spawn(
-          downloadFull,
+          download,
           DownloadFullTask(
             tasks: tasks,
             sendPort: thePort.sendPort,
@@ -269,10 +272,15 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         thePort.listen(
           (v) async {
             if (v is int) {
+              if ((count - preloadedTasksCount) == 0) {
+                print(
+                    '>< >< got the first task message : ${DateTime.now().difference(startTime).inMilliseconds} pre: $preloadedTasksCount count: $count');
+              }
               final hint = DownloadFullHintEnum.values[v];
               switch (hint) {
                 case DownloadFullHintEnum.doneFor:
                   {
+                    count++;
                     if (DateTime.now()
                             .difference(lastCheckForPauseOrDeleted)
                             .inMilliseconds >
@@ -291,7 +299,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                       }
                       lastCheckForPauseOrDeleted = DateTime.now();
                     }
-                    count++;
+
                     break;
                   }
                 case DownloadFullHintEnum.doneFull:

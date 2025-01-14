@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
-void downloadFull(DownloadFullTask full) {
+void download(DownloadFullTask full) {
   var count = 0;
   for (final task in full.tasks.indexed) {
     http
@@ -11,7 +11,8 @@ void downloadFull(DownloadFullTask full) {
       Uri.parse(
         task.$2.$1,
       ),
-      )
+        )
+        .timeout(const Duration(seconds: 35))
         .then(
       (response) async {
         if (response.statusCode == 200) {
@@ -30,26 +31,13 @@ void downloadFull(DownloadFullTask full) {
           await randomAccessFile.close();
 
           // print('>< >< done for : $count <> ${task.$1}');
-        } else {
-          // print(
-          //   '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}',
-          // );
-          full.sendPort.send(
-            DownloadFullHintEnum.failFor.index,
-          );
         }
       },
     ).onError(
-      (error, v) {
-        // print(
-        //   '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}',
-        // );
-        full.sendPort.send(
-          DownloadFullHintEnum.failFor.index,
-        );
-      },
-    ).whenComplete(() {
-      count++;
+          (error, v) {},
+        )
+        .whenComplete(() {
+          count++;
       // print('>< >< when complete : ${count}');
       if (count >= full.tasks.length) {
         full.sendPort.send(
