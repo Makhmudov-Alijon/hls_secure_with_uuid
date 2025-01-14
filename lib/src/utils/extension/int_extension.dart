@@ -17,4 +17,6 @@ extension IntExtension on int {
       return '$this Байт';
     }
   }
+
+  double get toMb => this / (1024 * 1024);
 }

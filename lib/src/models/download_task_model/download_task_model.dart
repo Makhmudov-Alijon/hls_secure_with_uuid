@@ -8,19 +8,19 @@ import 'package:equatable/equatable.dart';
 class DownloadTask extends Equatable {
   const DownloadTask({
     required this.items,
-    this.size = 0,
+    this.mbPerSegment = 0,
   });
 
   final List<DownloadItem> items;
-  final int size;
+  final double mbPerSegment;
 
   @override
-  List<Object?> get props => [items,size,];
+  List<Object?> get props => [items,mbPerSegment,];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'items': items.map((x) => x.toMap()).toList(),
-      'size': size,
+      'mb_per_segment': mbPerSegment,
     };
   }
 
@@ -40,7 +40,7 @@ class DownloadTask extends Equatable {
           ),
         ),
       ),
-      size: map['size'] as int? ?? 0,
+      mbPerSegment: map['mb_per_segment'] as double? ?? 0,
     );
   }
 

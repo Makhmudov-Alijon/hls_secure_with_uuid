@@ -35,6 +35,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       );
 
   void _startDownloading() {
+    _retry = 0;
     if (state == HlsDownloaderState.notDownloading) {
       state = HlsDownloaderState.downloading;
     }
@@ -163,7 +164,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   double calculateDownloadSpeed({
     required DateTime startTime,
     required int totalSegments,
-    required int totalBytes,
+    required double mbPerSegment,
     required int downloadedSegments,
   }) {
     if (downloadedSegments == 0) {
@@ -178,14 +179,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     }
 
     final segmentPerSecond = downloadedSegments / elapsedTime;
-    final sizeInMegaBytes = totalBytes / (1024 * 1024);
 
-    final megabytePerSegmentProximate = sizeInMegaBytes / totalSegments;
-
-    return segmentPerSecond * megabytePerSegmentProximate;
+    return segmentPerSecond * mbPerSegment;
   }
 
-  double calculateProgressNew({
+  double calculateProgress({
     required int totalLength,
     required int doneLength,
   }) {
@@ -197,6 +195,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     final progress = doneLength / totalLength;
 
     return progress;
+  }
+
+  int _retry = 0;
+
+  bool canRetry() {
+    _retry++;
+    return _retry <= 3;
   }
 
   Future<void> downloadOrContinue({
@@ -240,14 +245,14 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         progressUpdateTimer = Timer.periodic(
           const Duration(milliseconds: 500),
           (timer) {
-            final progress = calculateProgressNew(
+            final progress = calculateProgress(
               totalLength: downloadTask.items.length, doneLength: count,
               // + failedTasks.length,
             );
             final speed = calculateDownloadSpeed(
               startTime: startTime,
               totalSegments: downloadTask.items.length,
-              totalBytes: downloadTask.size,
+              mbPerSegment: downloadTask.mbPerSegment,
               downloadedSegments: count - preloadedTasksCount,
             );
             // This code runs every second and updates the UI
@@ -314,10 +319,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                                 : LocalHlsErrorState()),
                         where: 'downloader 273',
                       );
+                      progressUpdateTimer?.cancel();
+                      progressUpdateTimer = null;
+                      allTasksCompleted.complete();
                     });
-                    progressUpdateTimer?.cancel();
-                    progressUpdateTimer = null;
-                    allTasksCompleted.complete();
+
                     break;
                   }
                 case DownloadFullHintEnum.failFor:
@@ -347,10 +353,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       resultState = theTarget?.localHlsState ?? LocalHlsDeletedState();
 
-      // print(
-      //     '>< >< spend to download >> : ${DateTime.now().difference(startTime).inMilliseconds} milliseconds');
-
-      final v = 0;
+      if (resultState is LocalHlsErrorState) {
+        if (canRetry()) {
+          await downloadOrContinue(
+            downloadTask: downloadTask,
+            hls: hls,
+            onDownloadComplete: onDownloadComplete,
+            onError: onError,
+          );
+          return;
+        }
+      }
 
       /// ////////////////////////////////////
       _downloadingHls = null;

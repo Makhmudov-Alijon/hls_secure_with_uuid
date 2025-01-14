@@ -209,7 +209,7 @@ class HlsService {
 
     final downloadTask = DownloadTask(
       items: downloadItems,
-      size: size + videoPlaylist.resolution.size,
+      mbPerSegment: (size + videoPlaylist.resolution.size).toMb,
     );
 
     return downloadTask;
