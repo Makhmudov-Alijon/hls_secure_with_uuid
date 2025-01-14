@@ -145,16 +145,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required void Function(LocalHlsErrorState error)? onError,
     required String where,
   }) async {
-    var nextHls = await moviesController.findNextInQueue(where: where);
+    final nextHls = await moviesController.findNextInQueue(where: where);
 
-    if (nextHls == null) {
-      const time = 3;
-      for (var i = 0; i < time && nextHls == null; i++) {
-        await Future.delayed(const Duration(milliseconds: 300), () {});
-        nextHls = await moviesController.findNextInQueue(where: where);
-        final v = 0;
-      }
-    }
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
         final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
@@ -236,8 +228,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             .where((e) => !e.isDownloaded)
             .map((e) => e.getForIsolate),
       ];
-      final failedTasks = <MapEntry<String, dynamic>>[];
-      final totalSize = downloadTask.size;
+      final failedTasks = <(String url, String absPath)>[];
       final preloadedTasksCount = downloadTask.items.length - tasks.length;
       var count = preloadedTasksCount;
 
@@ -245,7 +236,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         Timer? progressUpdateTimer;
 
         progressUpdateTimer = Timer.periodic(
-          const Duration(milliseconds: 1000),
+          const Duration(milliseconds: 500),
           (timer) {
             final progress = calculateProgressNew(
               totalLength: downloadTask.items.length, doneLength: count,
@@ -306,9 +297,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   }
                 case DownloadFullHintEnum.doneFull:
                   {
-                    print(
-                      '>< >< full isolate done : ${DateTime.now().difference(startTime).inMilliseconds}',
-                    );
                     SchedulerBinding.instance.addPostFrameCallback((_) async {
                       // Update the UI here
                       theTarget = await moviesController.updateHlsStatus(
@@ -334,9 +322,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   }
                 case DownloadFullHintEnum.startingTaskCompleted:
                   {
-                    print(
-                      '>< >< start tasks : ${DateTime.now().difference(startTime).inMilliseconds}',
-                    );
                     break;
                   }
               }
@@ -344,8 +329,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           },
         );
         await allTasksCompleted.future;
-        thePort.close();
         theIsolate.kill(priority: Isolate.immediate);
+        thePort.close();
       } else {
         theTarget = await moviesController.updateHlsStatus(
           hls.iD,
@@ -353,12 +338,22 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           where: 'download completed 318',
         );
       }
+      if (count != downloadTask.items.length) {
+        await downloadOrContinue(
+          downloadTask: downloadTask,
+          hls: hls,
+          onDownloadComplete: onDownloadComplete,
+          onError: onError,
+        );
+        return;
+      }
+
       late LocalHlsState resultState;
 
       resultState = theTarget?.localHlsState ?? LocalHlsDeletedState();
 
-      print(
-          '>< >< spend to download >> : ${DateTime.now().difference(startTime).inMilliseconds} milliseconds');
+      // print(
+      //     '>< >< spend to download >> : ${DateTime.now().difference(startTime).inMilliseconds} milliseconds');
 
       final v = 0;
 

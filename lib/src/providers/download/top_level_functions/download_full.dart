@@ -3,53 +3,59 @@ import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
-void downloadFull(DownloadFullTask full) async{
-  int count = 0;
+void downloadFull(DownloadFullTask full) {
+  var count = 0;
   for (final task in full.tasks.indexed) {
-  await  http
+    http
         .get(
       Uri.parse(
         task.$2.$1,
       ),
       )
-          .then(
-        (response) async {
-          count++;
-          if (response.statusCode == 200) {
-            final file = File(task.$2.$2);
+        .then(
+      (response) async {
+        if (response.statusCode == 200) {
+          full.sendPort.send(
+            DownloadFullHintEnum.doneFor.index,
+          );
+          final file = File(task.$2.$2);
 
-            // Open the file for writing
-            final randomAccessFile = await file.open(mode: FileMode.write);
+          // Open the file for writing
+          final randomAccessFile = await file.open(mode: FileMode.write);
 
-            // Write the downloaded bytes to the file
-            await randomAccessFile.writeFrom(response.bodyBytes);
+          // Write the downloaded bytes to the file
+          await randomAccessFile.writeFrom(response.bodyBytes);
 
-            // Close the file
-            await randomAccessFile.close();
+          // Close the file
+          await randomAccessFile.close();
 
-            print('>< >< done for : $count <> ${task.$1}');
-            full.sendPort.send(
-              DownloadFullHintEnum.doneFor.index,
-            );
-          } else {
+          // print('>< >< done for : $count <> ${task.$1}');
+        } else {
           print(
-              '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}');
+            '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}',
+          );
           full.sendPort.send(
             DownloadFullHintEnum.failFor.index,
           );
         }
-          if (count >= full.tasks.length) {
-            full.sendPort.send(
-              DownloadFullHintEnum.doneFull.index,
-            );
-          }
-        },
-    ).catchError((error) {
-      print(
-          '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}');
-      full.sendPort.send(
-        DownloadFullHintEnum.failFor.index,
-      );
+      },
+    ).onError(
+      (error, v) {
+        print(
+          '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}',
+        );
+        full.sendPort.send(
+          DownloadFullHintEnum.failFor.index,
+        );
+      },
+    ).whenComplete(() {
+      count++;
+      print('>< >< when complete : ${count}');
+      if (count >= full.tasks.length) {
+        full.sendPort.send(
+          DownloadFullHintEnum.doneFull.index,
+        );
+      }
     });
   }
   full.sendPort.send(

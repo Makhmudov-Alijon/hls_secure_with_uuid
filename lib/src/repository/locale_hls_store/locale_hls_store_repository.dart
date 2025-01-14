@@ -17,7 +17,5 @@ abstract class LocaleHlsStoreRepository {
 
   Future<LocalHlsState> getHlsDownloadStatusType({
     required Id hlsId,
-    double? progress,
-    double? speed,
   });
 }

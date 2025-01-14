@@ -83,29 +83,20 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   @override
   Future<LocalHlsState> getHlsDownloadStatusType({
     required Id hlsId,
-    double? progress,
-    double? speed,
   }) {
-    final _progress = progress ?? 0;
-    final DateTime start = DateTime.now();
     return isar.writeTxn(
       () async {
         final hls = await isar.localHlsModelIsars.get(hlsId);
         if (hls != null) {
           final result = _getHlsDownloadStatusType(
             statusType: hls.downloadStatus.statusType,
-            progress: _progress,
+            progress: 0,
           );
 
-          print(
-              '>< >< the spent time to return download status from isar : ${DateTime.now().difference(start).inMilliseconds}');
           return result;
         } else {
-          print(
-              '>< >< the spent time to return download status from EXCEPTION : ${DateTime.now().difference(start).inMilliseconds}');
-
           return LocalHlsNotExistState(
-            progress: _progress,
+            progress: 0,
           );
         }
       },

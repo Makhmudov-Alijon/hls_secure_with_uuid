@@ -138,9 +138,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     try {
       final index = state.total.indexWhere((element) {
         final result = element.hlsDetails.localHlsId == id;
-        print(element.hlsDetails.localHlsId);
-        print(id);
-        print('>< >< $result');
+
         return result;
       });
       return index < 0 ? null : index;
@@ -188,9 +186,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
             continue;
           }
         } else {
-          print(
-              '>< >< is initial but else : name => ${localeState.toLocalHlsStatus().statusType.name}  ');
-          print('progress:${localeState.progress}  ');
+          // print(
+          //     '>< >< is initial but else : name => ${localeState.toLocalHlsStatus().statusType.name}  ');
+          // print('progress:${localeState.progress}  ');
         }
       }
       hlsMovies.add(hls);
@@ -204,7 +202,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   /// Sorting threads
   Future<void> sort(String where) async {
-    print('>< >< SORT FOR : $where');
     final total = state.total;
     final receivePort = ReceivePort();
     await Isolate.spawn<SortIsolateParams>(
@@ -218,9 +215,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       (v) {
         if (v is LocaleHlsMoviesState) {
           updateState(v.copyWith(trigger: !v.trigger));
-        } else {
-          final rtt = v.runtimeType;
-          final ff = 0;
         }
       },
     );
