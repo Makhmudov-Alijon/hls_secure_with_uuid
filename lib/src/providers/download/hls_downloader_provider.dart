@@ -228,7 +228,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             .where((e) => !e.isDownloaded)
             .map((e) => e.getForIsolate),
       ];
-      final failedTasks = <(String url, String absPath)>[];
       final preloadedTasksCount = downloadTask.items.length - tasks.length;
       var count = preloadedTasksCount;
 
@@ -302,12 +301,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                       theTarget = await moviesController.updateHlsStatus(
                         hls.iD,
                         localHlsState ??
-                            (failedTasks.isEmpty
+                            (count == downloadTask.items.length
                                 ? LocalHlsCompleteState()
-                                : LocalHlsErrorState(
-                                    message:
-                                        '${failedTasks.length} segments are not downloaded',
-                                  )),
+                                : LocalHlsErrorState()),
                         where: 'downloader 273',
                       );
                     });
@@ -337,15 +333,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           LocalHlsCompleteState(),
           where: 'download completed 318',
         );
-      }
-      if (count != downloadTask.items.length) {
-        await downloadOrContinue(
-          downloadTask: downloadTask,
-          hls: hls,
-          onDownloadComplete: onDownloadComplete,
-          onError: onError,
-        );
-        return;
       }
 
       late LocalHlsState resultState;

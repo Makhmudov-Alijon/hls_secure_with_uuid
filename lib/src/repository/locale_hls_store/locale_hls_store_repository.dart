@@ -6,6 +6,7 @@ abstract class LocaleHlsStoreRepository {
   Future<LocalHlsModelIsar?> updateDownloadStatus({
     required LocalHlsModelIsar hls,
     required LocalHlsStatus status,
+    required String where,
   });
 
   Future<LocalHlsModelIsar?> getByLocaleHlsId({

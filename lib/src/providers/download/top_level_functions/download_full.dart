@@ -31,9 +31,9 @@ void downloadFull(DownloadFullTask full) {
 
           // print('>< >< done for : $count <> ${task.$1}');
         } else {
-          print(
-            '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}',
-          );
+          // print(
+          //   '>< >< fail for else : $count <> ${task.$1} Exception: ${response.body}',
+          // );
           full.sendPort.send(
             DownloadFullHintEnum.failFor.index,
           );
@@ -41,16 +41,16 @@ void downloadFull(DownloadFullTask full) {
       },
     ).onError(
       (error, v) {
-        print(
-          '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}',
-        );
+        // print(
+        //   '>< >< fail for catch : $count <> ${task.$1} Exception: ${error.toString()}',
+        // );
         full.sendPort.send(
           DownloadFullHintEnum.failFor.index,
         );
       },
     ).whenComplete(() {
       count++;
-      print('>< >< when complete : ${count}');
+      // print('>< >< when complete : ${count}');
       if (count >= full.tasks.length) {
         full.sendPort.send(
           DownloadFullHintEnum.doneFull.index,

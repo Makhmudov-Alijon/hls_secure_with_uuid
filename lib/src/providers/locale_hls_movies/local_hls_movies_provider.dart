@@ -12,7 +12,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../repository/locale_hls_store/locale_hls_store_repository.dart';
 
 part 'locale_hls_movies_state.dart';
-
 final localHlsMoviesProvider =
 NotifierProvider<LocalHlsMoviesNotifier, LocaleHlsMoviesState>(
   LocalHlsMoviesNotifier.new,
@@ -176,8 +175,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         } else if (localeState is LocalHlsDownloadingState ||
             localeState is LocalHlsInQueueState) {
           final updatedHls = await hlsIsarRepo.updateDownloadStatus(
+
             hls: hls,
-            status: LocalHlsPauseState().toLocalHlsStatus(),
+            status: LocalHlsPauseState().toLocalHlsStatus(),where: 'local_hls_movies_provider.dart 180'
           );
           final vv = 0;
           if (updatedHls != null) {

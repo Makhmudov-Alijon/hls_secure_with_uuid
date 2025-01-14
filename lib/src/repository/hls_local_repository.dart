@@ -69,6 +69,7 @@ class HlsLocalRepository {
       final v = await localeHlsStorage.updateDownloadStatus(
         hls: hls,
         status: state.toLocalHlsStatus(),
+        where: 'hls_local_repository.dart 72 from: $where',
       );
 
       return v;

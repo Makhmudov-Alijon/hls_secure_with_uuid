@@ -31,7 +31,12 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   Future<LocalHlsModelIsar?> updateDownloadStatus({
     required LocalHlsModelIsar hls,
     required LocalHlsStatus status,
+    required String where,
   }) {
+    if (status.statusType == LocalHlsStatusType.complete) {
+      print('>< >< update download status : ${where} ');
+      final v = 0;
+    }
     return isar.writeTxn(
       () async {
         try {
