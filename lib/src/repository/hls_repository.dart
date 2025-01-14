@@ -154,7 +154,7 @@ class HlsRepository {
       );
       final v = localHlss.toJson();
 
-      await ref.read(localeHlsStoreRepositoryProvider).add(localHlss);
+      await ref.read(localeHlsIsarProvider).add(localHlss);
 
       return downloadTask;
     } catch (e) {

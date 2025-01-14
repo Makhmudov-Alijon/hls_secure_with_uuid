@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'locale_hls_store_repository.dart';
 
-final localeHlsStoreRepositoryProvider = Provider<LocaleHlsStoreRepository>(
+final localeHlsIsarProvider = Provider<LocaleHlsStoreRepository>(
   (ref) => LocalHlsStoreRepositoryImpl(
     isar: ref.read(isarProvider),
   ),
@@ -33,6 +33,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
     required LocalHlsStatus status,
     required String where,
   }) {
+    print('>< >< update status : ${status.statusType.name} where: $where');
 
     return isar.writeTxn(
       () async {

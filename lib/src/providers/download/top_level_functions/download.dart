@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:http/http.dart' as http;
 
 void download(DownloadFullTask full) {
+  final key = DateTime.now().millisecondsSinceEpoch;
   var count = 0;
   for (final task in full.tasks.indexed) {
     http
@@ -17,11 +18,11 @@ void download(DownloadFullTask full) {
       (response) async {
         if (response.statusCode == 200) {
           full.sendPort.send(
-            DownloadFullHintEnum.doneFor.index,
-          );
-          final file = File(task.$2.$2);
+                DownloadMassager.doneFor,
+              );
+              final file = File(task.$2.$2);
 
-          // Open the file for writing
+              // Open the file for writing
           final randomAccessFile = await file.open(mode: FileMode.write);
 
           // Write the downloaded bytes to the file
@@ -38,17 +39,15 @@ void download(DownloadFullTask full) {
         )
         .whenComplete(() {
           count++;
-      // print('>< >< when complete : ${count}');
-      if (count >= full.tasks.length) {
-        full.sendPort.send(
-          DownloadFullHintEnum.doneFull.index,
-        );
-      }
-    });
+
+          print('>< >< when complete : $count key: $key');
+          if (count >= full.tasks.length) {
+            full.sendPort.send(
+              DownloadMassager.doneFull,
+            );
+          }
+        });
   }
-  full.sendPort.send(
-    DownloadFullHintEnum.startingTaskCompleted.index,
-  );
 }
 
 class DownloadFullTask {
@@ -60,20 +59,10 @@ class DownloadFullTask {
   final List<(String url, String absPath)> tasks;
   final SendPort sendPort;
 }
-enum DownloadFullHintEnum {
-  doneFor,
-  doneFull,
-  failFor,
-  startingTaskCompleted,
-}
 
-extension DownloadFullHintEnumExtension on DownloadFullHintEnum {
-  bool get isDoneFor => this == DownloadFullHintEnum.doneFor;
+class DownloadMassager {
+  const DownloadMassager._();
 
-  bool get isDoneFull => this == DownloadFullHintEnum.doneFull;
-
-  bool get isFailFor => this == DownloadFullHintEnum.failFor;
-
-  bool get isStartingTaskCompleted =>
-      this == DownloadFullHintEnum.startingTaskCompleted;
+  static const doneFor = 1;
+  static const doneFull = 0;
 }

@@ -8,7 +8,7 @@ final localHlsMovieProviderr = AutoDisposeAsyncNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
   LocalHlsMovieNotifier.new,
   dependencies: [
-    // localHlsMoviesProvider,
+    localHlsMoviesProvider,
   ],
 );
 

@@ -7,7 +7,7 @@ import 'locale_hls_store/locale_hls_store_repository.dart';
 
 final hlsLocalRepositoryProvider = Provider(
   (ref) => HlsLocalRepository(
-    localeHlsStorage: ref.read(localeHlsStoreRepositoryProvider),
+    localeHlsStorage: ref.read(localeHlsIsarProvider),
   ),
 );
 

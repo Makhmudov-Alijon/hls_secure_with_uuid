@@ -3,7 +3,6 @@ import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/providers/download/top_level_functions/download.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum HlsDownloaderState {
@@ -163,7 +162,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   double calculateDownloadSpeed({
     required DateTime startTime,
-    required int totalSegments,
     required double mbPerSegment,
     required int downloadedSegments,
   }) {
@@ -215,21 +213,18 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     final startTime = DateTime.now();
     _startDownloading();
     _downloadingHls = hls.iD;
-    LocalHlsModelIsar? theTarget;
+    LocalHlsModelIsar? theTargett;
 
-    theTarget = await moviesController.updateHlsStatus(
+    theTargett = await moviesController.updateHlsStatus(
       hls.iD,
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
     );
 
-    print(
-        '>< >< update hls to downloading : ${DateTime.now().difference(startTime).inMilliseconds}');
 
     try {
-
-      final allTasksCompleted = Completer<void>();
-      LocalHlsState? localHlsState;
+      final allTasksCompletedd = Completer<void>();
+      LocalHlsState? localHlsStatee;
 
       final tasks = <(String url, String absPath)>[
         ...downloadTask.items
@@ -237,7 +232,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             .map((e) => e.getForIsolate),
       ];
       final preloadedTasksCount = downloadTask.items.length - tasks.length;
-      var count = preloadedTasksCount;
+      var count = 0;
 
       if (tasks.isNotEmpty) {
         Timer? progressUpdateTimer;
@@ -246,14 +241,14 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           const Duration(milliseconds: 500),
           (timer) {
             final progress = calculateProgress(
-              totalLength: downloadTask.items.length, doneLength: count,
+              totalLength: downloadTask.items.length,
+              doneLength: count + preloadedTasksCount,
               // + failedTasks.length,
             );
             final speed = calculateDownloadSpeed(
               startTime: startTime,
-              totalSegments: downloadTask.items.length,
               mbPerSegment: downloadTask.mbPerSegment,
-              downloadedSegments: count - preloadedTasksCount,
+              downloadedSegments: count,
             );
             // This code runs every second and updates the UI
             if (state == HlsDownloaderState.downloading) {
@@ -277,13 +272,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         thePort.listen(
           (v) async {
             if (v is int) {
-              if ((count - preloadedTasksCount) == 0) {
-                print(
-                    '>< >< got the first task message : ${DateTime.now().difference(startTime).inMilliseconds} pre: $preloadedTasksCount count: $count');
-              }
-              final hint = DownloadFullHintEnum.values[v];
-              switch (hint) {
-                case DownloadFullHintEnum.doneFor:
+              switch (v) {
+                case DownloadMassager.doneFor:
                   {
                     count++;
                     if (DateTime.now()
@@ -291,7 +281,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                             .inMilliseconds >
                         300) {
                       final state = await ref
-                          .read(localeHlsStoreRepositoryProvider)
+                          .read(localeHlsIsarProvider)
                           .getHlsDownloadStatusType(
                             hlsId: hls.id,
                           );
@@ -299,59 +289,67 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
                       if (state is LocalHlsPauseState ||
                           state is LocalHlsDeletedState) {
-                        localHlsState = state;
-                        allTasksCompleted.complete();
+                        try {
+                          if (!allTasksCompletedd.isCompleted) {
+                            allTasksCompletedd.complete();
+                          } else {
+                            thePort.close();
+                            final v = 0;
+                          }
+                        } catch (e) {
+                          print('>< >< complete exception : $e');
+                        }
                       }
                       lastCheckForPauseOrDeleted = DateTime.now();
                     }
 
                     break;
                   }
-                case DownloadFullHintEnum.doneFull:
+                case DownloadMassager.doneFull:
                   {
-                    SchedulerBinding.instance.addPostFrameCallback((_) async {
-                      // Update the UI here
-                      theTarget = await moviesController.updateHlsStatus(
-                        hls.iD,
-                        localHlsState ??
-                            (count == downloadTask.items.length
-                                ? LocalHlsCompleteState()
-                                : LocalHlsErrorState()),
-                        where: 'downloader 273',
-                      );
-                      progressUpdateTimer?.cancel();
-                      progressUpdateTimer = null;
-                      allTasksCompleted.complete();
-                    });
+                    // SchedulerBinding.instance.addPostFrameCallback((_) async {
+                    // Update the UI here
+                    theTargett = await moviesController.updateHlsStatus(
+                      hls.iD,
+                      count + preloadedTasksCount == downloadTask.items.length
+                          ? LocalHlsCompleteState()
+                          : LocalHlsErrorState(),
+                      where: 'downloader 273',
+                    );
+                    // });
+                    progressUpdateTimer?.cancel();
+                    progressUpdateTimer = null;
+                    try {
+                      if (!allTasksCompletedd.isCompleted) {
+                        allTasksCompletedd.complete();
+                      } else {
+                        final v = 0;
+                      }
+                    } catch (e) {
+                      print('>< >< complete exception doneFull : $e');
+                    }
 
-                    break;
-                  }
-                case DownloadFullHintEnum.failFor:
-                  {
-                    break;
-                  }
-                case DownloadFullHintEnum.startingTaskCompleted:
-                  {
                     break;
                   }
               }
             }
           },
         );
-        await allTasksCompleted.future;
-        theIsolate.kill(priority: Isolate.immediate);
+        await allTasksCompletedd.future;
         thePort.close();
+        theIsolate.kill(priority: Isolate.immediate);
       } else {
-        theTarget = await moviesController.updateHlsStatus(
+        theTargett = await moviesController.updateHlsStatus(
           hls.iD,
           LocalHlsCompleteState(),
           where: 'download completed 318',
         );
       }
 
-      late LocalHlsState resultState;
-
-      resultState = theTarget?.localHlsState ?? LocalHlsDeletedState();
+      final resultState =
+          await ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
+                hlsId: hls.id,
+              );
 
       if (resultState is LocalHlsErrorState) {
         if (canRetry()) {
@@ -369,7 +367,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _downloadingHls = null;
       _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
-        theTarget = await moviesController.updateHlsStatus(
+        theTargett = await moviesController.updateHlsStatus(
           hls.iD,
           resultState,
           where: 'error state 332',
@@ -381,7 +379,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         moviesController.deleteHls(hls: hls);
       } else {
         _stopDownloading();
-        theTarget = await moviesController.updateHlsStatus(
+        theTargett = await moviesController.updateHlsStatus(
           hls.iD,
           resultState,
           where: 'download provider 340',
@@ -390,8 +388,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       if (onDownloadComplete != null &&
           resultState is LocalHlsCompleteState &&
-          theTarget != null) {
-        await onDownloadComplete.call(theTarget!, ref);
+          theTargett != null) {
+        await onDownloadComplete.call(theTargett!, ref);
       } else {
         final v = 0;
       }

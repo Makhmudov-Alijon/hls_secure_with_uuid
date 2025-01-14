@@ -21,7 +21,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   bool isInitial = true;
 
   LocaleHlsStoreRepository get hlsIsarRepo =>
-      ref.read(localeHlsStoreRepositoryProvider);
+      ref.read(localeHlsIsarProvider);
 
   LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
     return ref.read(localHlsMovieProviderr(hlsId).notifier);
@@ -89,7 +89,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     if (hlsIndex != null) {
       _removeHlsAt(hlsIndex);
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
-      ref.read(localeHlsStoreRepositoryProvider).delete(hls);
+      ref.read(localeHlsIsarProvider).delete(hls);
       movieController(hls.iD).refresh(); // TODO: check without it
       onDelete?.call(hls, ref);
     } else {
@@ -147,7 +147,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   Future<LocalHlsModelIsar?> hlsById(LocalHlsId id) async {
-    return ref.read(localeHlsStoreRepositoryProvider).getByLocaleHlsId(id: id);
+    return ref.read(localeHlsIsarProvider).getByLocaleHlsId(id: id);
   }
 
   /// Load the movies thread
