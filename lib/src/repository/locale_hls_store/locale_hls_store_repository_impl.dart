@@ -33,13 +33,12 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
     required LocalHlsStatus status,
     required String where,
   }) {
-    print('>< >< update status : ${status.statusType.name} where: $where');
-
     return isar.writeTxn(
       () async {
         try {
           final target = await isar.localHlsModelIsars.get(hls.id);
           target!.downloadStatus = status;
+          await Prefs.putLocalHlsStatusIndex(hls.id, status.statusType.index);
           await isar.localHlsModelIsars.put(target);
 
           return target;
@@ -84,33 +83,30 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   }
 
   @override
-  Future<LocalHlsState> getHlsDownloadStatusType({
+  LocalHlsState getHlsDownloadStatusType({
     required Id hlsId,
   }) {
-    return isar.writeTxn(
-      () async {
-        final hls = await isar.localHlsModelIsars.get(hlsId);
-        if (hls != null) {
-          final result = _getHlsDownloadStatusType(
-            statusType: hls.downloadStatus.statusType,
-            progress: 0,
-          );
+    final index = Prefs.getLocalHlsStatusIndex(hlsId);
+    if (index != null) {
+      final result = _getHlsDownloadStatusType(
+        statusType: LocalHlsStatusType.values[index],
+        progress: 0,
+      );
 
-          return result;
-        } else {
-          return LocalHlsNotExistState(
-            progress: 0,
-          );
-        }
-      },
-    );
+      return result;
+    } else {
+      return LocalHlsNotExistState(
+        progress: 0,
+      );
+    }
   }
+}
 
-  Future<LocalHlsState> _getHlsDownloadStatusType({
-    required LocalHlsStatusType statusType,
+LocalHlsState _getHlsDownloadStatusType({
+  required LocalHlsStatusType statusType,
     required double progress,
-  }) async {
-    switch (statusType) {
+}) {
+  switch (statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
           progress: progress,
@@ -145,4 +141,3 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
         );
     }
   }
-}
