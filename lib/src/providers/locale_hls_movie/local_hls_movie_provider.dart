@@ -31,7 +31,7 @@ class LocalHlsMovieNotifier
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
   void updateProgresss({required double progress, required double speed}) {
-    state = AsyncData(
+    state =  AsyncData(
       LocalHlsDownloadingState(
         speed: speed,
         progress: progress > 99 ? 99 : progress,

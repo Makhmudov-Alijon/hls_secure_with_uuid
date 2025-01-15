@@ -10,8 +10,6 @@ void download(DownloadFullTask full) {
 
   var count = 0;
   for (final task in full.tasks.indexed) {
-    final completer = Completer<void>();
-    completers.add(completer);
     http
         .get(
       Uri.parse(
@@ -23,7 +21,7 @@ void download(DownloadFullTask full) {
       (response) async {
         if (response.statusCode == 200) {
           full.sendPort.send(
-                DownloadMassager.doneFor,
+                DM.doneFor,
               );
               final file = File(task.$2.$2);
 
@@ -40,54 +38,36 @@ void download(DownloadFullTask full) {
         }
       },
     ).onError(
-      (error, v) {
-        if (!completer.isCompleted) completer.complete();
-      },
-    ).whenComplete(() {
-      count++;
+          (error, v) {},
+        )
+        .whenComplete(() {
+          count++;
 
-      if (!completer.isCompleted) completer.complete();
-      print('>< >< when comple : ${completer.isCompleted}');
-
-      // print('>< >< when complete : $count key: $key');
+          // print('>< >< when complete : $count key: $key');
       if (count >= full.tasks.length) {
         full.sendPort.send(
-          DownloadMassager.doneFull,
-        );
+              DM.doneFull,
+            );
           }
         });
-    completer.future.catchError((_) {
-      print('>< >< COMPLETER EXCEPTION : ${_}');
-      // Cancel request logic if supported, or ignore
-    });
   }
-  // Wait for cancellation signal
-  full.cancelSignal.stream.listen((_) {
-    print('>< >< listen the consel signal : $_ ');
-    // Complete all pending tasks to "cancel" them
-    for (var completer in completers) {
-      print('>< >< is completed : ${completer.isCompleted}');
-      if (!completer.isCompleted)
-        completer.completeError(Exception('Cancelled'));
-    }
-  });
 }
 
 class DownloadFullTask {
   const DownloadFullTask({
     required this.tasks,
     required this.sendPort,
-    required this.cancelSignal,
   });
 
   final List<(String url, String absPath)> tasks;
   final SendPort sendPort;
-  final StreamController<bool> cancelSignal;
 }
 
-class DownloadMassager {
-  const DownloadMassager._();
+class DM {
+  const DM._();
 
-  static const doneFor = 1;
   static const doneFull = 0;
+  static const doneFor = 1;
+  static const goBack = 2;
+  static const gottenBack = 3;
 }

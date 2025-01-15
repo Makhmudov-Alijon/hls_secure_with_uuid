@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
 
-class LocalHlsModell extends Equatable {
+class LocalHlsModel extends Equatable {
   final Directory baseDir;
   final Directory masterDir;
   final File posterFile;
@@ -16,7 +16,7 @@ class LocalHlsModell extends Equatable {
   final LocalHlsStatus downloadStatus;
   final int totalSegments;
 
-  const LocalHlsModell({
+  const LocalHlsModel({
     required this.baseDir,
     required this.hlsDetails,
     required this.posterFile,
@@ -202,13 +202,13 @@ class LocalHlsModell extends Equatable {
     };
   }
 
-  factory LocalHlsModell.fromFile(File file) {
+  factory LocalHlsModel.fromFile(File file) {
     final content = file.readAsStringSync();
-    return LocalHlsModell.fromJson(content);
+    return LocalHlsModel.fromJson(content);
   }
 
-  factory LocalHlsModell.fromMap(Map<String, dynamic> map) {
-    return LocalHlsModell(
+  factory LocalHlsModel.fromMap(Map<String, dynamic> map) {
+    return LocalHlsModel(
       totalSegments: map['totalSegments'] as int,
       baseDir: Directory(map['baseDir'] as String),
       masterDir: Directory(map['masterDir'] as String),
@@ -231,10 +231,10 @@ class LocalHlsModell extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  factory LocalHlsModell.fromJson(String source) =>
-      LocalHlsModell.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory LocalHlsModel.fromJson(String source) =>
+      LocalHlsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LocalHlsModell copyWith({
+  LocalHlsModel copyWith({
     Directory? baseDir,
     Directory? masterDir,
     File? posterFile,
@@ -247,7 +247,7 @@ class LocalHlsModell extends Equatable {
     File? mediumThumbnailsFile,
     File? largeThumbnailsFile,
   }) {
-    return LocalHlsModell(
+    return LocalHlsModel(
       baseDir: baseDir ?? this.baseDir,
       masterDir: masterDir ?? this.masterDir,
       posterFile: posterFile ?? this.posterFile,
@@ -258,12 +258,5 @@ class LocalHlsModell extends Equatable {
       downloadStatus: downloadStatus ?? this.downloadStatus,
       totalSegments: totalSegments ?? this.totalSegments,
     );
-  }
-
-  String get getStatusKey {
-    if (hlsDetails.isSerial) {
-      return '${hlsDetails.localHlsId.contentId}-${hlsDetails.localHlsId.episodeId}';
-    }
-    return '${hlsDetails.localHlsId.contentId}';
   }
 }

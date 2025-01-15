@@ -1,25 +1,56 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
 import 'download.dart';
 
-void downloadGpt(DownloadFullTask full) {
-  final key = DateTime.now().millisecondsSinceEpoch;
+bool breakFor = false;
+
+void downloadDio(DownloadFullTask full) {
   var count = 0;
+  bool breakFor = false;
+  final receivePort = ReceivePort();
+  full.sendPort.send(receivePort.sendPort);
   final dio = Dio();
-  final CancelToken cancelToken = CancelToken();
+  CancelToken cancelTokens = CancelToken();
+
+  receivePort.listen(
+    (message) {
+      if (message is int) {
+        if (message == DM.goBack) {
+          breakFor = true;
+          try {
+            cancelTokens.cancel();
+
+            print('>< >< token canceled');
+          } catch (e) {
+            print('>< >< cancel token exception : $e');
+            // continue;
+          }
+
+          receivePort.close();
+          Isolate.exit(full.sendPort, DM.gottenBack);
+        }
+      }
+    },
+  );
 
   for (final task in full.tasks) {
+    if (breakFor) {
+      break;
+    }
+
     dio
         .get<dynamic>(
       task.$1,
       options: Options(responseType: ResponseType.bytes),
-      cancelToken: cancelToken,
+      cancelToken: cancelTokens,
     )
         .then((response) async {
       if (response.data is Uint8List) {
+        full.sendPort.send(DM.doneFor);
         final file = File(task.$2);
 
         // Open the file for writing
@@ -30,32 +61,23 @@ void downloadGpt(DownloadFullTask full) {
 
         // Close the file
         await randomAccessFile.close();
-
-        // Notify that this task is done
-        full.sendPort.send(DownloadMassager.doneFor);
       } else {
-        print('>< >< rtt : ${response.data.runtimeType}');
+        // print('>< >< rtt : ${response.data.runtimeType}');
       }
-    }).catchError((error) {
+    }).catchError((error, c) {
       if (error is DioException) {
         if (CancelToken.isCancel(error)) {
-          print('Download cancelled for: ${task.$1}');
-        } else {
-          print('Error downloading ${task.$2}: $error');
+          print('>< >< cancel token exception : ${error.message}');
         }
-      } else {
-        print('>< >< not dio exception : ${error.runtimeType}');
       }
     }).whenComplete(() {
       count++;
       if (count >= full.tasks.length) {
-        full.sendPort.send(DownloadMassager.doneFull);
+        receivePort.close();
+
+        print('>< >< full done in isolate ');
+        Isolate.exit(full.sendPort, DM.doneFull);
       }
     });
   }
-
-  // Listen for cancellation signal
-  full.cancelSignal.stream.listen((_) {
-    cancelToken.cancel('Download cancelled by user.');
-  });
 }

@@ -88,10 +88,14 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   }) {
     final index = Prefs.getLocalHlsStatusIndex(hlsId);
     if (index != null) {
+      final type = LocalHlsStatusType.values[index];
       final result = _getHlsDownloadStatusType(
-        statusType: LocalHlsStatusType.values[index],
+        statusType: type,
         progress: 0,
       );
+      if (result is LocalHlsDeletedState) {
+        final v = 0;
+      }
 
       return result;
     } else {

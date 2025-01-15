@@ -226,7 +226,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   @override
   LocaleHlsMoviesState build() {
-    loadMoviesIsar(_checkInitial());
+    Prefs.init().then((v) {
+      loadMoviesIsar(_checkInitial());
+    });
 
     return const LocaleHlsMoviesState();
   }
