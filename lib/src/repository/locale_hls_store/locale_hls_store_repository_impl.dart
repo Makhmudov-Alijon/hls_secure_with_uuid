@@ -143,5 +143,5 @@ LocalHlsState _getHlsDownloadStatusType({
         return LocalHlsPreparedState(
           progress: progress,
         );
-    }
+  }
   }

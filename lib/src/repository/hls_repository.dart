@@ -73,7 +73,7 @@ class HlsRepository {
   }
 
   /// prepare playlists
-  Future<DownloadTask?> preparePlaylists({
+  Future<DownloadTask?> preparePlaylistss({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
     required String? posterLink,
@@ -115,8 +115,9 @@ class HlsRepository {
         );
 
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
+        /// the download item created
         await downloadItemm(
-          DownloadItem(
+          DownloadItemm(
             groupId: hlsDetails.localHlsId.toStringId(),
             url: posterLink,
             saveDir: pathManager.masterDir,
@@ -138,7 +139,7 @@ class HlsRepository {
           dowloadTaskContent,
         );
 
-      final localHlss = LocalHlsModelIsar(
+      final localHls = LocalHlsModelIsar(
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: masterFile.path,
@@ -152,9 +153,9 @@ class HlsRepository {
           // creationDate: DateTime.now(),
         ),
       );
-      final v = localHlss.toJson();
+      final v = localHls.toJson();
 
-      await ref.read(localeHlsIsarProvider).add(localHlss);
+      await ref.read(localeHlsIsarProvider).add(localHls);
 
       return downloadTask;
     } catch (e) {
@@ -225,8 +226,8 @@ class HlsRepository {
     }
   }
 
-  Future<void> downloadItemm(DownloadItem downloadItem) async {
-      await dio.download(
+  Future<void> downloadItemm(DownloadItemm downloadItem) async {
+    await dio.download(
       downloadItem.url,
       downloadItem.absolutePath,
     );

@@ -46,7 +46,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   Future<void> refreshMovies() async {
-    await loadMoviesIsar(false);
+    await loadMoviesIsarr(false);
   }
 
   Future<LocalHlsModelIsar?> findNextInQueue({required String where}) async {
@@ -151,7 +151,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   /// Load the movies thread
-  Future<void> loadMoviesIsar(bool isInitial) async {
+  Future<void> loadMoviesIsarr(bool isInitial) async {
     final DateTime start = DateTime.now();
     final total =
         await ref.read(isarProvider).localHlsModelIsars.where().findAll();
@@ -227,7 +227,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   @override
   LocaleHlsMoviesState build() {
     Prefs.init().then((v) {
-      loadMoviesIsar(_checkInitial());
+      loadMoviesIsarr(_checkInitial());
     });
 
     return const LocaleHlsMoviesState();

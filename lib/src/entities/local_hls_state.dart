@@ -32,8 +32,6 @@ abstract class LocalHlsState {
 
   final double progress;
 
-  LocalHlsState copyWith({double? progress});
-
   LocalHlsStatus toLocalHlsStatus() {
     switch (runtimeType) {
       case LocalHlsDownloadingState:
@@ -82,12 +80,6 @@ class LocalHlsDownloadingState extends LocalHlsState {
   }) : super(progress: progress ?? 0.0);
 
   double? speed;
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsDownloadingState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsErrorState extends LocalHlsState {
@@ -97,79 +89,30 @@ class LocalHlsErrorState extends LocalHlsState {
     super.progress,
   });
 
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsErrorState(
-      progress: progress ?? this.progress,
-    );
-  }
-
   final int? statusCode;
   final String? message;
 }
 
 class LocalHlsPauseState extends LocalHlsState {
   LocalHlsPauseState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsPauseState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsInQueueState extends LocalHlsState {
   LocalHlsInQueueState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsInQueueState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsNotExistState extends LocalHlsState {
   LocalHlsNotExistState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsNotExistState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsCompleteState extends LocalHlsState {
   LocalHlsCompleteState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsCompleteState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsDeletedState extends LocalHlsState {
   LocalHlsDeletedState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsDeletedState(
-      progress: progress ?? this.progress,
-    );
-  }
 }
 
 class LocalHlsPreparedState extends LocalHlsState {
   LocalHlsPreparedState({super.progress});
-
-  @override
-  LocalHlsState copyWith({double? progress}) {
-    return LocalHlsPreparedState(
-      progress: progress ?? this.progress,
-    );
-  }
 }

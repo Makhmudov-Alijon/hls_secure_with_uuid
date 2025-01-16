@@ -73,7 +73,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     try {
-      await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueue(
+      await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueuee(
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,

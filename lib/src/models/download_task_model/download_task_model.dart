@@ -11,7 +11,7 @@ class DownloadTask extends Equatable {
     this.mbPerSegment = 0,
   });
 
-  final List<DownloadItem> items;
+  final List<DownloadItemm> items;
   final double mbPerSegment;
 
   @override
@@ -31,9 +31,9 @@ class DownloadTask extends Equatable {
 
   factory DownloadTask.fromMap(Map<String, dynamic> map) {
     return DownloadTask(
-      items: List<DownloadItem>.from(
-        (map['items'] as List<dynamic>).map<DownloadItem>(
-          (item) => DownloadItem.fromMap(
+      items: List<DownloadItemm>.from(
+        (map['items'] as List<dynamic>).map<DownloadItemm>(
+          (item) => DownloadItemm.fromMap(
             Map.from(
               item as Map<String, dynamic>,
             ),

@@ -169,13 +169,15 @@ class HlsService {
     required VideoSegmentPlaylistModel videoPlaylist,
     required HlsPathManager pathManager,
   }) {
-    int size = 0;
-    final downloadItems = <DownloadItem>[];
+    /// total size
+    var size = 0;
+
+    final downloadItems = <DownloadItemm>[];
     for (final audioPlaylist in audioPlaylists) {
       size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
         downloadItems.add(
-          DownloadItem(
+          DownloadItemm(
             url: segment.downloadLink,
             saveDir: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack),
             fileName: pathManager
@@ -192,7 +194,7 @@ class HlsService {
     for (final segment in videoPlaylist.segments) {
       final resolutionType = videoPlaylist.resolution.resolution;
       downloadItems.add(
-        DownloadItem(
+        DownloadItemm(
           url: segment.downloadLink,
           saveDir: pathManager.videoDir(
             resolutionType: resolutionType,

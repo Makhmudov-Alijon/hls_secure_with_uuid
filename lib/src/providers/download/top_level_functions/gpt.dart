@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
-import 'download.dart';
+import '../datas/datas.dart';
 
 bool breakFor = false;
 
@@ -44,14 +44,14 @@ void downloadDio(DownloadFullTask full) {
 
     dio
         .get<dynamic>(
-      task.$1,
+      task.url,
       options: Options(responseType: ResponseType.bytes),
       cancelToken: cancelTokens,
     )
         .then((response) async {
       if (response.data is Uint8List) {
         full.sendPort.send(DM.doneFor);
-        final file = File(task.$2);
+        final file = File(task.absPath);
 
         // Open the file for writing
         final randomAccessFile = await file.open(mode: FileMode.write);

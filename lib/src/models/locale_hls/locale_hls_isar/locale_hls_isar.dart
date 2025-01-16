@@ -203,6 +203,7 @@ class LocalHlsModelIsar extends Equatable {
         return LocalHlsPreparedState(
           progress: progress,
         );
+
     }
   }
 

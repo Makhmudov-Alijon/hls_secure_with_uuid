@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-class DownloadItem extends Equatable {
-  const DownloadItem({
+class DownloadItemm extends Equatable {
+  const DownloadItemm({
     required this.url,
     required this.saveDir,
     required this.fileName,
@@ -19,7 +19,13 @@ class DownloadItem extends Equatable {
 
   String get absolutePath => '${saveDir.path}/$fileName';
 
-  bool get isDownloaded => File(absolutePath).existsSync();
+  bool get isDownloaded {
+    // final file = File(absolutePath);
+    // file.length().then((v) {
+    //   print('>< >< the segment size : ${v}');
+    // });
+    return File(absolutePath).existsSync();
+  }
 
   @override
   List<Object?> get props => [url, saveDir, fileName, groupId];
@@ -33,8 +39,8 @@ class DownloadItem extends Equatable {
     };
   }
 
-  factory DownloadItem.fromMap(Map<String, dynamic> map) {
-    return DownloadItem(
+  factory DownloadItemm.fromMap(Map<String, dynamic> map) {
+    return DownloadItemm(
       url: map['url'] as String,
       groupId: map['groupId'] != null ? map['groupId'] as String : null,
       saveDir: Directory(map['saveDir'] as String),
@@ -44,14 +50,14 @@ class DownloadItem extends Equatable {
 
   String toJson() => json.encode(toMap());
 
-  (
+  ({
     String url,
     String absPath,
-  ) get getForIsolate => (
-        url,
-        absolutePath,
+  }) get getForIsolate => (
+        url: url,
+        absPath: absolutePath,
       );
 
-  factory DownloadItem.fromJson(String source) =>
-      DownloadItem.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory DownloadItemm.fromJson(String source) =>
+      DownloadItemm.fromMap(json.decode(source) as Map<String, dynamic>);
 }

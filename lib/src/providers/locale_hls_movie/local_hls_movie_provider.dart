@@ -30,7 +30,9 @@ class LocalHlsMovieNotifier
 
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
-  void updateProgresss({required double progress, required double speed}) {
+
+
+  void updateProgress({required double progress, required double speed}) {
     state =  AsyncData(
       LocalHlsDownloadingState(
         speed: speed,
@@ -49,7 +51,6 @@ class LocalHlsMovieNotifier
     final foundHls =
         await ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
-    sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
     if (foundHls == null) {
       return LocalHlsNotExistState();

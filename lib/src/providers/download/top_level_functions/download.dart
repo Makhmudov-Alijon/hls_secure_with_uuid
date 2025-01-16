@@ -4,16 +4,19 @@ import 'dart:isolate';
 
 import 'package:http/http.dart' as http;
 
+import '../datas/datas.dart';
+
 void download(DownloadFullTask full) {
   final key = DateTime.now().millisecondsSinceEpoch;
+  bool cancel = false;
   final List<Completer<void>> completers = [];
 
   var count = 0;
-  for (final task in full.tasks.indexed) {
+  for (final task in full.tasks) {
     http
         .get(
       Uri.parse(
-        task.$2.$1,
+        task.url,
       ),
         )
         .timeout(const Duration(seconds: 35))
@@ -23,7 +26,7 @@ void download(DownloadFullTask full) {
           full.sendPort.send(
                 DM.doneFor,
               );
-              final file = File(task.$2.$2);
+              final file = File(task.absPath);
 
               // Open the file for writing
           final randomAccessFile = await file.open(mode: FileMode.write);
@@ -53,21 +56,3 @@ void download(DownloadFullTask full) {
   }
 }
 
-class DownloadFullTask {
-  const DownloadFullTask({
-    required this.tasks,
-    required this.sendPort,
-  });
-
-  final List<(String url, String absPath)> tasks;
-  final SendPort sendPort;
-}
-
-class DM {
-  const DM._();
-
-  static const doneFull = 0;
-  static const doneFor = 1;
-  static const goBack = 2;
-  static const gottenBack = 3;
-}
