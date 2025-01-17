@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:download_manager/src/providers/download/top_level_functions/write_to_file.dart';
 import 'package:http/http.dart' as http;
@@ -12,25 +13,29 @@ void cancellableHttp(DownloadFullTask full) {
   final fileReceivePort = ReceivePort();
 
   final clients = <String, http.Client>{};
-  var countt = 0;
+  var count = 0;
+  var failedCount = 0;
   Isolate? writeFileIsolate;
   SendPort? writeFileSendPort;
+
   Isolate.spawn(writeToFileTop, fileReceivePort.sendPort).then(
-    (v) {
-      writeFileIsolate = v;
+    (isolate) {
+      writeFileIsolate = isolate;
       fileReceivePort.listen(
         (message) {
           if (message is int) {
-            if (message == DM.gottenBack) {
-              print('>< >< write to file isolate gotten back : ');
+            if (message == DM.gottenBack || message == DM.doneFull) {
+              print('>< >< write to file isolate $message: ');
+              writeFileIsolate?.kill(priority: Isolate.immediate);
+              receivePort.close();
+              full.sendPort.send(message);
             }
             if (message == DM.doneFor) {
               full.sendPort.send(message);
-              countt++;
+              count++;
 
-              if (countt >= full.tasks.length) {
-                receivePort.close();
-                full.sendPort.send(DM.doneFull);
+              if (failedCount + count == full.tasks.length) {
+                writeFileSendPort?.send(DM.doneFull);
               }
             }
           }
@@ -45,18 +50,14 @@ void cancellableHttp(DownloadFullTask full) {
                 writeFileSendPort?.send(DM.goBack);
 
                 cancel = true;
-                writeFileIsolate?.kill(priority: Isolate.immediate);
-                // Cancel all ongoing requests
+
                 for (final client in List<http.Client>.from(clients.values)) {
                   try {
                     client.close();
                   } catch (e) {
-                    print('>< >< close client exception : ${e}');
+                    print('>< >< close client exception : $e');
                   }
                 }
-
-                receivePort.close();
-                full.sendPort.send(DM.gottenBack);
               }
             });
 
@@ -68,28 +69,35 @@ void cancellableHttp(DownloadFullTask full) {
               final uri = Uri.parse(task.url);
               final request = http.Request('GET', uri);
 
+              Uint8List? content;
+
               client.send(request).timeout(const Duration(seconds: 15)).then(
                 (response) async {
                   if (cancel) return;
 
                   if (response.statusCode == 200) {
                     if (!cancel) {
-                      // Send bytes to another isolate for writing
-                      // Isolate.spawn(writeFileIsolate, [task.absPath, bytes]);
-                      final v = await response.stream.toBytes();
-                      writeFileSendPort?.send((task.absPath, v));
-                    }
-                  }
-                },
-              ).onError(
-                (error, stackTrace) {
-                  print('>< >< Download error: $error');
-                },
-              ).whenComplete(
-                () {
-                  clients.remove(task.absPath);
-                },
-              );
+                          content = await response.stream.toBytes();
+                        }
+                      }
+                    },
+                  )
+                  .onError(
+                    (error, stackTrace) {},
+                  )
+                  .whenComplete(
+                    () {
+                      clients.remove(task.absPath);
+                      if (content != null) {
+                        writeFileSendPort?.send((task.absPath, content));
+                      } else {
+                        failedCount++;
+                      }
+                      if (failedCount + count == full.tasks.length) {
+                        writeFileSendPort?.send(DM.doneFull);
+                      }
+                    },
+                  );
             }
           }
         },

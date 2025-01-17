@@ -13,17 +13,16 @@ void writeToFileTop(SendPort sendPort) {
     required Uint8List content,
   }) async {
     final file = File(path);
-    final raf = await file.open(mode: FileMode.write);
-
+    RandomAccessFile? raf;
     try {
-      for (final v in content) {
-
-              print('>< ><  $v');
-        raf.writeByteSync(v);
-      }
+      raf = await file.open(mode: FileMode.write);
+      await raf.writeFrom(content);
+    } catch (e) {
+      print('>< >< write file exception : ${e}');
     } finally {
-      await raf.close();
+      await raf?.close();
     }
+    return;
   }
 
   final receivePort = ReceivePort();
@@ -31,7 +30,6 @@ void writeToFileTop(SendPort sendPort) {
   receivePort.listen((message) {
     if (message is (String, Uint8List)) {
       store(path: message.$1, content: message.$2).then((v) {
-        print('>< >< store file done :  ');
         sendPort.send(DM.doneFor);
       });
     }
@@ -39,6 +37,10 @@ void writeToFileTop(SendPort sendPort) {
       if (message == DM.goBack) {
         receivePort.close();
         sendPort.send(DM.gottenBack);
+      }
+      if (message == DM.doneFull) {
+        receivePort.close();
+        sendPort.send(DM.doneFull);
       }
     }
   });

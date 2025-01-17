@@ -307,13 +307,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 switch (v) {
                   case DM.gottenBack:
                     {
-                      // theTarget = await moviesController.updateHlsStatus(
-                      //   hls.iD,
-                      //   count + preloadedTasksCount == downloadTask.items.length
-                      //       ? LocalHlsCompleteState()
-                      //       : LocalHlsPauseState(),
-                      //   where: 'downloader 273',
-                      // );
+
                       hlsState = count + preloadedTasksCount ==
                               downloadTask.items.length
                           ? LocalHlsCompleteState()
