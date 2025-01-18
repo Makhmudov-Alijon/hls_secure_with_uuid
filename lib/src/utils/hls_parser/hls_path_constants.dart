@@ -25,11 +25,9 @@ class HlsFolders {
 }
 
 class HlsFilenames {
-  static const localHlsJson = 'local_hls.json';
 
   static const hlsPoster = 'poster.png';
 
-  static const downloadTask = 'download_task.json';
 
   static const master = 'master.m3u8';
 

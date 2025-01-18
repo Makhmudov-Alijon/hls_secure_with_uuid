@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/repository/isar/download_task/download_task_repository_impl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
+
+import 'isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
@@ -120,7 +123,7 @@ class HlsRepository {
           DownloadItem(
             groupId: hlsDetails.localHlsId.toStringId(),
             url: posterLink,
-            saveDir: pathManager.masterDir,
+            saveDirPath: pathManager.masterDir.path,
             fileName: pathManager.posterFile.fileName,
           ),
         );
@@ -131,20 +134,12 @@ class HlsRepository {
         videoPlaylist: hlsFullPlaylist.videoPlaylists.first,
         pathManager: pathManager,
       );
-      final dowloadTaskContent = downloadTask.toJson();
-
-      pathManager.downloadTaskFile
-        ..createIfNotExist()
-        ..writeAsStringSync(
-          dowloadTaskContent,
-        );
 
       final localHls = LocalHlsModelIsar(
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: masterFile.path,
         masterDirPath: masterDir.path,
-        downloadTasksFilePath: pathManager.downloadTaskFile.path,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -153,7 +148,9 @@ class HlsRepository {
         ),
       );
 
-      await ref.read(localeHlsIsarProvider).add(localHls);
+      final id = await ref.read(localeHlsIsarProvider).add(localHls);
+      downloadTask.id = id;
+      final v = await ref.read(downloadTaskIsarProvider).create(downloadTask);
 
       return downloadTask;
     } catch (e) {

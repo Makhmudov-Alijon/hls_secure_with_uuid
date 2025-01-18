@@ -233,11 +233,7 @@ class HlsPathManager {
 
 
 
-  File get downloadTaskFile => File(
-        _masterPath(
-          fileName: HlsFilenames.downloadTask,
-        ),
-      );
+
 
   File get encKeyFile => File(
         _masterPath(

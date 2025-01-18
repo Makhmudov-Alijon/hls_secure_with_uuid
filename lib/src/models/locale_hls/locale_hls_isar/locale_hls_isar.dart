@@ -13,7 +13,6 @@ class LocalHlsModelIsar extends Equatable {
     required this.masterDirPath,
     required this.posterFilePath,
     required this.masterFilePath,
-    required this.downloadTasksFilePath,
     required this.totalSegments,
     required this.hlsDetails,
     required this.downloadStatus,
@@ -25,7 +24,6 @@ class LocalHlsModelIsar extends Equatable {
   String masterDirPath;
   String posterFilePath;
   String masterFilePath;
-  String downloadTasksFilePath;
 
   int totalSegments;
 
@@ -53,13 +51,6 @@ class LocalHlsModelIsar extends Equatable {
   File get masterFile => File(masterFilePath);
 
   set masterFile(File file) => masterFilePath = file.path;
-
-
-
-  @ignore
-  File get downloadTasksFile => File(downloadTasksFilePath);
-
-  set downloadTasksFile(File file) => downloadTasksFilePath = file.path;
 
   /// getters
   LocalHlsId get iD {
@@ -115,7 +106,6 @@ class LocalHlsModelIsar extends Equatable {
         masterDir.existsSync() &&
         posterFile.existsSync() &&
         masterFile.existsSync() &&
-        downloadTasksFile.existsSync() &&
         audioMastersExists &&
         videoMasterExists;
   }
@@ -131,13 +121,13 @@ class LocalHlsModelIsar extends Equatable {
 
   @ignore
   double get calculateProgress {
-    /// point calculate
+    /// todo reconsider calculate
     double result = 0;
-    if (downloadTasksFile.existsSync()) {
-      final task = DownloadTask.fromFilee(downloadTasksFile);
-      final downloadedTasks = task.items.where((v) => v.isDownloaded);
-      result = downloadedTasks.length / task.items.length;
-    }
+    // if (downloadTasksFile.existsSync()) {
+    //   final task = DownloadTask.fromFilee(downloadTasksFile);
+    //   final downloadedTasks = task.items.where((v) => v.isDownloaded);
+    //   result = downloadedTasks.length / task.items.length;
+    // }
 
     return result;
   }
@@ -214,7 +204,6 @@ class LocalHlsModelIsar extends Equatable {
         baseDir,
         masterDir,
         downloadStatus,
-        downloadTasksFile,
         totalSegments,
       ];
 

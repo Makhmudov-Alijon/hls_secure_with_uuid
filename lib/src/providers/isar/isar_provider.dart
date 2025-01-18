@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../../download_manager.dart';
-import '../../repository/stat_repository_api/remote_stat_repository_api.dart';
 
 final isarProvider = NotifierProvider<IsarNotifierr, Isar>(
   () {

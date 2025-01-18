@@ -5,6 +5,8 @@ import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/providers/download/top_level_functions/retry_without_exiting.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../repository/isar/download_task/download_task_repository_impl.dart';
+import '../../repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 import 'datas/datas.dart';
 
 enum HlsDownloaderState {
@@ -84,13 +86,16 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required void Function(LocalHlsErrorState error)? onError,
     required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
         onDownloadComplete,
-  }) {
+  }) async {
     if (state == HlsDownloaderState.downloading) {
       addToQueue(hls);
     } else {
-      if (hls.downloadTasksFile.existsSync()) {
-        downloadOrContinueWithRetryInIsolate(
-          downloadTask: DownloadTask.fromFilee(hls.downloadTasksFile),
+      final downloadTask = await ref.read(downloadTaskIsarProvider).getById(
+            hls.id,
+          );
+      if (downloadTask != null) {
+        await downloadOrContinueWithRetryInIsolate(
+          downloadTask: downloadTask,
           hls: hls,
           onDownloadComplete: onDownloadComplete,
           onError: onError,
@@ -152,8 +157,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     final nextHls = await moviesController.findNextInQueue(where: where);
 
     if (nextHls != null) {
-      if (nextHls.downloadTasksFile.existsSync()) {
-        final downloadTask = DownloadTask.fromFilee(nextHls.downloadTasksFile);
+      final downloadTask = await ref.read(downloadTaskIsarProvider).getById(
+            nextHls.id,
+          );
+      if (downloadTask != null) {
         await downloadOrContinueWithRetryInIsolate(
           downloadTask: downloadTask,
           hls: nextHls,

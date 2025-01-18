@@ -1,9 +1,12 @@
 import 'dart:async';
 
-import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/entities/local_hls_state.dart';
+import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:isar/isar.dart';
 
-import 'locale_hls_store/locale_hls_store_repository.dart';
+import '../models/locale_hls/locale_hls_isar/locale_hls_isar.dart';
+import 'isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 
 final hlsLocalRepositoryProvider = Provider(
   (ref) => HlsLocalRepository(

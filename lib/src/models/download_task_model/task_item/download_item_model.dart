@@ -1,24 +1,34 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:isar/isar.dart';
 
+part 'download_item_model.g.dart';
+
+@Embedded(inheritance: false)
 class DownloadItem extends Equatable {
-  const DownloadItem({
-    required this.url,
-    required this.saveDir,
-    required this.fileName,
-    this.groupId,
+  DownloadItem({
+    this.url = '',
+    this.saveDirPath = '',
+    this.fileName = '',
+    this.groupId = '',
   });
 
-  final String url;
-  final String? groupId;
-  final Directory saveDir;
-  final String fileName;
+  String url;
+  String groupId;
+  String saveDirPath;
+  String fileName;
 
-  String get absolutePath => '${saveDir.path}/$fileName';
+  @ignore
+  String get absolutePath => '$saveDirPath/$fileName';
 
+  @ignore
+  Directory get saveDir => Directory(saveDirPath);
+
+  set saveDir(Directory dir) => saveDirPath = dir.path;
+
+  @ignore
   bool get isDownloaded {
     // final file = File(absolutePath);
     // file.length().then((v) {
@@ -27,14 +37,15 @@ class DownloadItem extends Equatable {
     return File(absolutePath).existsSync();
   }
 
+  @ignore
   @override
-  List<Object?> get props => [url, saveDir, fileName, groupId];
+  List<Object?> get props => [url, saveDirPath, fileName, groupId];
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'url': url,
       'groupId': groupId,
-      'saveDir': saveDir.path,
+      'saveDir': saveDirPath,
       'fileName': fileName,
     };
   }
@@ -42,14 +53,15 @@ class DownloadItem extends Equatable {
   factory DownloadItem.fromMap(Map<String, dynamic> map) {
     return DownloadItem(
       url: map['url'] as String,
-      groupId: map['groupId'] != null ? map['groupId'] as String : null,
-      saveDir: Directory(map['saveDir'] as String),
+      // groupId: map['groupId'] != null ? map['groupId'] as String : '-1',
+      saveDirPath: map['saveDir'] as String,
       fileName: map['fileName'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
+  @ignore
   ({
     String url,
     String absPath,
@@ -58,6 +70,7 @@ class DownloadItem extends Equatable {
         absPath: absolutePath,
       );
 
+  @ignore
   MapEntry<String, String> get getForIsolateMap => MapEntry(
         url,
         absolutePath,

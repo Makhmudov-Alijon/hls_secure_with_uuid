@@ -1,8 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
+import 'package:isar/isar.dart';
+
+import '../../../entities/hls_audio/hls_audio.dart';
+import '../../../entities/hls_resolution/hls_resolution.dart';
+import '../locale_hls_id/local_hls_id.dart';
 
 part 'local_hls_details_model.g.dart';
 

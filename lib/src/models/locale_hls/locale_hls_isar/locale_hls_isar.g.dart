@@ -28,50 +28,40 @@ const LocalHlsModelIsarSchema = CollectionSchema(
       type: IsarType.object,
       target: r'LocalHlsStatus',
     ),
-    r'downloadTasksFilePath': PropertySchema(
-      id: 2,
-      name: r'downloadTasksFilePath',
-      type: IsarType.string,
-    ),
     r'getStatusKey': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'getStatusKey',
       type: IsarType.string,
     ),
     r'hlsDetails': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'hlsDetails',
       type: IsarType.object,
       target: r'LocalHlsDetailsModel',
     ),
     r'iD': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'iD',
       type: IsarType.object,
       target: r'LocalHlsId',
     ),
-    r'localHlsFilePath': PropertySchema(
-      id: 6,
-      name: r'localHlsFilePath',
-      type: IsarType.string,
-    ),
     r'masterDirPath': PropertySchema(
-      id: 7,
+      id: 5,
       name: r'masterDirPath',
       type: IsarType.string,
     ),
     r'masterFilePath': PropertySchema(
-      id: 8,
+      id: 6,
       name: r'masterFilePath',
       type: IsarType.string,
     ),
     r'posterFilePath': PropertySchema(
-      id: 9,
+      id: 7,
       name: r'posterFilePath',
       type: IsarType.string,
     ),
     r'totalSegments': PropertySchema(
-      id: 10,
+      id: 8,
       name: r'totalSegments',
       type: IsarType.long,
     )
@@ -106,7 +96,6 @@ int _localHlsModelIsarEstimateSize(
   bytesCount += 3 +
       LocalHlsStatusSchema.estimateSize(
           object.downloadStatus, allOffsets[LocalHlsStatus]!, allOffsets);
-  bytesCount += 3 + object.downloadTasksFilePath.length * 3;
   bytesCount += 3 + object.getStatusKey.length * 3;
   bytesCount += 3 +
       LocalHlsDetailsModelSchema.estimateSize(
@@ -114,7 +103,6 @@ int _localHlsModelIsarEstimateSize(
   bytesCount += 3 +
       LocalHlsIdSchema.estimateSize(
           object.iD, allOffsets[LocalHlsId]!, allOffsets);
-  bytesCount += 3 + object.localHlsFilePath.length * 3;
   bytesCount += 3 + object.masterDirPath.length * 3;
   bytesCount += 3 + object.masterFilePath.length * 3;
   bytesCount += 3 + object.posterFilePath.length * 3;
@@ -134,25 +122,23 @@ void _localHlsModelIsarSerialize(
     LocalHlsStatusSchema.serialize,
     object.downloadStatus,
   );
-  writer.writeString(offsets[2], object.downloadTasksFilePath);
-  writer.writeString(offsets[3], object.getStatusKey);
+  writer.writeString(offsets[2], object.getStatusKey);
   writer.writeObject<LocalHlsDetailsModel>(
-    offsets[4],
+    offsets[3],
     allOffsets,
     LocalHlsDetailsModelSchema.serialize,
     object.hlsDetails,
   );
   writer.writeObject<LocalHlsId>(
-    offsets[5],
+    offsets[4],
     allOffsets,
     LocalHlsIdSchema.serialize,
     object.iD,
   );
-  writer.writeString(offsets[6], object.localHlsFilePath);
-  writer.writeString(offsets[7], object.masterDirPath);
-  writer.writeString(offsets[8], object.masterFilePath);
-  writer.writeString(offsets[9], object.posterFilePath);
-  writer.writeLong(offsets[10], object.totalSegments);
+  writer.writeString(offsets[5], object.masterDirPath);
+  writer.writeString(offsets[6], object.masterFilePath);
+  writer.writeString(offsets[7], object.posterFilePath);
+  writer.writeLong(offsets[8], object.totalSegments);
 }
 
 LocalHlsModelIsar _localHlsModelIsarDeserialize(
@@ -169,18 +155,16 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
           allOffsets,
         ) ??
         LocalHlsStatus(),
-    downloadTasksFilePath: reader.readString(offsets[2]),
     hlsDetails: reader.readObjectOrNull<LocalHlsDetailsModel>(
-          offsets[4],
+          offsets[3],
           LocalHlsDetailsModelSchema.deserialize,
           allOffsets,
         ) ??
         LocalHlsDetailsModel(),
-    localHlsFilePath: reader.readString(offsets[6]),
-    masterDirPath: reader.readString(offsets[7]),
-    masterFilePath: reader.readString(offsets[8]),
-    posterFilePath: reader.readString(offsets[9]),
-    totalSegments: reader.readLong(offsets[10]),
+    masterDirPath: reader.readString(offsets[5]),
+    masterFilePath: reader.readString(offsets[6]),
+    posterFilePath: reader.readString(offsets[7]),
+    totalSegments: reader.readLong(offsets[8]),
   );
   object.id = id;
   return object;
@@ -205,30 +189,26 @@ P _localHlsModelIsarDeserializeProp<P>(
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
-    case 4:
       return (reader.readObjectOrNull<LocalHlsDetailsModel>(
             offset,
             LocalHlsDetailsModelSchema.deserialize,
             allOffsets,
           ) ??
           LocalHlsDetailsModel()) as P;
-    case 5:
+    case 4:
       return (reader.readObjectOrNull<LocalHlsId>(
             offset,
             LocalHlsIdSchema.deserialize,
             allOffsets,
           ) ??
           LocalHlsId()) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
       return (reader.readString(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
-    case 9:
-      return (reader.readString(offset)) as P;
-    case 10:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -468,143 +448,6 @@ extension LocalHlsModelIsarQueryFilter
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'downloadTasksFilePath',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'downloadTasksFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathMatches(String pattern,
-          {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'downloadTasksFilePath',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'downloadTasksFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      downloadTasksFilePathIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'downloadTasksFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
       getStatusKeyEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -792,142 +635,6 @@ extension LocalHlsModelIsarQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'localHlsFilePath',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'localHlsFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'localHlsFilePath',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'localHlsFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      localHlsFilePathIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'localHlsFilePath',
-        value: '',
       ));
     });
   }
@@ -1441,20 +1148,6 @@ extension LocalHlsModelIsarQuerySortBy
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByDownloadTasksFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'downloadTasksFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByDownloadTasksFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'downloadTasksFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       sortByGetStatusKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'getStatusKey', Sort.asc);
@@ -1465,20 +1158,6 @@ extension LocalHlsModelIsarQuerySortBy
       sortByGetStatusKeyDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'getStatusKey', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByLocalHlsFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'localHlsFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByLocalHlsFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'localHlsFilePath', Sort.desc);
     });
   }
 
@@ -1556,20 +1235,6 @@ extension LocalHlsModelIsarQuerySortThenBy
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByDownloadTasksFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'downloadTasksFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByDownloadTasksFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'downloadTasksFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       thenByGetStatusKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'getStatusKey', Sort.asc);
@@ -1593,20 +1258,6 @@ extension LocalHlsModelIsarQuerySortThenBy
       thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByLocalHlsFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'localHlsFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByLocalHlsFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'localHlsFilePath', Sort.desc);
     });
   }
 
@@ -1677,25 +1328,9 @@ extension LocalHlsModelIsarQueryWhereDistinct
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
-      distinctByDownloadTasksFilePath({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'downloadTasksFilePath',
-          caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
       distinctByGetStatusKey({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'getStatusKey', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
-      distinctByLocalHlsFilePath({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'localHlsFilePath',
-          caseSensitive: caseSensitive);
     });
   }
 
@@ -1754,13 +1389,6 @@ extension LocalHlsModelIsarQueryProperty
   }
 
   QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
-      downloadTasksFilePathProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'downloadTasksFilePath');
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
       getStatusKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'getStatusKey');
@@ -1777,13 +1405,6 @@ extension LocalHlsModelIsarQueryProperty
   QueryBuilder<LocalHlsModelIsar, LocalHlsId, QQueryOperations> iDProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'iD');
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
-      localHlsFilePathProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'localHlsFilePath');
     });
   }
 

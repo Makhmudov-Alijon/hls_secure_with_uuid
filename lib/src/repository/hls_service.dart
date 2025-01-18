@@ -179,7 +179,7 @@ class HlsService {
         downloadItems.add(
           DownloadItem(
             url: segment.downloadLink,
-            saveDir: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack),
+            saveDirPath: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack).path,
             fileName: pathManager
                 .fileFromAudio(
                   url: segment.downloadLink,
@@ -196,9 +196,9 @@ class HlsService {
       downloadItems.add(
         DownloadItem(
           url: segment.downloadLink,
-          saveDir: pathManager.videoDir(
+          saveDirPath: pathManager.videoDir(
             resolutionType: resolutionType,
-          ),
+          ).path,
           fileName: pathManager
               .fileFromVideo(
                 url: segment.downloadLink,
