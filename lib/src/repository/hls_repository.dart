@@ -117,7 +117,7 @@ class HlsRepository {
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
         /// the download item created
         await downloadItemm(
-          DownloadItemm(
+          DownloadItem(
             groupId: hlsDetails.localHlsId.toStringId(),
             url: posterLink,
             saveDir: pathManager.masterDir,
@@ -145,7 +145,6 @@ class HlsRepository {
         masterFilePath: masterFile.path,
         masterDirPath: masterDir.path,
         downloadTasksFilePath: pathManager.downloadTaskFile.path,
-        localHlsFilePath: pathManager.localHlsFilee.path,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -153,7 +152,6 @@ class HlsRepository {
           // creationDate: DateTime.now(),
         ),
       );
-      final v = localHls.toJson();
 
       await ref.read(localeHlsIsarProvider).add(localHls);
 
@@ -226,7 +224,7 @@ class HlsRepository {
     }
   }
 
-  Future<void> downloadItemm(DownloadItemm downloadItem) async {
+  Future<void> downloadItemm(DownloadItem downloadItem) async {
     await dio.download(
       downloadItem.url,
       downloadItem.absolutePath,

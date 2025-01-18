@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/providers/locale_hls_movies/sort_extensions.dart';
 import 'package:download_manager/src/repository/hls_local_repository.dart';
+import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -45,15 +46,22 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     return temp;
   }
 
+  final AppDeBouncer deBouncer = AppDeBouncer(
+    milliseconds: 300,
+  );
   Future<void> refreshMovies() async {
-    await loadMoviesIsarr(false);
+    deBouncer.run(
+      () => loadMoviesIsar(false),
+    );
   }
 
   Future<LocalHlsModelIsar?> findNextInQueue({required String where}) async {
     if (state.total.isEmpty) {
       return null;
     }
-    final moviesInQueue = state.total
+    final total = await ref.read(localeHlsIsarProvider).getAll();
+
+    final moviesInQueue = total
         .where((element) => element.localHlsState is LocalHlsInQueueState)
         .toList()
       ..sort(
@@ -76,74 +84,36 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     FutureOr<void> Function(LocalHlsGroupModel group, Ref ref)? onDelete,
   }) {
     for (final item in hlsGroup.movies) {
-      deleteHls(hls: item);
+      deleteHlss(hls: item);
     }
     onDelete?.call(hlsGroup, ref);
   }
 
-  void deleteHls({
+  Future<void> deleteHlss({
     required LocalHlsModelIsar hls,
-    FutureOr<void> Function(LocalHlsModelIsar hls, Ref ref)? onDelete,
-  }) {
-    final hlsIndex = _hlsIndex(hls.hlsDetails.localHlsId);
-    if (hlsIndex != null) {
-      _removeHlsAt(hlsIndex);
-      ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
-      ref.read(localeHlsIsarProvider).delete(hls);
-      movieController(hls.iD).refresh(); // TODO: check without it
-      onDelete?.call(hls, ref);
-    } else {
-      final v = 0;
-    }
+    FutureOr<void> Function(LocalHlsModelIsar hls, Ref ref)? onDeletee,
+  }) async {
+    await ref.read(localeHlsIsarProvider).delete(hls);
+    ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+    movieController(hls.iD).refresh();
+    await refreshMovies();
+    onDeletee?.call(hls, ref);
   }
 
-  Future<LocalHlsModelIsar?> updateHlsStatus(
-    LocalHlsId id,
+  Future<LocalHlsModelIsar?> updateHlsStatus(Id hlsId,
     LocalHlsState hlsState, {
     required String where,
   }) async {
-    final hlsIndex = _hlsIndex(id);
-    if (hlsIndex != null) {
-      final oldHls = state.total[hlsIndex];
-      final newHls = await ref.read(hlsLocalRepositoryProvider).updateHlsStatus(
-            oldHls,
-            hlsState,
-            where: 'local_hls_movies_provider 110 $where',
-          );
-      if (newHls != null) {
-        await refreshMovies();
-        movieController(id).refresh(); // TODO: check without it
-      }
-      return newHls;
-    } else {
-      return null;
+    final result = await ref.read(localeHlsIsarProvider).updateDownloadStatus(
+          hlsId: hlsId,
+          status: hlsState.toLocalHlsStatus(),
+          where: 'locale hls movies 105 => $where',
+        );
+    if (result != null) {
+      await refreshMovies();
+      movieController(result.iD).refresh();
     }
-  }
-
-  void _removeHlsAt(int index) {
-    if (state.total.isNotEmpty) {
-      final oldState = [...state.total];
-      final newState = oldState..removeAt(index);
-      updateState(
-        state.copyWith(
-          total: newState,
-        ),
-      );
-      sort('_removeHlsAtt');
-    }
-  }
-
-  int? _hlsIndex(LocalHlsId id) {
-    try {
-      final index = state.total.indexWhere((element) {
-        final result = element.hlsDetails.localHlsId == id;
-
-        return result;
-      });
-      return index < 0 ? null : index;
-    } catch (e) {
-      return null;
-    }
+    return result;
   }
 
   Future<LocalHlsModelIsar?> hlsById(LocalHlsId id) async {
@@ -151,7 +121,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   /// Load the movies thread
-  Future<void> loadMoviesIsarr(bool isInitial) async {
+  Future<void> loadMoviesIsar(bool isInitial) async {
     final DateTime start = DateTime.now();
     final total =
         await ref.read(isarProvider).localHlsModelIsars.where().findAll();
@@ -175,10 +145,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         } else if (localeState is LocalHlsDownloadingState ||
             localeState is LocalHlsInQueueState) {
           final updatedHls = await hlsIsarRepo.updateDownloadStatus(
-
-            hls: hls,
-            status: LocalHlsPauseState().toLocalHlsStatus(),where: 'local_hls_movies_provider.dart 180'
-          );
+              hlsId: hls.id,
+              status: LocalHlsPauseState().toLocalHlsStatus(),
+              where: 'local_hls_movies_provider.dart 180');
           final vv = 0;
           if (updatedHls != null) {
             hls = updatedHls;
@@ -227,7 +196,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   @override
   LocaleHlsMoviesState build() {
     Prefs.init().then((v) {
-      loadMoviesIsarr(_checkInitial());
+      loadMoviesIsar(_checkInitial());
     });
 
     return const LocaleHlsMoviesState();

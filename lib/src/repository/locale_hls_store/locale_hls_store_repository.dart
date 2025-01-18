@@ -4,7 +4,7 @@ abstract class LocaleHlsStoreRepository {
   Future<void> add(LocalHlsModelIsar hls);
 
   Future<LocalHlsModelIsar?> updateDownloadStatus({
-    required LocalHlsModelIsar hls,
+    required Id hlsId,
     required LocalHlsStatus status,
     required String where,
   });
@@ -12,6 +12,7 @@ abstract class LocaleHlsStoreRepository {
   Future<LocalHlsModelIsar?> getByLocaleHlsId({
     required LocalHlsId id,
   });
+  Future<List<LocalHlsModelIsar>> getAll( );
   Future<void> delete(LocalHlsModelIsar hls);
 
   Future<void> clear();

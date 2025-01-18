@@ -4,8 +4,8 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-class DownloadItemm extends Equatable {
-  const DownloadItemm({
+class DownloadItem extends Equatable {
+  const DownloadItem({
     required this.url,
     required this.saveDir,
     required this.fileName,
@@ -39,8 +39,8 @@ class DownloadItemm extends Equatable {
     };
   }
 
-  factory DownloadItemm.fromMap(Map<String, dynamic> map) {
-    return DownloadItemm(
+  factory DownloadItem.fromMap(Map<String, dynamic> map) {
+    return DownloadItem(
       url: map['url'] as String,
       groupId: map['groupId'] != null ? map['groupId'] as String : null,
       saveDir: Directory(map['saveDir'] as String),
@@ -58,6 +58,11 @@ class DownloadItemm extends Equatable {
         absPath: absolutePath,
       );
 
-  factory DownloadItemm.fromJson(String source) =>
-      DownloadItemm.fromMap(json.decode(source) as Map<String, dynamic>);
+  MapEntry<String, String> get getForIsolateMap => MapEntry(
+        url,
+        absolutePath,
+      );
+
+  factory DownloadItem.fromJson(String source) =>
+      DownloadItem.fromMap(json.decode(source) as Map<String, dynamic>);
 }

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -14,7 +13,6 @@ class LocalHlsModelIsar extends Equatable {
     required this.masterDirPath,
     required this.posterFilePath,
     required this.masterFilePath,
-    required this.localHlsFilePath,
     required this.downloadTasksFilePath,
     required this.totalSegments,
     required this.hlsDetails,
@@ -27,7 +25,6 @@ class LocalHlsModelIsar extends Equatable {
   String masterDirPath;
   String posterFilePath;
   String masterFilePath;
-  String localHlsFilePath;
   String downloadTasksFilePath;
 
   int totalSegments;
@@ -134,9 +131,10 @@ class LocalHlsModelIsar extends Equatable {
 
   @ignore
   double get calculateProgress {
+    /// point calculate
     double result = 0;
     if (downloadTasksFile.existsSync()) {
-      final task = DownloadTask.fromFile(downloadTasksFile);
+      final task = DownloadTask.fromFilee(downloadTasksFile);
       final downloadedTasks = task.items.where((v) => v.isDownloaded);
       result = downloadedTasks.length / task.items.length;
     }
@@ -219,58 +217,6 @@ class LocalHlsModelIsar extends Equatable {
         downloadTasksFile,
         totalSegments,
       ];
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'masterDir': masterDirPath,
-      'posterFile': posterFilePath,
-      'masterFile': masterFilePath,
-      'hlsDetails': hlsDetails.toJson(),
-      'downloadStatus': downloadStatus.toMap(),
-      'downloadTaskFile': downloadTasksFilePath,
-      'localHlsFile': localHlsFilePath,
-      'baseDir': baseDirPath,
-      'totalSegments': totalSegments,
-    };
-  }
-
-  factory LocalHlsModelIsar.fromFile(File file) {
-    final content = file.readAsStringSync();
-    return LocalHlsModelIsar.fromJson(content);
-  }
-
-  factory LocalHlsModelIsar.fromMap(Map<String, dynamic> json) {
-    final baseDirPat = json['baseDir'] as String?;
-    final masterDirPat = json['masterDir'] as String?;
-    final posterFilePat = json['posterFile'] as String?;
-    final masterFilePat = json['masterFile'] as String?;
-    final localHlsFilePat = json['localHlsFile'] as String?;
-    final downloadTasksFilePat = json['downloadTaskFile'] as String?;
-    final totalSegment = json['totalSegments'] as int?;
-
-    final v = 0;
-    final model = LocalHlsModelIsar(
-      baseDirPath: baseDirPat!,
-      masterDirPath: masterDirPat!,
-      posterFilePath: posterFilePat!,
-      masterFilePath: masterFilePat!,
-      localHlsFilePath: localHlsFilePat!,
-      downloadTasksFilePath: downloadTasksFilePat!,
-      totalSegments: totalSegment!,
-      hlsDetails: LocalHlsDetailsModel.fromJson(json['hlsDetails'] as String),
-      downloadStatus: LocalHlsStatus.fromMap(
-          json['downloadStatus'] as Map<String, dynamic>),
-    );
-
-    return model;
-  }
-
-  String toJson() => jsonEncode(toMap());
-
-  factory LocalHlsModelIsar.fromJson(String source) =>
-      LocalHlsModelIsar.fromMap(json.decode(source) as Map<String, dynamic>);
-
-
 
   String get getStatusKey {
     if (hlsDetails.isSerial) {

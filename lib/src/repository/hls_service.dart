@@ -172,12 +172,12 @@ class HlsService {
     /// total size
     var size = 0;
 
-    final downloadItems = <DownloadItemm>[];
+    final downloadItems = <DownloadItem>[];
     for (final audioPlaylist in audioPlaylists) {
       size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
         downloadItems.add(
-          DownloadItemm(
+          DownloadItem(
             url: segment.downloadLink,
             saveDir: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack),
             fileName: pathManager
@@ -194,7 +194,7 @@ class HlsService {
     for (final segment in videoPlaylist.segments) {
       final resolutionType = videoPlaylist.resolution.resolution;
       downloadItems.add(
-        DownloadItemm(
+        DownloadItem(
           url: segment.downloadLink,
           saveDir: pathManager.videoDir(
             resolutionType: resolutionType,

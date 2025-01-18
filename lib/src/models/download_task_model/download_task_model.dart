@@ -11,7 +11,7 @@ class DownloadTask extends Equatable {
     this.mbPerSegment = 0,
   });
 
-  final List<DownloadItemm> items;
+  final List<DownloadItem> items;
   final double mbPerSegment;
 
   @override
@@ -24,16 +24,16 @@ class DownloadTask extends Equatable {
     };
   }
 
-  factory DownloadTask.fromFile(File file) {
+  factory DownloadTask.fromFilee(File file) {
     final content = file.readAsStringSync();
     return DownloadTask.fromJson(content);
   }
 
   factory DownloadTask.fromMap(Map<String, dynamic> map) {
     return DownloadTask(
-      items: List<DownloadItemm>.from(
-        (map['items'] as List<dynamic>).map<DownloadItemm>(
-          (item) => DownloadItemm.fromMap(
+      items: List<DownloadItem>.from(
+        (map['items'] as List<dynamic>).map<DownloadItem>(
+          (item) => DownloadItem.fromMap(
             Map.from(
               item as Map<String, dynamic>,
             ),

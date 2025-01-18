@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/providers/download/top_level_functions/cancelable_http.dart';
+import 'package:download_manager/src/providers/download/top_level_functions/retry_without_exiting.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'datas/datas.dart';
@@ -54,7 +54,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   void addToQueue(LocalHlsModelIsar hls) {
     moviesController.updateHlsStatus(
-      hls.iD,
+      hls.id,
       LocalHlsInQueueState(),
       where: 'add to queue 53',
     );
@@ -65,7 +65,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       _stopDownloading(where: 'pause download');
     }
     moviesController.updateHlsStatus(
-      hls.iD,
+      hls.id,
       LocalHlsPauseState(),
       where: 'pause download 60',
     );
@@ -73,7 +73,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   void cancelDownload(LocalHlsModelIsar hls) {
     moviesController.updateHlsStatus(
-      hls.iD,
+      hls.id,
       LocalHlsDeletedState(),
       where: 'cancel download 64',
     );
@@ -81,7 +81,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
   void tryToDownload({
     required LocalHlsModelIsar hls,
-    required DownloadTask? downloadTask,
     required void Function(LocalHlsErrorState error)? onError,
     required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
         onDownloadComplete,
@@ -90,9 +89,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       addToQueue(hls);
     } else {
       if (hls.downloadTasksFile.existsSync()) {
-        downloadOrContinue(
-          downloadTask:
-              downloadTask ?? DownloadTask.fromFile(hls.downloadTasksFile),
+        downloadOrContinueWithRetryInIsolate(
+          downloadTask: DownloadTask.fromFilee(hls.downloadTasksFile),
           hls: hls,
           onDownloadComplete: onDownloadComplete,
           onError: onError,
@@ -131,7 +129,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           addToQueue(hls);
         } else {
           if (!_isolateRunning) {
-            await downloadOrContinue(
+            await downloadOrContinueWithRetryInIsolate(
               downloadTask: downloadTask,
               hls: hls,
               onDownloadComplete: onDownloadComplete,
@@ -155,8 +153,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
     if (nextHls != null) {
       if (nextHls.downloadTasksFile.existsSync()) {
-        final downloadTask = DownloadTask.fromFile(nextHls.downloadTasksFile);
-        await downloadOrContinue(
+        final downloadTask = DownloadTask.fromFilee(nextHls.downloadTasksFile);
+        await downloadOrContinueWithRetryInIsolate(
           downloadTask: downloadTask,
           hls: nextHls,
           onDownloadComplete: onDownloadComplete,
@@ -208,7 +206,251 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     return _retry <= 3;
   }
 
-  Future<void> downloadOrContinue({
+  // Future<void> downloadOrContinue({
+  //   // required double estimatedTaskSize,
+  //   required DownloadTask downloadTask,
+  //   required LocalHlsModelIsar hls,
+  //   required Future<void> Function(LocalHlsModelIsar hls, Ref ref)?
+  //       onDownloadComplete,
+  //   required void Function(LocalHlsErrorState error)? onError,
+  // }) async {
+  //   var lastCheckForPauseOrDeletedd = DateTime.now();
+  //
+  //   final startTime = DateTime.now();
+  //   _startDownloading(where: 'line 222');
+  //   _downloadingHls = hls.iD;
+  //   LocalHlsModelIsar? theTarget;
+  //
+  //   theTarget = await moviesController.updateHlsStatus(
+  //     hls.iD,
+  //     LocalHlsDownloadingState(),
+  //     where: 'start downloading 168 ',
+  //   );
+  //   Isolate? theIsolate;
+  //   ReceivePort? thePort;
+  //   Timer? progressUpdateTimer;
+  //   int? countUpdatedForLast;
+  //   void dispose() {
+  //     countUpdatedForLast = null;
+  //     progressUpdateTimer?.cancel();
+  //     progressUpdateTimer = null;
+  //     thePort?.close();
+  //     thePort = null;
+  //     theIsolate?.kill(priority: Isolate.immediate);
+  //     theIsolate = null;
+  //   }
+  //
+  //   try {
+  //     Future<LocalHlsState> func() async {
+  //       final tasks = <({String url, String absPath})>[
+  //         ...downloadTask.items
+  //             .where((e) => !e.isDownloaded)
+  //             .map((e) => e.getForIsolate),
+  //       ];
+  //       final preloadedTasksCount = downloadTask.items.length - tasks.length;
+  //       final allTasksCompleted = Completer<void>();
+  //       if (tasks.isNotEmpty) {
+  //         thePort = ReceivePort();
+  //         var count = 0;
+  //         countUpdatedForLast = count + preloadedTasksCount;
+  //         void updateLastCountUpdatedFor() {
+  //           countUpdatedForLast = count + preloadedTasksCount;
+  //         }
+  //
+  //         progressUpdateTimer = Timer.periodic(
+  //           const Duration(milliseconds: 300),
+  //           (timer) {
+  //             if (state == HlsDownloaderState.downloading &&
+  //                 (countUpdatedForLast! < count + preloadedTasksCount)) {
+  //               updateLastCountUpdatedFor();
+  //               final progress = calculateProgress(
+  //                 totalLength: downloadTask.items.length,
+  //                 doneLength: count + preloadedTasksCount,
+  //                 // + failedTasks.length,
+  //               );
+  //               final speed = calculateDownloadSpeed(
+  //                 startTime: startTime,
+  //                 mbPerSegment: downloadTask.mbPerSegment,
+  //                 downloadedSegments: count,
+  //               );
+  //               // This code runs every half a second and updates the UI
+  //
+  //               localHlsMovieController(hls.iD).updateProgress(
+  //                 progress: progress,
+  //                 speed: speed,
+  //               );
+  //             } else {
+  //               final v = 0;
+  //             }
+  //           },
+  //         );
+  //
+  //         theIsolate = await Isolate.spawn(
+  //           // downloadDio,
+  //           cancellableHttp,
+  //           DownloadFullTask(
+  //             tasks: tasks,
+  //             sendPort: thePort!.sendPort,
+  //           ),
+  //         );
+  //         late SendPort isolateSendPort;
+  //         LocalHlsState? hlsState;
+  //
+  //         thePort!.listen(
+  //           (v) async {
+  //             if (v is SendPort) {
+  //               isolateSendPort = v;
+  //             }
+  //             if (v is int) {
+  //               switch (v) {
+  //                 case DM.gottenBack:
+  //                   {
+  //
+  //                     hlsState = count + preloadedTasksCount ==
+  //                             downloadTask.items.length
+  //                         ? LocalHlsCompleteState()
+  //                         : LocalHlsPauseState();
+  //                     print(
+  //                         '>< >< gotten back : ${theTarget?.downloadStatus.statusType.name}');
+  //                     try {
+  //                       if (!allTasksCompleted.isCompleted) {
+  //                         allTasksCompleted.complete();
+  //                       }
+  //                     } catch (e) {
+  //                       print('>< >< complete exception : $e');
+  //                     }
+  //
+  //                     break;
+  //                   }
+  //                 case DM.doneFor:
+  //                   {
+  //                     count++;
+  //
+  //                     if (DateTime.now()
+  //                             .difference(lastCheckForPauseOrDeletedd)
+  //                             .inMilliseconds >
+  //                         300) {
+  //                       final check = ref
+  //                           .read(localeHlsIsarProvider)
+  //                           .getHlsDownloadStatusType(
+  //                             hlsId: hls.id,
+  //                           );
+  //
+  //                       if (check is LocalHlsPauseState ||
+  //                           check is LocalHlsDeletedState) {
+  //                         isolateSendPort.send(DM.goBack);
+  //                       }
+  //
+  //                       lastCheckForPauseOrDeletedd = DateTime.now();
+  //                     }
+  //
+  //                     break;
+  //                   }
+  //                 case DM.doneFull:
+  //                   {
+  //                     hlsState = count + preloadedTasksCount ==
+  //                             downloadTask.items.length
+  //                         ? LocalHlsCompleteState()
+  //                         : LocalHlsErrorState();
+  //                     print(
+  //                       '''>< >< ${hlsState.runtimeType} done full => count: $count, pre: $preloadedTasksCount, total: ${downloadTask.items.length}''',
+  //                     );
+  //                     try {
+  //                       if (!allTasksCompleted.isCompleted) {
+  //                         allTasksCompleted.complete();
+  //                       } else {
+  //                         final v = 0;
+  //                       }
+  //                     } catch (e) {
+  //                       print('>< >< complete exception doneFull : $e');
+  //                     }
+  //
+  //                     break;
+  //                   }
+  //               }
+  //             }
+  //           },
+  //         );
+  //         await allTasksCompleted.future;
+  //
+  //         dispose();
+  //         if (hlsState is LocalHlsErrorState) {
+  //           if (canRetry()) {
+  //             print('>< >< can retry : ');
+  //
+  //             return func();
+  //           }
+  //         }
+  //
+  //         return hlsState ??
+  //             ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
+  //                   hlsId: hls.id,
+  //                 );
+  //       } else {
+  //         theTarget = await moviesController.updateHlsStatus(
+  //           hls.iD,
+  //           LocalHlsCompleteState(),
+  //           where: 'download completed 318',
+  //         );
+  //         final result =
+  //             ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
+  //                   hlsId: hls.id,
+  //                 );
+  //         return result;
+  //       }
+  //     }
+  //
+  //     final resultState = await func();
+  //     theTarget = await moviesController.updateHlsStatus(
+  //       hls.iD,
+  //       resultState,
+  //       where: 'after download complete 402',
+  //     );
+  //
+  //     print('>< >< result : ${resultState.runtimeType}');
+  //
+  //     /// ////////////////////////////////////
+  //     _downloadingHls = null;
+  //     _isolateRunning = false;
+  //     if (resultState is LocalHlsErrorState) {
+  //       _stopDownloading(where: 'line 411');
+  //       onError?.call(resultState);
+  //     } else if (resultState is LocalHlsDeletedState) {
+  //       _stopDownloading(where: 'line 414');
+  //       moviesController.deleteHls(hls: hls);
+  //     } else {
+  //       _stopDownloading(where: 'line 417');
+  //     }
+  //
+  //     if (onDownloadComplete != null &&
+  //         resultState is LocalHlsCompleteState &&
+  //         theTarget != null) {
+  //       await onDownloadComplete.call(theTarget!, ref);
+  //     } else {
+  //       final v = 0;
+  //     }
+  //     await checkForNextQueue(
+  //       where: ' after complete: 373',
+  //       onDownloadComplete: onDownloadComplete,
+  //       onError: onError,
+  //     );
+  //   } catch (e) {
+  //     theTarget = await moviesController.updateHlsStatus(
+  //       hls.iD,
+  //       LocalHlsErrorState(),
+  //       where: 'after download complete 402',
+  //     );
+  //     dispose();
+  //     _stopDownloading(where: 'catch line 421');
+  //   }
+  // }
+
+  /// ///////////////////////
+  /// ///////////////////////
+  /// ///////////////////////
+  /// ///////////////////////
+  /// ///////////////////////
+  Future<void> downloadOrContinueWithRetryInIsolate({
     // required double estimatedTaskSize,
     required DownloadTask downloadTask,
     required LocalHlsModelIsar hls,
@@ -216,210 +458,199 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
-    var lastCheckForPauseOrDeletedd = DateTime.now();
+    var lastCheckForPauseOrDeleted = DateTime.now();
 
     final startTime = DateTime.now();
     _startDownloading(where: 'line 222');
     _downloadingHls = hls.iD;
-    LocalHlsModelIsar? theTarget;
-
-    theTarget = await moviesController.updateHlsStatus(
-      hls.iD,
+    LocalHlsModelIsar? theTarget = await moviesController.updateHlsStatus(
+      hls.id,
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
     );
     Isolate? theIsolate;
     ReceivePort? thePort;
-    Timer? progressUpdateTimer;
+    Timer? progressUpdateTimerr;
+    late LocalHlsState resultState;
     int? countUpdatedForLast;
-    void dispose() {
+    void disposee() {
       countUpdatedForLast = null;
-      progressUpdateTimer?.cancel();
-      progressUpdateTimer = null;
+      progressUpdateTimerr?.cancel();
+      progressUpdateTimerr = null;
       thePort?.close();
       thePort = null;
       theIsolate?.kill(priority: Isolate.immediate);
       theIsolate = null;
+
+      print('>< >< disposed for  : ${hls.iD}');
     }
 
     try {
-      Future<LocalHlsState> func() async {
-        final tasks = <({String url, String absPath})>[
-          ...downloadTask.items
-              .where((e) => !e.isDownloaded)
-              .map((e) => e.getForIsolate),
-        ];
-        final preloadedTasksCount = downloadTask.items.length - tasks.length;
-        final allTasksCompleted = Completer<void>();
-        if (tasks.isNotEmpty) {
-          thePort = ReceivePort();
-          var count = 0;
-          countUpdatedForLast = count + preloadedTasksCount;
-          void updateLastCountUpdatedFor() {
-            countUpdatedForLast = count + preloadedTasksCount;
-          }
-
-          progressUpdateTimer = Timer.periodic(
-            const Duration(milliseconds: 300),
-            (timer) {
-              if (state == HlsDownloaderState.downloading &&
-                  (countUpdatedForLast! < count + preloadedTasksCount)) {
-                updateLastCountUpdatedFor();
-                final progress = calculateProgress(
-                  totalLength: downloadTask.items.length,
-                  doneLength: count + preloadedTasksCount,
-                  // + failedTasks.length,
-                );
-                final speed = calculateDownloadSpeed(
-                  startTime: startTime,
-                  mbPerSegment: downloadTask.mbPerSegment,
-                  downloadedSegments: count,
-                );
-                // This code runs every half a second and updates the UI
-
-                localHlsMovieController(hls.iD).updateProgress(
-                  progress: progress,
-                  speed: speed,
-                );
-              } else {
-                final v = 0;
-              }
-            },
-          );
-
-          theIsolate = await Isolate.spawn(
-            // downloadDio,
-            cancellableHttp,
-            DownloadFullTask(
-              tasks: tasks,
-              sendPort: thePort!.sendPort,
+      final tasks = Map<String, String>.fromEntries(
+        downloadTask.items.where((e) => !e.isDownloaded).map(
+              (e) => e.getForIsolateMap,
             ),
-          );
-          late SendPort isolateSendPort;
-          LocalHlsState? hlsState;
+      );
 
-          thePort!.listen(
-            (v) async {
-              if (v is SendPort) {
-                isolateSendPort = v;
-              }
-              if (v is int) {
-                switch (v) {
-                  case DM.gottenBack:
-                    {
+      final preloadedTasksCount = downloadTask.items.length - tasks.length;
+      final allTasksCompleted = Completer<void>();
+      if (tasks.isNotEmpty) {
+        thePort = ReceivePort();
+        var count = 0;
 
-                      hlsState = count + preloadedTasksCount ==
-                              downloadTask.items.length
-                          ? LocalHlsCompleteState()
-                          : LocalHlsPauseState();
-                      print(
-                          '>< >< gotten back : ${theTarget?.downloadStatus.statusType.name}');
-                      try {
-                        if (!allTasksCompleted.isCompleted) {
-                          allTasksCompleted.complete();
-                        }
-                      } catch (e) {
-                        print('>< >< complete exception : $e');
-                      }
-
-                      break;
-                    }
-                  case DM.doneFor:
-                    {
-                      count++;
-
-                      if (DateTime.now()
-                              .difference(lastCheckForPauseOrDeletedd)
-                              .inMilliseconds >
-                          300) {
-                        final check = ref
-                            .read(localeHlsIsarProvider)
-                            .getHlsDownloadStatusType(
-                              hlsId: hls.id,
-                            );
-
-                        if (check is LocalHlsPauseState ||
-                            check is LocalHlsDeletedState) {
-                          isolateSendPort.send(DM.goBack);
-                        }
-
-                        lastCheckForPauseOrDeletedd = DateTime.now();
-                      }
-
-                      break;
-                    }
-                  case DM.doneFull:
-                    {
-                      hlsState = count + preloadedTasksCount ==
-                              downloadTask.items.length
-                          ? LocalHlsCompleteState()
-                          : LocalHlsErrorState();
-                      print(
-                        '''>< >< ${hlsState.runtimeType} done full => count: $count, pre: $preloadedTasksCount, total: ${downloadTask.items.length}''',
-                      );
-                      try {
-                        if (!allTasksCompleted.isCompleted) {
-                          allTasksCompleted.complete();
-                        } else {
-                          final v = 0;
-                        }
-                      } catch (e) {
-                        print('>< >< complete exception doneFull : $e');
-                      }
-
-                      break;
-                    }
-                }
-              }
-            },
-          );
-          await allTasksCompleted.future;
-
-          dispose();
-          if (hlsState is LocalHlsErrorState) {
-            if (canRetry()) {
-              print('>< >< can retry : ');
-
-              return func();
-            }
-          }
-
-          return hlsState ??
-              ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
-                    hlsId: hls.id,
-                  );
-        } else {
-          theTarget = await moviesController.updateHlsStatus(
-            hls.iD,
-            LocalHlsCompleteState(),
-            where: 'download completed 318',
-          );
-          final result =
-              ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
-                    hlsId: hls.id,
-                  );
-          return result;
+        void updateLastCountUpdatedFor() {
+          countUpdatedForLast = count + preloadedTasksCount;
         }
-      }
 
-      final resultState = await func();
+        updateLastCountUpdatedFor();
+
+        progressUpdateTimerr = Timer.periodic(
+          const Duration(milliseconds: 300),
+          (timer) {
+            if (state == HlsDownloaderState.downloading) {
+              updateLastCountUpdatedFor();
+              final progress = calculateProgress(
+                totalLength: downloadTask.items.length,
+                doneLength: count + preloadedTasksCount,
+                // + failedTasks.length,
+              );
+              final speed = calculateDownloadSpeed(
+                startTime: startTime,
+                mbPerSegment: downloadTask.mbPerSegment,
+                downloadedSegments: count,
+              );
+              // This code runs every half a second and updates the UI
+
+              localHlsMovieController(hls.iD).updateProgress(
+                progress: progress,
+                speed: speed,
+              );
+            } else {
+              final v = 0;
+            }
+          },
+        );
+
+        theIsolate = await Isolate.spawn(
+          // downloadDio,
+          retryWithoutExiting,
+          DownloadFullTask2(
+            tasks: tasks,
+            sendPort: thePort!.sendPort,
+          ),
+        );
+        late SendPort isolateSendPort;
+
+        thePort!.listen(
+          (v) async {
+            if (v is SendPort) {
+              isolateSendPort = v;
+            }
+            if (v is int) {
+              switch (v) {
+                case DM.error:
+                  {
+                    print('>< >< error : ');
+                    if (canRetry()) {
+                      isolateSendPort.send(DM.error);
+                    } else {
+                      isolateSendPort.send(DM.goBack);
+                    }
+                    break;
+                  }
+                case DM.gottenBack:
+                  {
+                    resultState =
+                        count + preloadedTasksCount == downloadTask.items.length
+                            ? LocalHlsCompleteState()
+                            : LocalHlsPauseState();
+                    print(
+                      '>< >< gotten back',
+                    );
+                    try {
+                      if (!allTasksCompleted.isCompleted) {
+                        allTasksCompleted.complete();
+                      }
+                    } catch (e) {
+                      print('>< >< complete exception : $e');
+                    }
+
+                    break;
+                  }
+                case DM.doneFor:
+                  {
+                    count++;
+
+                    if (DateTime.now()
+                            .difference(lastCheckForPauseOrDeleted)
+                            .inMilliseconds >
+                        300) {
+                      final check = ref
+                          .read(localeHlsIsarProvider)
+                          .getHlsDownloadStatusType(
+                            hlsId: hls.id,
+                          );
+
+                      if (check is LocalHlsPauseState ||
+                          check is LocalHlsDeletedState) {
+                        isolateSendPort.send(DM.goBack);
+                      }
+
+                      lastCheckForPauseOrDeleted = DateTime.now();
+                    }
+
+                    break;
+                  }
+                case DM.doneFull:
+                  {
+                    resultState =
+                        count + preloadedTasksCount == downloadTask.items.length
+                            ? LocalHlsCompleteState()
+                            : LocalHlsErrorState();
+                    print(
+                      '''>< >< ${resultState.runtimeType} done full => count: $count, pre: $preloadedTasksCount, total: ${downloadTask.items.length}''',
+                    );
+                    try {
+                      if (!allTasksCompleted.isCompleted) {
+                        allTasksCompleted.complete();
+                      } else {
+                        final v = 0;
+                      }
+                    } catch (e) {
+                      print('>< >< complete exception doneFull : $e');
+                    }
+
+                    break;
+                  }
+              }
+            }
+          },
+        );
+      } else {
+        resultState = LocalHlsCompleteState();
+        allTasksCompleted.complete();
+      }
+      await allTasksCompleted.future;
+
+      disposee();
+
+      print('>< >< after dispose : ${hls.iD}');
+
       theTarget = await moviesController.updateHlsStatus(
-        hls.iD,
+        hls.id,
         resultState,
         where: 'after download complete 402',
       );
 
       print('>< >< result : ${resultState.runtimeType}');
-
-      /// ////////////////////////////////////
       _downloadingHls = null;
       _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
         _stopDownloading(where: 'line 411');
-        onError?.call(resultState);
+        onError?.call(LocalHlsErrorState());
       } else if (resultState is LocalHlsDeletedState) {
         _stopDownloading(where: 'line 414');
-        moviesController.deleteHls(hls: hls);
+        await moviesController.deleteHlss(hls: hls);
       } else {
         _stopDownloading(where: 'line 417');
       }
@@ -427,7 +658,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       if (onDownloadComplete != null &&
           resultState is LocalHlsCompleteState &&
           theTarget != null) {
-        await onDownloadComplete.call(theTarget!, ref);
+        await onDownloadComplete.call(theTarget, ref);
       } else {
         final v = 0;
       }
@@ -438,14 +669,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       );
     } catch (e) {
       theTarget = await moviesController.updateHlsStatus(
-        hls.iD,
+        hls.id,
         LocalHlsErrorState(),
         where: 'after download complete 402',
       );
-      dispose();
+      disposee();
       _stopDownloading(where: 'catch line 421');
     }
   }
-
-
 }

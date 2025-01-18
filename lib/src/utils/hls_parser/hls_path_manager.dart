@@ -231,11 +231,7 @@ class HlsPathManager {
         ),
       );
 
-  File get localHlsFilee => File(
-        _masterPath(
-          fileName: HlsFilenames.localHlsJson,
-        ),
-      );
+
 
   File get downloadTaskFile => File(
         _masterPath(

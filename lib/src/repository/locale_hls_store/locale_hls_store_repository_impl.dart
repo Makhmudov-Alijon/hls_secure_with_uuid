@@ -29,16 +29,16 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
 
   @override
   Future<LocalHlsModelIsar?> updateDownloadStatus({
-    required LocalHlsModelIsar hls,
+    required Id hlsId,
     required LocalHlsStatus status,
     required String where,
   }) {
     return isar.writeTxn(
       () async {
         try {
-          final target = await isar.localHlsModelIsars.get(hls.id);
+          final target = await isar.localHlsModelIsars.get(hlsId);
           target!.downloadStatus = status;
-          await Prefs.putLocalHlsStatusIndex(hls.id, status.statusType.index);
+          await Prefs.putLocalHlsStatusIndex(hlsId, status.statusType.index);
           await isar.localHlsModelIsars.put(target);
 
           return target;
@@ -103,6 +103,20 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
         progress: 0,
       );
     }
+  }
+
+  @override
+  Future<List<LocalHlsModelIsar>> getAll() {
+    return isar.writeTxn(
+      () async {
+        try {
+          final all = await isar.localHlsModelIsars.where().findAll();
+          return all;
+        } catch (e) {
+          return [];
+        }
+      },
+    );
   }
 }
 
