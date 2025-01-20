@@ -262,8 +262,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             ),
       );
 
-      print(
-          '>< >< tasks : ${tasks.length}, totalTasks: ${downloadTask.items.length}');
 
       final preloadedTasksCount = downloadTask.items.length - tasks.length;
       final allTasksCompleted = Completer<void>();
@@ -313,8 +311,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
         thePort!.listen(
           (message) async {
-            print(
-                '>< >< main thread message : ${message.runtimeType} : ${message}');
             if (message is SendPort) {
               isolateSendPort = message;
             }
@@ -322,9 +318,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               switch (message) {
                 case DM.waitForNetwork:
                   {
-                    print(
-                        '>< >< hls receive for waiting for network : ${hls.id}');
-                    resultState = LocalHlsWaitingForNetworkState();
+                     resultState = LocalHlsWaitingForNetworkState();
                     try {
                       if (!allTasksCompleted.isCompleted) {
                         allTasksCompleted.complete();
@@ -382,8 +376,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                           );
 
                       if (check is LocalHlsWaitingForNetworkState) {
-                        print('>< >< waiting for network send : ${hls.id}');
-                        isolateSendPort.send(DM.waitForNetwork);
+                         isolateSendPort.send(DM.waitForNetwork);
                       } else if (check is LocalHlsPauseState ||
                           check is LocalHlsDeletedState) {
                         isolateSendPort.send(DM.goBack);
@@ -423,8 +416,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
       await allTasksCompleted.future;
 
-      print(
-          '>< >< result state of : ${resultState.runtimeType} hls: ${hls.id}');
+
 
       dispose();
 

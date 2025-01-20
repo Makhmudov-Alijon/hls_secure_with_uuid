@@ -49,15 +49,14 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
 
-        print('>< >< continue : ${loading}');
+
         continue;
       }
 
       if (localeState is LocalHlsWaitingForNetworkState) {
         final isDownload = loading != null && loading == hls.id;
 
-        print('>< >< is download : ${isDownload} $loading, ${hls.id}');
-        if (isDownload) {
+         if (isDownload) {
           movieController(hls.iD).tryContinueDownload(
             onError: (error) {
               // ShowSnackBar.errorText(
@@ -110,8 +109,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         if (localeState is LocalHlsDownloadingState) {
           await movieController(hls.iD).pauseDownloadd(isUpdate: false);
 
-          print('>< >< setting hls id : ${hls.id}');
-          await Prefs.setWaitingForNetwork(hls.id);
+         await Prefs.setWaitingForNetwork(hls.id);
         }
         final vv = 0;
         if (updatedHls != null) {
