@@ -2,24 +2,24 @@ import 'package:download_manager/download_manager.dart';
 
 extension Dibiding on List<LocalHlsModelIsar> {
   List<LocalHlsModelIsar> get getItemsInQueueExt {
-    // final start = DateTime.now();
     if (isEmpty) {
       return [];
     }
 
     final result = where(
       (hls) {
-        final state = hls.localHlsStateWithoutProgress;
+        final state = hls.localHlsState();
         return state is LocalHlsDownloadingState ||
             state is LocalHlsInQueueState ||
             state is LocalHlsPauseState ||
-            state is LocalHlsErrorState;
+            state is LocalHlsErrorState ||
+            state is LocalHlsWaitingForNetworkState;
       },
     ).toList()
       ..sort(
         (a, b) {
-          final aOrder = a.localHlsStateWithoutProgress.getOrder;
-          final bOrder = b.localHlsStateWithoutProgress.getOrder;
+          final aOrder = a.localHlsState().getOrder;
+          final bOrder = b.localHlsState().getOrder;
           if (aOrder != bOrder) {
             return aOrder.compareTo(
               bOrder,
@@ -31,9 +31,6 @@ extension Dibiding on List<LocalHlsModelIsar> {
           }
         },
       );
-    // final end = DateTime.now();
-    //
-    // print('>< >< the queue spent : ${end.difference(start).inMilliseconds}');
     return result;
   }
 
@@ -48,7 +45,7 @@ extension Dibiding on List<LocalHlsModelIsar> {
 
     for (final hls in this) {
       final key = hls.hlsDetails.localHlsId.contentId;
-      if (hls.localHlsStateWithoutProgress is LocalHlsCompleteState) {
+      if (hls.localHlsState() is LocalHlsCompleteState) {
         if (groupMap.containsKey(key)) {
           groupMap.update(key, (value) {
             return [...value, hls];
@@ -93,10 +90,6 @@ extension Dibiding on List<LocalHlsModelIsar> {
         movies: items,
       );
     }).toList();
-    // final end = DateTime.now();
-    //
-    // print(
-    //     '>< >< the downloadeds spent : ${end.difference(start).inMilliseconds}');
 
     return groups;
   }

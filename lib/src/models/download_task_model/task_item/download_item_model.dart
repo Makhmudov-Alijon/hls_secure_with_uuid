@@ -30,10 +30,7 @@ class DownloadItem extends Equatable {
 
   @ignore
   bool get isDownloaded {
-    // final file = File(absolutePath);
-    // file.length().then((v) {
-    //   print('>< >< the segment size : ${v}');
-    // });
+
     return File(absolutePath).existsSync();
   }
 
@@ -72,8 +69,8 @@ class DownloadItem extends Equatable {
 
   @ignore
   MapEntry<String, String> get getForIsolateMap => MapEntry(
-        url,
         absolutePath,
+        url,
       );
 
   factory DownloadItem.fromJson(String source) =>

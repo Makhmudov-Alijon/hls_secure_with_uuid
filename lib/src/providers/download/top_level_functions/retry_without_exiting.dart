@@ -11,7 +11,7 @@ void retryWithoutExiting(DownloadFullTask2 full) {
   var cancel = false;
   final mainRecivePort = ReceivePort();
   final fileReceivePort = ReceivePort();
-  Map<String, String> failedTasks = <String, String>{};
+  Map<String, String> failedTaskss = <String, String>{};
   Map<String, String> mission = full.tasks;
 
   final clients = <String, http.Client>{};
@@ -20,13 +20,76 @@ void retryWithoutExiting(DownloadFullTask2 full) {
   SendPort? writeFileSendPortt;
   // late DateTime sendTime;
 
+  void checkDoneFullOrError() {
+    if (failedTaskss.length + count == mission.length) {
+      if (failedTaskss.isEmpty) {
+        writeFileSendPortt?.send(DM.doneFull);
+      } else {
+        // sendTime = DateTime.now();
+        full.sendPort.send(DM.error);
+      }
+    }
+  }
+
+  void func(
+    Map<String, String> tasks, {
+    required String where,
+  }) {
+    for (final task in tasks.entries) {
+      if (cancel) break;
+
+      final client = http.Client();
+      clients[task.absPath] = client;
+      final uri = Uri.parse(task.url);
+      final request = http.Request('GET', uri);
+
+      Uint8List? content;
+
+      client.send(request).timeout(const Duration(seconds: 15)).then(
+        (response) async {
+          if (cancel) return;
+
+          if (response.statusCode == 200) {
+            if (!cancel) {
+              content = await response.stream.toBytes();
+            }
+          }
+        },
+      ).onError(
+        (error, stackTrace) {
+          const v = -1;
+        },
+      ).whenComplete(
+        () {
+          clients.remove(task.absPath);
+          if (content != null) {
+            writeFileSendPortt?.send((task.absPath, content));
+          } else {
+            failedTaskss[task.absPath] = task.url;
+            checkDoneFullOrError();
+          }
+        },
+      );
+    }
+  }
+
   Isolate.spawn(writeToFileTop, fileReceivePort.sendPort).then(
     (isolate) {
       writeFileIsolate = isolate;
       fileReceivePort.listen(
         (message) {
+          if (message is (String, Uint8List)) {
+            final url = mission[message.$1];
+
+            if (url != null) {
+              failedTaskss[message.$1] = url;
+              checkDoneFullOrError();
+            }
+          }
           if (message is int) {
-            if (message == DM.gottenBack) {
+            if (message == DM.gottenBack ||
+                message == DM.gottenBackWithError ||
+                message == DM.waitForNetwork) {
               writeFileIsolate?.kill(priority: Isolate.immediate);
               mainRecivePort.close();
               full.sendPort.send(message);
@@ -40,14 +103,7 @@ void retryWithoutExiting(DownloadFullTask2 full) {
               full.sendPort.send(message);
               count++;
 
-              if (failedTasks.length + count == mission.length) {
-                if (failedTasks.isEmpty) {
-                  writeFileSendPortt?.send(DM.doneFull);
-                } else {
-                  // sendTime = DateTime.now();
-                  full.sendPort.send(DM.error);
-                }
-              }
+              checkDoneFullOrError();
             }
           }
 
@@ -56,63 +112,21 @@ void retryWithoutExiting(DownloadFullTask2 full) {
 
             full.sendPort.send(mainRecivePort.sendPort);
 
-            /// ///////////////////////////
-            ///        FUNC        ////////
-            /// ///////////////////////////
-            void func(Map<String, String> full) {
-              for (final task in full.entries) {
-                if (cancel) break;
 
-                final client = http.Client();
-                clients[task.absPath] = client;
-                final uri = Uri.parse(task.url);
-                final request = http.Request('GET', uri);
-
-                Uint8List? content;
-
-                client
-                    .send(request)
-                    .timeout(const Duration(seconds: 15))
-                    .then(
-                      (response) async {
-                        if (cancel) return;
-
-                        if (response.statusCode == 200) {
-                          if (!cancel) {
-                            content = await response.stream.toBytes();
-                          }
-                        }
-                      },
-                    )
-                    .onError(
-                      (error, stackTrace) {},
-                    )
-                    .whenComplete(
-                      () {
-                        clients.remove(task.absPath);
-                        if (content != null) {
-                          writeFileSendPortt?.send((task.absPath, content));
-                        } else {
-                          failedTasks[task.key] = task.value;
-                        }
-                      },
-                    );
-              }
-            }
 
             mainRecivePort.listen(
-              (v) {
-                if (v == DM.error) {
+              (message) {
+                if (message == DM.error) {
                   count = 0;
-                  mission = failedTasks;
-                  failedTasks = {};
-
-                  // print(
-                  //     '>< >< spent time to check retry : ${DateTime.now().difference(sendTime).inMicroseconds} microseconds');
-                  func(mission);
+                  mission = failedTaskss;
+                  failedTaskss = {};
+                  cancel = false;
+                  func(mission, where: 'retry');
                 }
-                if (v == DM.goBack) {
-                  writeFileSendPortt?.send(DM.goBack);
+                if (message == DM.goBack ||
+                    message == DM.goBackWithError ||
+                    message == DM.waitForNetwork) {
+                  writeFileSendPortt?.send(message);
 
                   cancel = true;
 
@@ -120,17 +134,21 @@ void retryWithoutExiting(DownloadFullTask2 full) {
                     try {
                       client.close();
                     } catch (e) {
-                      print('>< >< close client exception : $e');
+                      print('<>< ><> close client exception : $e');
                     }
                   }
                 }
               },
             );
 
-            func(mission);
+            func(mission, where: 'initial call');
           }
         },
       );
+
+      /// ///////////////////////////
+      ///        FUNC        ////////
+      /// ///////////////////////////
     },
   );
 }

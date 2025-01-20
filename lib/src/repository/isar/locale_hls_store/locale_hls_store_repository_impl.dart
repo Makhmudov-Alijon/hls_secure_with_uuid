@@ -83,7 +83,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   }
 
   @override
-  LocalHlsState getHlsDownloadStatusType({
+  LocalHlsState getHlsDownloadStatusTypee({
     required Id hlsId,
   }) {
     final index = Prefs.getLocalHlsStatusIndex(hlsId);
@@ -157,5 +157,9 @@ LocalHlsState _getHlsDownloadStatusType({
         return LocalHlsPreparedState(
           progress: progress,
         );
+    case LocalHlsStatusType.waitingForNetwork:
+      return LocalHlsWaitingForNetworkState(
+        progress: progress,
+      );
   }
   }

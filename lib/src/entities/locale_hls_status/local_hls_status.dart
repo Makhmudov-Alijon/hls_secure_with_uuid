@@ -14,6 +14,7 @@ enum LocalHlsStatusType {
   notExist,
   deleted,
   prepared,
+  waitingForNetwork,
   error;
 }
 

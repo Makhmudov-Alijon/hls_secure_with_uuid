@@ -73,7 +73,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     try {
-      await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueuee(
+      await ref.read(hlsDownloaderProvider.notifier).prepareAndDownloadOrQueue(
             masterPlaylist: master,
             hlsDetails: localHlsDetails,
             posterLink: poster,
@@ -171,7 +171,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  void onIconPressed(LocalHlsState hlsState) {
+  Future<void> onIconPressed(LocalHlsState hlsState) async {
     final movieController = ref.read(localHlsMovieProviderr(hlsIdd).notifier);
 
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
@@ -181,7 +181,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
     } else if (hlsState is LocalHlsDownloadingState ||
         hlsState is LocalHlsInQueueState) {
-      movieController.pauseDownload();
+      await movieController.pauseDownloadd();
     }
   }
 

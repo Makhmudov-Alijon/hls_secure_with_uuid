@@ -25,7 +25,6 @@ void cancellableHttp(DownloadFullTask full) {
         (message) {
           if (message is int) {
             if (message == DM.gottenBack || message == DM.doneFull) {
-              print('>< >< write to file isolate $message: ');
               writeFileIsolate?.kill(priority: Isolate.immediate);
               receivePort.close();
               full.sendPort.send(message);
@@ -55,7 +54,7 @@ void cancellableHttp(DownloadFullTask full) {
                   try {
                     client.close();
                   } catch (e) {
-                    print('>< >< close client exception : $e');
+                    print('<>< ><> close client exception : $e');
                   }
                 }
               }

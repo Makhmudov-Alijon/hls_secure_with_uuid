@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:download_manager/download_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../repository/isar/download_task/download_task_repository_impl.dart';
+
 final localHlsMovieProviderr = AutoDisposeAsyncNotifierProviderFamily<
     LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
   LocalHlsMovieNotifier.new,
@@ -48,17 +50,24 @@ class LocalHlsMovieNotifier
         await ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
     sizeToDownloadd ??= foundHls?.hlsDetails.sizeBytes;
-    if (foundHls == null) {
+
+     if (foundHls == null) {
       return LocalHlsNotExistState();
     }
-    final r = foundHls.localHlsState;
+    final downloadTask =
+        await ref.read(downloadTaskIsarProvider).getById(foundHls.id);
+    if (downloadTask == null) {
+      return LocalHlsNotExistState();
+    }
+    final r = foundHls.localHlsState(progresss: downloadTask.getProgress);
+
 
     return r;
   }
 
-  void pauseDownload() {
+  Future<void> pauseDownloadd( {bool isUpdate = true})async {
     if (currentHls != null) {
-      downloaderController.pauseDownload(currentHls!);
+     await downloaderController.pauseDownload(currentHls!,isUpdate: isUpdate);
     } else {
       final v = 0;
     }
@@ -69,7 +78,7 @@ class LocalHlsMovieNotifier
       if (state is LocalHlsDownloadingState) {
         downloaderController.cancelDownload(currentHls!);
       } else {
-        moviesController.deleteHlss(hls: currentHls!);
+        moviesController.deleteHls(hls: currentHls!);
       }
     }
   }
@@ -80,7 +89,7 @@ class LocalHlsMovieNotifier
     required void Function(LocalHlsErrorState error)? onError,
   }) {
     if (currentHls != null) {
-      downloaderController.tryToDownload(
+      downloaderController.tryToDownloadd(
         hls: currentHls!,
         onError: onError,
         onDownloadComplete: onDownloadComplete,

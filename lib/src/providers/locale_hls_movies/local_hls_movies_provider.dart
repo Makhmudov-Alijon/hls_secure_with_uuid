@@ -12,7 +12,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-
 part 'locale_hls_movies_state.dart';
 final localHlsMoviesProvider =
 NotifierProvider<LocalHlsMoviesNotifier, LocaleHlsMoviesState>(
@@ -39,6 +38,89 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     return null;
   }
 
+  Future<void> checkWaitingForNetworkQueue() async {
+    final total = await ref.read(localeHlsIsarProvider).getAll();
+    final int? loading = Prefs.getWaitingForNetworkDownloadingHlsId();
+
+    for (var hls in total) {
+      final localeState = hls.localHlsState();
+      if (localeState is LocalHlsDeletedState || !hls.validate()) {
+        await hlsIsarRepo.delete(hls);
+
+        ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+
+        print('>< >< continue : ${loading}');
+        continue;
+      }
+
+      if (localeState is LocalHlsWaitingForNetworkState) {
+        final isDownload = loading != null && loading == hls.id;
+
+        print('>< >< is download : ${isDownload} $loading, ${hls.id}');
+        if (isDownload) {
+          movieController(hls.iD).tryContinueDownload(
+            onError: (error) {
+              // ShowSnackBar.errorText(
+              //     '${error.statusCode}: ${LocaleKeys.somethingWentWrong.tr()}');
+            },
+            onDownloadComplete: (hls, ref) {
+              return ref
+                  .read(remoteStatRepositoryProvider)
+                  .sendDownloadedHlsStat(
+                    downloadedHlsStat: HlsDownloadedStatModel.fromHlsId(
+                      id: hls.iD,
+                    ),
+                  );
+            },
+          );
+          continue;
+        }
+        final updatedHls = await hlsIsarRepo.updateDownloadStatus(
+            hlsId: hls.id,
+            status: LocalHlsInQueueState().toLocalHlsStatus(),
+            where: 'local_hls_movies_provider.dart 65');
+        final vv = 0;
+        if (updatedHls != null) {
+          movieController(hls.iD).refresh();
+        }
+      } else {
+        print('<>< ><> elese : ${localeState.runtimeType}');
+      }
+    }
+  }
+
+  Future<void> setNoNetworkQueuee() async {
+    final total = await ref.read(localeHlsIsarProvider).getAll();
+    final inQueue = total.getItemsInQueueExt;
+    for (var hls in inQueue) {
+      final localeState = hls.localHlsState();
+      if (localeState is LocalHlsDeletedState || !hls.validate()) {
+        await hlsIsarRepo.delete(hls);
+
+        ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+        continue;
+      }
+
+      if (localeState is LocalHlsDownloadingState ||
+          localeState is LocalHlsInQueueState) {
+        final updatedHls = await hlsIsarRepo.updateDownloadStatus(
+            hlsId: hls.id,
+            status: LocalHlsWaitingForNetworkState().toLocalHlsStatus(),
+            where: 'local_hls_movies_provider.dart 65');
+        if (localeState is LocalHlsDownloadingState) {
+          await movieController(hls.iD).pauseDownloadd(isUpdate: false);
+
+          print('>< >< setting hls id : ${hls.id}');
+          await Prefs.setWaitingForNetwork(hls.id);
+        }
+        final vv = 0;
+        if (updatedHls != null) {
+          movieController(hls.iD).refresh();
+        }
+      }
+    }
+  }
+
   bool _checkInitial() {
     final temp = isInitial;
     if (isInitial) {
@@ -57,13 +139,10 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   }
 
   Future<LocalHlsModelIsar?> findNextInQueue({required String where}) async {
-    if (state.total.isEmpty) {
-      return null;
-    }
     final total = await ref.read(localeHlsIsarProvider).getAll();
 
     final moviesInQueue = total
-        .where((element) => element.localHlsState is LocalHlsInQueueState)
+        .where((element) => element.localHlsState() is LocalHlsInQueueState)
         .toList()
       ..sort(
         (a, b) {
@@ -85,19 +164,23 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     FutureOr<void> Function(LocalHlsGroupModel group, Ref ref)? onDelete,
   }) {
     for (final item in hlsGroup.movies) {
-      deleteHlss(hls: item);
+      deleteHls(hls: item, isRefresh: false);
     }
+    refreshMovies();
     onDelete?.call(hlsGroup, ref);
   }
 
-  Future<void> deleteHlss({
+  Future<void> deleteHls({
     required LocalHlsModelIsar hls,
     FutureOr<void> Function(LocalHlsModelIsar hls, Ref ref)? onDeletee,
+    bool isRefresh = true,
   }) async {
     await ref.read(localeHlsIsarProvider).delete(hls);
     ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
     movieController(hls.iD).refresh();
-    await refreshMovies();
+    if (isRefresh) {
+      await refreshMovies();
+    }
     onDeletee?.call(hls, ref);
   }
 
@@ -123,12 +206,14 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   /// Load the movies thread
   Future<void> loadMoviesIsar(bool isInitial) async {
-    final DateTime start = DateTime.now();
+    if (isInitial) {
+      await Prefs.clear();
+    }
     final total =
         await ref.read(isarProvider).localHlsModelIsars.where().findAll();
     final hlsMovies = <LocalHlsModelIsar>[];
     for (var hls in total) {
-      final localeState = hls.localHlsState;
+      final localeState = hls.localHlsState();
       final rtt = localeState.runtimeType;
       final v = localeState is LocalHlsDownloadingState ||
           localeState is LocalHlsInQueueState;
@@ -144,7 +229,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
           ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
           continue;
         } else if (localeState is LocalHlsDownloadingState ||
-            localeState is LocalHlsInQueueState) {
+            localeState is LocalHlsInQueueState ||
+            localeState is LocalHlsDownloadingState ||
+            localeState is LocalHlsWaitingForNetworkState) {
           final updatedHls = await hlsIsarRepo.updateDownloadStatus(
               hlsId: hls.id,
               status: LocalHlsPauseState().toLocalHlsStatus(),
@@ -155,24 +242,16 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
           } else {
             continue;
           }
-        } else {
-          // print(
-          //     '>< >< is initial but else : name => ${localeState.toLocalHlsStatus().statusType.name}  ');
-          // print('progress:${localeState.progress}  ');
         }
       }
       hlsMovies.add(hls);
     }
-    updateState(
-      state.copyWith(total: hlsMovies),
-    );
 
-    unawaited(sort('load and sort'));
+    unawaited(sortt(hlsMovies));
   }
 
   /// Sorting threads
-  Future<void> sort(String where) async {
-    final total = state.total;
+  Future<void> sortt(List<LocalHlsModelIsar> total) async {
     final receivePort = ReceivePort();
     await Isolate.spawn<SortIsolateParams>(
       _sortWorker,
@@ -184,10 +263,15 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     receivePort.listen(
       (v) {
         if (v is LocaleHlsMoviesState) {
-          updateState(v.copyWith(trigger: !v.trigger));
+          updateState(
+            v.copyWith(
+              trigger: !v.trigger,
+            ),
+          );
         }
       },
     );
+    // updateState(state.copyWith(trigger: !state.trigger, rawItems: state.total));
   }
 
   void updateState(LocaleHlsMoviesState v) {
@@ -196,7 +280,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   @override
   LocaleHlsMoviesState build() {
-    Prefs.init().then((v) {
+    Prefs.initt().then((v) {
       loadMoviesIsar(_checkInitial());
     });
 

@@ -58,6 +58,6 @@ class LocalHlsId extends Equatable {
 
   @override
   String toString() {
-    return '''>< >< $contentId, $filmId, $seasonId, $episodeId''';
+    return '''contentId: $contentId, filmId: $filmId, seasonId: $seasonId, episodeId: $episodeId''';
   }
 }

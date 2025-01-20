@@ -7,20 +7,24 @@ extension Dibiding on LocalHlsState {
         {
           return 0;
         }
-      case LocalHlsInQueueState:
+      case LocalHlsWaitingForNetworkState:
         {
           return 1;
         }
-      case LocalHlsPauseState:
+      case LocalHlsInQueueState:
         {
           return 2;
         }
-      case LocalHlsErrorState:
+      case LocalHlsPauseState:
         {
           return 3;
         }
+      case LocalHlsErrorState:
+        {
+          return 4;
+        }
       default:
-        return 3;
+        return 5;
     }
   }
 }
@@ -57,6 +61,10 @@ abstract class LocalHlsState {
       case LocalHlsPreparedState:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.prepared,
+        );
+      case LocalHlsWaitingForNetworkState:
+        return LocalHlsStatus(
+          statusType: LocalHlsStatusType.waitingForNetwork,
         );
       case LocalHlsErrorState:
         final error = this as LocalHlsErrorState;
@@ -95,6 +103,10 @@ class LocalHlsErrorState extends LocalHlsState {
 
 class LocalHlsPauseState extends LocalHlsState {
   LocalHlsPauseState({super.progress});
+}
+
+class LocalHlsWaitingForNetworkState extends LocalHlsState {
+  LocalHlsWaitingForNetworkState({super.progress});
 }
 
 class LocalHlsInQueueState extends LocalHlsState {

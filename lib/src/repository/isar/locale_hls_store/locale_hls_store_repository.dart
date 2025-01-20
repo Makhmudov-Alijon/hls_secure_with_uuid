@@ -17,7 +17,7 @@ abstract class LocaleHlsStoreRepository {
 
   Future<void> clear();
 
-  LocalHlsState getHlsDownloadStatusType({
+  LocalHlsState getHlsDownloadStatusTypee({
     required Id hlsId,
   });
 }

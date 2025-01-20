@@ -123,7 +123,8 @@ const _LocalHlsStatusstatusTypeEnumValueMap = {
   'notExist': 4,
   'deleted': 5,
   'prepared': 6,
-  'error': 7,
+  'waitingForNetwork': 7,
+  'error': 8,
 };
 const _LocalHlsStatusstatusTypeValueEnumMap = {
   0: LocalHlsStatusType.complete,
@@ -133,7 +134,8 @@ const _LocalHlsStatusstatusTypeValueEnumMap = {
   4: LocalHlsStatusType.notExist,
   5: LocalHlsStatusType.deleted,
   6: LocalHlsStatusType.prepared,
-  7: LocalHlsStatusType.error,
+  7: LocalHlsStatusType.waitingForNetwork,
+  8: LocalHlsStatusType.error,
 };
 
 extension LocalHlsStatusQueryFilter

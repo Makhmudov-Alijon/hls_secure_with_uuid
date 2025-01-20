@@ -9,16 +9,29 @@ class DownloadTask extends Equatable {
     this.id = -1,
     this.items = const [],
     this.mbPerSegment = 0,
+    this.doneTasksCount = 0,
   });
 
   Id id = Isar.autoIncrement;
   @Embedded()
   List<DownloadItem> items;
   double mbPerSegment;
+  int doneTasksCount;
 
   @ignore
   @override
-  List<Object?> get props => [items,mbPerSegment,];
+  List<Object?> get props => [
+        items,
+        mbPerSegment,
+        doneTasksCount,
+      ];
 
+  @ignore
+  double get getProgress {
+    final downloadedTasks = items.where((v) => v.isDownloaded);
 
+    final result = downloadedTasks.length / items.length;
+
+    return result;
+  }
 }

@@ -24,9 +24,7 @@ void downloadDio(DownloadFullTask full) {
           try {
             cancelTokens.cancel();
 
-            print('>< >< token canceled');
           } catch (e) {
-            print('>< >< cancel token exception : $e');
             // continue;
           }
 
@@ -67,7 +65,6 @@ void downloadDio(DownloadFullTask full) {
     }).catchError((error, c) {
       if (error is DioException) {
         if (CancelToken.isCancel(error)) {
-          print('>< >< cancel token exception : ${error.message}');
         }
       }
     }).whenComplete(() {
@@ -75,7 +72,6 @@ void downloadDio(DownloadFullTask full) {
       if (count >= full.tasks.length) {
         receivePort.close();
 
-        print('>< >< full done in isolate ');
         Isolate.exit(full.sendPort, DM.doneFull);
       }
     });

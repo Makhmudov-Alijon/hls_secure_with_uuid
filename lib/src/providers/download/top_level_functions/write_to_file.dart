@@ -12,31 +12,27 @@ void writeToFileTop(SendPort sendPort) {
   int processCount = 0;
   Map<String, Uint8List> buffer = {};
 
-  Future<void> store((String, Uint8List) task) async {
-    final start = DateTime.now();
+  Future<bool> storee((String, Uint8List) task) async {
     final file = File(task.$1);
     try {
       await file.parent.create(recursive: true);
-      await file.writeAsBytes(task.$2, flush: true);
+      await file.writeAsBytes(task.$2, flush: true, mode: FileMode.writeOnly);
+      return true;
     } catch (e) {
-      print('>< >< write to file exception : $e');
-      buffer[task.$1] = task.$2;
-    }
+      print('<>< ><> write to file exception : $e');
 
-    return;
+      return false;
+    }
   }
 
   final receivePort = ReceivePort();
   sendPort.send(receivePort.sendPort);
-  void closeFile() {
-    // raf?.close();
-  }
 
   void receiveTask((String, Uint8List) task) {
     if (limit > processCount) {
       processCount++;
-      store(task).then((v) {
-        sendPort.send(DM.doneFor);
+      storee(task).then((v) {
+        sendPort.send(v ? DM.doneFor : task);
         processCount--;
         if (buffer.isNotEmpty) {
           final nextTask = buffer.entries.first;
@@ -51,23 +47,26 @@ void writeToFileTop(SendPort sendPort) {
 
   receivePort.listen((message) {
     if (message is (String, Uint8List)) {
-      // print('>< >< buffer length: ${buffer.length} : ${processCount}');
-
       receiveTask(message);
     }
 
     if (message is int) {
-      if (message == DM.goBack) {
-        // print(
-        //     '>< >< buffer length go back: ${buffer.length} : ${processCount}');
-
-        closeFile();
+      if (message == DM.goBack ||
+          message == DM.goBackWithError ||
+          message == DM.waitForNetwork) {
         buffer = {};
         receivePort.close();
-        sendPort.send(DM.gottenBack);
+        sendPort.send(
+          message == DM.goBack
+              ? DM.gottenBack
+              : (
+                  message == DM.goBackWithError
+                      ? DM.gottenBackWithError
+                      : DM.waitForNetwork,
+                ),
+        );
       }
       if (message == DM.doneFull) {
-        closeFile();
         buffer = {};
         receivePort.close();
         sendPort.send(DM.doneFull);

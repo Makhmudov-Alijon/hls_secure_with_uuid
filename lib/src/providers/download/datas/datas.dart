@@ -19,6 +19,9 @@ class DM {
   static const goBack = 2;
   static const gottenBack = 3;
   static const error = 4;
+  static const goBackWithError = 5;
+  static const gottenBackWithError = 6;
+  static const waitForNetwork = 7;
 }
 
 typedef TheTask = ({String url, String absPath});
@@ -34,9 +37,9 @@ class DownloadFullTask2 {
 }
 
 extension MapEntryExtension on MapEntry<String, String> {
-  String get url => key;
+  String get url => value;
 
-  String get absPath => value;
+  String get absPath => key;
 }
 
 extension MapEntryExtensionUint8List on MapEntry<String, Uint8List> {

@@ -120,78 +120,49 @@ class LocalHlsModelIsar extends Equatable {
   }
 
   @ignore
-  double get calculateProgress {
-    /// todo reconsider calculate
-    double result = 0;
-    // if (downloadTasksFile.existsSync()) {
-    //   final task = DownloadTask.fromFilee(downloadTasksFile);
-    //   final downloadedTasks = task.items.where((v) => v.isDownloaded);
-    //   result = downloadedTasks.length / task.items.length;
-    // }
+  LocalHlsState localHlsState({
+    double progresss = 0,
+  }) {
 
-    return result;
-  }
-
-  @ignore
-  LocalHlsState get localHlsStateWithoutProgress {
-    switch (downloadStatus.statusType) {
-      case LocalHlsStatusType.error:
-        return LocalHlsErrorState();
-      case LocalHlsStatusType.inQueue:
-        return LocalHlsInQueueState();
-      case LocalHlsStatusType.paused:
-        return LocalHlsPauseState();
-      case LocalHlsStatusType.complete:
-        return LocalHlsCompleteState();
-      case LocalHlsStatusType.notExist:
-        return LocalHlsNotExistState();
-      case LocalHlsStatusType.downloading:
-        return LocalHlsDownloadingState();
-      case LocalHlsStatusType.deleted:
-        return LocalHlsDeletedState();
-      case LocalHlsStatusType.prepared:
-        return LocalHlsPreparedState();
-    }
-  }
-
-  @ignore
-  LocalHlsState get localHlsState {
-    final progress = calculateProgress;
 
     switch (downloadStatus.statusType) {
       case LocalHlsStatusType.error:
         return LocalHlsErrorState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.inQueue:
         return LocalHlsInQueueState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.paused:
         return LocalHlsPauseState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.complete:
         return LocalHlsCompleteState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.notExist:
         return LocalHlsNotExistState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.downloading:
         return LocalHlsDownloadingState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.deleted:
         return LocalHlsDeletedState(
-          progress: progress,
+          progress: progresss,
         );
       case LocalHlsStatusType.prepared:
         return LocalHlsPreparedState(
-          progress: progress,
+          progress: progresss,
         );
 
+      case LocalHlsStatusType.waitingForNetwork:
+        return LocalHlsWaitingForNetworkState(
+          progress: progresss,
+        );
     }
   }
 

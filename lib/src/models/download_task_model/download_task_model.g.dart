@@ -17,14 +17,19 @@ const DownloadTaskSchema = CollectionSchema(
   name: r'DownloadTask',
   id: -8326932930248620171,
   properties: {
-    r'items': PropertySchema(
+    r'doneTasksCount': PropertySchema(
       id: 0,
+      name: r'doneTasksCount',
+      type: IsarType.long,
+    ),
+    r'items': PropertySchema(
+      id: 1,
       name: r'items',
       type: IsarType.objectList,
       target: r'DownloadItem',
     ),
     r'mbPerSegment': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'mbPerSegment',
       type: IsarType.double,
     )
@@ -66,13 +71,14 @@ void _downloadTaskSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
+  writer.writeLong(offsets[0], object.doneTasksCount);
   writer.writeObjectList<DownloadItem>(
-    offsets[0],
+    offsets[1],
     allOffsets,
     DownloadItemSchema.serialize,
     object.items,
   );
-  writer.writeDouble(offsets[1], object.mbPerSegment);
+  writer.writeDouble(offsets[2], object.mbPerSegment);
 }
 
 DownloadTask _downloadTaskDeserialize(
@@ -82,15 +88,16 @@ DownloadTask _downloadTaskDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = DownloadTask(
+    doneTasksCount: reader.readLongOrNull(offsets[0]) ?? 0,
     id: id,
     items: reader.readObjectList<DownloadItem>(
-          offsets[0],
+          offsets[1],
           DownloadItemSchema.deserialize,
           allOffsets,
           DownloadItem(),
         ) ??
         const [],
-    mbPerSegment: reader.readDoubleOrNull(offsets[1]) ?? 0,
+    mbPerSegment: reader.readDoubleOrNull(offsets[2]) ?? 0,
   );
   return object;
 }
@@ -103,6 +110,8 @@ P _downloadTaskDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 1:
       return (reader.readObjectList<DownloadItem>(
             offset,
             DownloadItemSchema.deserialize,
@@ -110,7 +119,7 @@ P _downloadTaskDeserializeProp<P>(
             DownloadItem(),
           ) ??
           const []) as P;
-    case 1:
+    case 2:
       return (reader.readDoubleOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -211,6 +220,62 @@ extension DownloadTaskQueryWhere
 
 extension DownloadTaskQueryFilter
     on QueryBuilder<DownloadTask, DownloadTask, QFilterCondition> {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
+      doneTasksCountEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'doneTasksCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
+      doneTasksCountGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'doneTasksCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
+      doneTasksCountLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'doneTasksCount',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
+      doneTasksCountBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'doneTasksCount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -435,6 +500,20 @@ extension DownloadTaskQueryLinks
 
 extension DownloadTaskQuerySortBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortBy> {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
+      sortByDoneTasksCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'doneTasksCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
+      sortByDoneTasksCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'doneTasksCount', Sort.desc);
+    });
+  }
+
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> sortByMbPerSegment() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'mbPerSegment', Sort.asc);
@@ -451,6 +530,20 @@ extension DownloadTaskQuerySortBy
 
 extension DownloadTaskQuerySortThenBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortThenBy> {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
+      thenByDoneTasksCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'doneTasksCount', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
+      thenByDoneTasksCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'doneTasksCount', Sort.desc);
+    });
+  }
+
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -479,6 +572,13 @@ extension DownloadTaskQuerySortThenBy
 
 extension DownloadTaskQueryWhereDistinct
     on QueryBuilder<DownloadTask, DownloadTask, QDistinct> {
+  QueryBuilder<DownloadTask, DownloadTask, QDistinct>
+      distinctByDoneTasksCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'doneTasksCount');
+    });
+  }
+
   QueryBuilder<DownloadTask, DownloadTask, QDistinct> distinctByMbPerSegment() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mbPerSegment');
@@ -491,6 +591,12 @@ extension DownloadTaskQueryProperty
   QueryBuilder<DownloadTask, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<DownloadTask, int, QQueryOperations> doneTasksCountProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'doneTasksCount');
     });
   }
 

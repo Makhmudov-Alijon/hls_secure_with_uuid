@@ -1,7 +1,11 @@
 import 'package:download_manager/download_manager.dart';
 
-import '../crud_mixin.dart';
+abstract class DownloadTaskIsarRepository {
+  Future<Id> create(DownloadTask v);
 
-abstract class DownloadTaskIsarRepository with Crud<DownloadTask> {}
+  Future<DownloadTask> delete(DownloadTask v);
 
+  Future<DownloadTask> update(DownloadTask v);
 
+  Future<DownloadTask?> getById(Id v);
+}

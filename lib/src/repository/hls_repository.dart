@@ -150,7 +150,7 @@ class HlsRepository {
 
       final id = await ref.read(localeHlsIsarProvider).add(localHls);
       downloadTask.id = id;
-      final v = await ref.read(downloadTaskIsarProvider).create(downloadTask);
+      await ref.read(downloadTaskIsarProvider).create(downloadTask);
 
       return downloadTask;
     } catch (e) {
