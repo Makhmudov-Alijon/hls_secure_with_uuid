@@ -43,9 +43,9 @@ extension MapEntryExtension on MapEntry<String, String> {
   String get absPath => key;
 
   String get tempFile {
-    final parts = absPath.split('.');
+    final result = '${absPath.substring(0,absPath.length - 3)}temp.ts';
 
-    return '${parts.first}_temp.${parts.last}';
+    return result;
   }
 }
 

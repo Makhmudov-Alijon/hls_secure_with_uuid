@@ -513,6 +513,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                     hlsId: hls.id,
                   );
 
+
+
           if (check is LocalHlsWaitingForNetworkState) {
             isolateSendPort.send(DM.waitForNetwork);
           } else if (check is LocalHlsPauseState) {

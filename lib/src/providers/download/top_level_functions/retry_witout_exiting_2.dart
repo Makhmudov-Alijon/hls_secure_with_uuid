@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../datas/datas.dart';
 
 Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
+  print('>< >< enter the isolate');
   const limit = 200;
   var cancel = false;
   final mainRecivePort = ReceivePort();
@@ -25,6 +26,7 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
     required void Function(MapEntry<String, String>?) onDone,
     required String where,
   }) {
+    print('>< >< start func  ');
     for (final task in tasks) {
       if (cancel) break;
       bool success = false;
@@ -35,6 +37,7 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
 
       client.send(request).timeout(const Duration(seconds: 15)).then(
         (response) async {
+          print('>< >< response : ${response.statusCode}');
           if (cancel) return;
 
           if (response.statusCode == 200) {
@@ -53,15 +56,20 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
         },
       ).onError(
         (error, stackTrace) {
-          if (error is TimeoutException) {
-            print('>< >< t e message: ${error.message}  ');
-            print('>< >< t e duration: ${error.duration}  ');
+          print('>< >< on error : ${error.runtimeType}');
+          if (error is PathAccessException) {
+            print('>< >< message : ${error.message}');
+            print('>< >< o m : ${error.osError?.message}');
+            print('>< >< o e c : ${error.osError?.errorCode}');
+          } else if (error is TimeoutException) {
+            // print('>< >< t e message: ${error.message}  ');
+            // print('>< >< t e duration: ${error.duration}  ');
           } else if (error is FileSystemException) {
             print('>< >< message : ${error.message}  ');
             print('>< >< path : ${error.path}  ');
             print('>< >< osError : ${error.osError?.message}  ');
           } else {
-            print('>< >< error downloading : ${error.runtimeType}  ');
+            // print('>< >< error downloading : ${error.runtimeType}  ');
           }
         },
       ).whenComplete(
@@ -78,6 +86,7 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
   }
 
   Future<void> baraban(Map<String, String> tasks) async {
+    print('>< >< start baraban ');
     final entries = tasks.entries.toList();
 
     for (var i = 0; i < entries.length; i += limit) {
@@ -112,7 +121,7 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
     if (cancel) {
       mainRecivePort.close();
 
-      print('>< >< go back from braban');
+      // print('>< >< go back from braban');
       full.sendPort.send(DM.goBack);
     }
     if (failedTaskss.isEmpty) {
@@ -136,24 +145,24 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
 
   mainRecivePort.listen(
     (message) {
+      // print('>< >< got message : ${message}');
       if (message == DM.goBack ||
           message == DM.waitForNetwork ||
           message == DM.error) {
-        print('>< >< got message : ${message}');
         cancel = true;
         mainRecivePort.close();
         int c = 0;
 
         for (final client in List<http.Client>.from(clients.values)) {
           try {
-            print('>< >< close client : ${c++}');
+            // print('>< >< close client : ${c++}');
             client.close();
           } catch (e) {
-            print('<>< ><> close client exception : $e');
+            // print('<>< ><> close client exception : $e');
           }
         }
 
-        print('>< >< length : ${clients.length}');
+        // print('>< >< length : ${clients.length}');
         full.sendPort.send(message);
       }
     },
