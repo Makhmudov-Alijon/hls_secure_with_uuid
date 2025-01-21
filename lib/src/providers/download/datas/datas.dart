@@ -40,6 +40,12 @@ extension MapEntryExtension on MapEntry<String, String> {
   String get url => value;
 
   String get absPath => key;
+
+  String get tempFile {
+    final parts = absPath.split('.');
+
+    return '${parts.first}_temp.${parts.last}';
+  }
 }
 
 extension MapEntryExtensionUint8List on MapEntry<String, Uint8List> {
