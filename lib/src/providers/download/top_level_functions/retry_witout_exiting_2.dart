@@ -54,7 +54,8 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
       ).onError(
         (error, stackTrace) {
           if (error is TimeoutException) {
-            print('>< >< t e m: ${error.message}  ');
+            print('>< >< t e message: ${error.message}  ');
+            print('>< >< t e duration: ${error.duration}  ');
           } else if (error is FileSystemException) {
             print('>< >< message : ${error.message}  ');
             print('>< >< path : ${error.path}  ');
@@ -131,22 +132,29 @@ Future<void> retryWithoutExiting2(DownloadFullTask2 full) async {
 
   full.sendPort.send(mainRecivePort.sendPort);
 
-  baraban(full.tasks);
+  unawaited(baraban(full.tasks));
 
   mainRecivePort.listen(
     (message) {
-      if (message == DM.goBack || message == DM.waitForNetwork) {
+      if (message == DM.goBack ||
+          message == DM.waitForNetwork ||
+          message == DM.error) {
+        print('>< >< got message : ${message}');
         cancel = true;
         mainRecivePort.close();
-        full.sendPort.send(message);
+        int c = 0;
 
         for (final client in List<http.Client>.from(clients.values)) {
           try {
+            print('>< >< close client : ${c++}');
             client.close();
           } catch (e) {
             print('<>< ><> close client exception : $e');
           }
         }
+
+        print('>< >< length : ${clients.length}');
+        full.sendPort.send(message);
       }
     },
   );

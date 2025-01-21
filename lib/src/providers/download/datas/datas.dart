@@ -22,6 +22,7 @@ class DM {
   static const goBackWithError = 5;
   static const gottenBackWithError = 6;
   static const waitForNetwork = 7;
+  static const deleted = 8;
 }
 
 typedef TheTask = ({String url, String absPath});

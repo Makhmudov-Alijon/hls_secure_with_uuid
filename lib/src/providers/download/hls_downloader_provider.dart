@@ -471,8 +471,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
-    var lastCheckForPauseOrDeleted = DateTime.now();
-
     final startTimee = DateTime.now();
     _startDownloading(where: 'line 222 ${startTimee}');
     _downloadingHlss = hls.iD;
@@ -481,6 +479,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
     );
+    late SendPort isolateSendPort;
     Isolate? theIsolate;
     ReceivePort? thePort;
     late LocalHlsState resultState;
@@ -508,6 +507,20 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       if (tasks.isNotEmpty) {
         thePort = ReceivePort();
         var count = 0;
+        void checkState() {
+          final check =
+              ref.read(localeHlsIsarProvider).getHlsDownloadStatusTypee(
+                    hlsId: hls.id,
+                  );
+
+          if (check is LocalHlsWaitingForNetworkState) {
+            isolateSendPort.send(DM.waitForNetwork);
+          } else if (check is LocalHlsPauseState) {
+            isolateSendPort.send(DM.goBack);
+          } else if (check is LocalHlsDeletedState) {
+            isolateSendPort.send(DM.deleted);
+          }
+        }
 
         void _timer(timer) {
           if (state == HlsDownloaderState.downloading) {
@@ -530,6 +543,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               progress: progress,
               speed: speed,
             );
+            checkState();
           } else {
             timer.cancel();
           }
@@ -547,7 +561,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             sendPort: thePort!.sendPort,
           ),
         );
-        late SendPort isolateSendPort;
 
         thePort!.listen(
           (message) async {
@@ -556,30 +569,23 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             }
             if (message is int) {
               switch (message) {
+                case DM.deleted:
                 case DM.error:
-                  {
-                    resultState = LocalHlsErrorState();
-                    try {
-                      if (!allTasksCompleted.isCompleted) {
-                        allTasksCompleted.complete();
-                      } else {
-                        final v = 0;
-                      }
-                    } catch (e) {
-                      print('<>< ><> complete exception doneFull : $e');
-                    }
-
-                    break;
-                  }
                 case DM.goBack:
                 case DM.waitForNetwork:
                   {
-                    resultState =
-                        count + preloadedTasksCount == downloadTask.items.length
-                            ? LocalHlsCompleteState()
-                            : message == DM.waitForNetwork
-                                ? LocalHlsWaitingForNetworkState()
-                                : LocalHlsPauseState();
+                    if (message == DM.deleted) {
+                      resultState = LocalHlsDeletedState();
+                    } else {
+                      resultState = count + preloadedTasksCount ==
+                              downloadTask.items.length
+                          ? LocalHlsCompleteState()
+                          : message == DM.waitForNetwork
+                              ? LocalHlsWaitingForNetworkState()
+                              : (message == DM.error
+                                  ? LocalHlsErrorState()
+                                  : LocalHlsPauseState());
+                    }
 
                     try {
                       if (!allTasksCompleted.isCompleted) {
@@ -594,26 +600,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 case DM.doneFor:
                   {
                     count++;
-
-                    if (DateTime.now()
-                            .difference(lastCheckForPauseOrDeleted)
-                            .inMilliseconds >
-                        300) {
-                      final check = ref
-                          .read(localeHlsIsarProvider)
-                          .getHlsDownloadStatusTypee(
-                            hlsId: hls.id,
-                          );
-
-                      if (check is LocalHlsWaitingForNetworkState) {
-                         isolateSendPort.send(DM.waitForNetwork);
-                      } else if (check is LocalHlsPauseState ||
-                          check is LocalHlsDeletedState) {
-                        isolateSendPort.send(DM.goBack);
-                      }
-
-                      lastCheckForPauseOrDeleted = DateTime.now();
-                    }
 
                     break;
                   }
