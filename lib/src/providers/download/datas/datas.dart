@@ -40,10 +40,10 @@ class DownloadFullTask2 {
 extension MapEntryExtension on MapEntry<String, String> {
   String get url => value;
 
-  String get absPath => key;
+  String get filePath => key;
 
   String get tempFile {
-    final result = '${absPath.substring(0,absPath.length - 3)}temp.ts';
+    final result = '${filePath.substring(0,filePath.length - 3)}temp.ts';
 
     return result;
   }

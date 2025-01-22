@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/providers/download/top_level_functions/retry_without_exiting_3.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../repository/isar/download_task/download_task_repository_impl.dart';
@@ -513,8 +514,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                     hlsId: hls.id,
                   );
 
-
-
           if (check is LocalHlsWaitingForNetworkState) {
             isolateSendPort.send(DM.waitForNetwork);
           } else if (check is LocalHlsPauseState) {
@@ -525,6 +524,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         }
 
         void _timer(timer) {
+          checkState();
           if (state == HlsDownloaderState.downloading) {
             final progress = calculateProgress(
               totalLength: downloadTask.items.length,
@@ -545,7 +545,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               progress: progress,
               speed: speed,
             );
-            checkState();
           } else {
             timer.cancel();
           }
@@ -557,7 +556,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
 
         theIsolate = await Isolate.spawn(
-          retryWithoutExiting2,
+          retryWithoutExiting3,
           DownloadFullTask2(
             tasks: tasks,
             sendPort: thePort!.sendPort,

@@ -39,7 +39,7 @@ void retryWithoutExiting(DownloadFullTask2 full) {
       if (cancel) break;
 
       final client = http.Client();
-      clients[task.absPath] = client;
+      clients[task.filePath] = client;
       final uri = Uri.parse(task.url);
       final request = http.Request('GET', uri);
 
@@ -61,11 +61,11 @@ void retryWithoutExiting(DownloadFullTask2 full) {
         },
       ).whenComplete(
         () {
-          clients.remove(task.absPath);
+          clients.remove(task.filePath);
           if (content != null) {
-            writeFileSendPortt?.send((task.absPath, content));
+            writeFileSendPortt?.send((task.filePath, content));
           } else {
-            failedTaskss[task.absPath] = task.url;
+            failedTaskss[task.filePath] = task.url;
             checkDoneFullOrError();
           }
         },

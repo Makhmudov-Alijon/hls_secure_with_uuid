@@ -83,7 +83,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
           movieController(hls.iD).refresh();
         }
       } else {
-        print('<>< ><> elese : ${localeState.runtimeType}');
+        // print('<>< ><> elese : ${localeState.runtimeType}');
       }
     }
   }
