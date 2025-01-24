@@ -211,8 +211,7 @@ class HlsService {
 
     final downloadTask = DownloadTask(
       items: downloadItems,
-      mbPerSegment:
-          (size + videoPlaylist.resolution.size).toMb / downloadItems.length,
+      totalBytes: size + videoPlaylist.resolution.size,
     );
 
     return downloadTask;

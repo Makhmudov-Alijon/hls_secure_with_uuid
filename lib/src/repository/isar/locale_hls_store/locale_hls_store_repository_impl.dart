@@ -18,6 +18,23 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   Future<Id> add(LocalHlsModelIsar hls) {
     return isar.writeTxn(
       () async {
+        LocalHlsModelIsar? old;
+        try {
+          try {
+            final all = await isar.localHlsModelIsars.where().findAll();
+            final result =
+                all.firstWhere((e) => e.hlsDetails.localHlsId == hls.iD);
+            old = result;
+          } catch (e) {
+            final v = 0;
+          }
+        } catch (e) {
+          final v = 0;
+        }
+
+        if (old != null) {
+          hls.id = old.id;
+        }
         final v = await isar.localHlsModelIsars.put(hls);
         final theItem = await isar.localHlsModelIsars.get(v);
 
@@ -53,6 +70,10 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   Future<void> delete(LocalHlsModelIsar hls) {
     return isar.writeTxn(
       () async {
+        try {
+          await isar.downloadTasks.delete(hls.id);
+        } catch (e) {}
+
         await isar.localHlsModelIsars.delete(hls.id);
       },
     );

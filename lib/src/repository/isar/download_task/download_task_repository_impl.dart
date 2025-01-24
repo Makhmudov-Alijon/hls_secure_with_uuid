@@ -26,22 +26,36 @@ class DownloadTaskIsarRepositoryImpl extends DownloadTaskIsarRepository {
   }
 
   @override
-  Future<DownloadTask> delete(DownloadTask v) {
-    // TODO: implement remove
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<DownloadTask> update(DownloadTask v) {
-    // TODO: implement update
-    throw UnimplementedError();
-  }
-
-  @override
   Future<DownloadTask?> getById(Id v) {
     return isar.writeTxn(
       () async {
         final result = await isar.downloadTasks.get(v);
+
+        return result;
+      },
+    );
+  }
+
+  @override
+  Future<List<DownloadTask>> getAll() {
+    return isar.writeTxn(
+      () async {
+        final result = await isar.downloadTasks.where().findAll();
+
+        return result;
+      },
+    );
+  }
+
+  @override
+  Future<DownloadTask?> updateDownloadedSize(Id hlsId, {required int downloadedSize}) {
+    return isar.writeTxn(
+      () async {
+        final result = await isar.downloadTasks.get(hlsId);
+        if (result != null) {
+          result.downloadedBytes = downloadedSize;
+          await isar.downloadTasks.put(result);
+        }
 
         return result;
       },

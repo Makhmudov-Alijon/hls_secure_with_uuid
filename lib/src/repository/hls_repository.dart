@@ -76,7 +76,7 @@ class HlsRepository {
   }
 
   /// prepare playlists
-  Future<DownloadTask?> preparePlaylistss({
+  Future<DownloadTask?> preparePlaylists({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
     required String? posterLink,
@@ -149,6 +149,7 @@ class HlsRepository {
       );
 
       final id = await ref.read(localeHlsIsarProvider).add(localHls);
+
       downloadTask.id = id;
       await ref.read(downloadTaskIsarProvider).create(downloadTask);
 

@@ -17,9 +17,9 @@ const DownloadTaskSchema = CollectionSchema(
   name: r'DownloadTask',
   id: -8326932930248620171,
   properties: {
-    r'doneTasksCount': PropertySchema(
+    r'downloadedBytes': PropertySchema(
       id: 0,
-      name: r'doneTasksCount',
+      name: r'downloadedBytes',
       type: IsarType.long,
     ),
     r'items': PropertySchema(
@@ -28,10 +28,10 @@ const DownloadTaskSchema = CollectionSchema(
       type: IsarType.objectList,
       target: r'DownloadItem',
     ),
-    r'mbPerSegment': PropertySchema(
+    r'totalBytes': PropertySchema(
       id: 2,
-      name: r'mbPerSegment',
-      type: IsarType.double,
+      name: r'totalBytes',
+      type: IsarType.long,
     )
   },
   estimateSize: _downloadTaskEstimateSize,
@@ -71,14 +71,14 @@ void _downloadTaskSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.doneTasksCount);
+  writer.writeLong(offsets[0], object.downloadedBytes);
   writer.writeObjectList<DownloadItem>(
     offsets[1],
     allOffsets,
     DownloadItemSchema.serialize,
     object.items,
   );
-  writer.writeDouble(offsets[2], object.mbPerSegment);
+  writer.writeLong(offsets[2], object.totalBytes);
 }
 
 DownloadTask _downloadTaskDeserialize(
@@ -88,7 +88,7 @@ DownloadTask _downloadTaskDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = DownloadTask(
-    doneTasksCount: reader.readLongOrNull(offsets[0]) ?? 0,
+    downloadedBytes: reader.readLongOrNull(offsets[0]) ?? 0,
     id: id,
     items: reader.readObjectList<DownloadItem>(
           offsets[1],
@@ -97,7 +97,7 @@ DownloadTask _downloadTaskDeserialize(
           DownloadItem(),
         ) ??
         const [],
-    mbPerSegment: reader.readDoubleOrNull(offsets[2]) ?? 0,
+    totalBytes: reader.readLongOrNull(offsets[2]) ?? 0,
   );
   return object;
 }
@@ -120,7 +120,7 @@ P _downloadTaskDeserializeProp<P>(
           ) ??
           const []) as P;
     case 2:
-      return (reader.readDoubleOrNull(offset) ?? 0) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -221,45 +221,45 @@ extension DownloadTaskQueryWhere
 extension DownloadTaskQueryFilter
     on QueryBuilder<DownloadTask, DownloadTask, QFilterCondition> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      doneTasksCountEqualTo(int value) {
+      downloadedBytesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'doneTasksCount',
+        property: r'downloadedBytes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      doneTasksCountGreaterThan(
+      downloadedBytesGreaterThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'doneTasksCount',
+        property: r'downloadedBytes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      doneTasksCountLessThan(
+      downloadedBytesLessThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'doneTasksCount',
+        property: r'downloadedBytes',
         value: value,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      doneTasksCountBetween(
+      downloadedBytesBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -267,7 +267,7 @@ extension DownloadTaskQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'doneTasksCount',
+        property: r'downloadedBytes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -419,67 +419,57 @@ extension DownloadTaskQueryFilter
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      mbPerSegmentEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
+      totalBytesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'mbPerSegment',
+        property: r'totalBytes',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      mbPerSegmentGreaterThan(
-    double value, {
+      totalBytesGreaterThan(
+    int value, {
     bool include = false,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'mbPerSegment',
+        property: r'totalBytes',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      mbPerSegmentLessThan(
-    double value, {
+      totalBytesLessThan(
+    int value, {
     bool include = false,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'mbPerSegment',
+        property: r'totalBytes',
         value: value,
-        epsilon: epsilon,
       ));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      mbPerSegmentBetween(
-    double lower,
-    double upper, {
+      totalBytesBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'mbPerSegment',
+        property: r'totalBytes',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        epsilon: epsilon,
       ));
     });
   }
@@ -501,29 +491,29 @@ extension DownloadTaskQueryLinks
 extension DownloadTaskQuerySortBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortBy> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByDoneTasksCount() {
+      sortByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'doneTasksCount', Sort.asc);
+      return query.addSortBy(r'downloadedBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByDoneTasksCountDesc() {
+      sortByDownloadedBytesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'doneTasksCount', Sort.desc);
+      return query.addSortBy(r'downloadedBytes', Sort.desc);
     });
   }
 
-  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> sortByMbPerSegment() {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> sortByTotalBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mbPerSegment', Sort.asc);
+      return query.addSortBy(r'totalBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByMbPerSegmentDesc() {
+      sortByTotalBytesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mbPerSegment', Sort.desc);
+      return query.addSortBy(r'totalBytes', Sort.desc);
     });
   }
 }
@@ -531,16 +521,16 @@ extension DownloadTaskQuerySortBy
 extension DownloadTaskQuerySortThenBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortThenBy> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByDoneTasksCount() {
+      thenByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'doneTasksCount', Sort.asc);
+      return query.addSortBy(r'downloadedBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByDoneTasksCountDesc() {
+      thenByDownloadedBytesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'doneTasksCount', Sort.desc);
+      return query.addSortBy(r'downloadedBytes', Sort.desc);
     });
   }
 
@@ -556,16 +546,16 @@ extension DownloadTaskQuerySortThenBy
     });
   }
 
-  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> thenByMbPerSegment() {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy> thenByTotalBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mbPerSegment', Sort.asc);
+      return query.addSortBy(r'totalBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByMbPerSegmentDesc() {
+      thenByTotalBytesDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mbPerSegment', Sort.desc);
+      return query.addSortBy(r'totalBytes', Sort.desc);
     });
   }
 }
@@ -573,15 +563,15 @@ extension DownloadTaskQuerySortThenBy
 extension DownloadTaskQueryWhereDistinct
     on QueryBuilder<DownloadTask, DownloadTask, QDistinct> {
   QueryBuilder<DownloadTask, DownloadTask, QDistinct>
-      distinctByDoneTasksCount() {
+      distinctByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'doneTasksCount');
+      return query.addDistinctBy(r'downloadedBytes');
     });
   }
 
-  QueryBuilder<DownloadTask, DownloadTask, QDistinct> distinctByMbPerSegment() {
+  QueryBuilder<DownloadTask, DownloadTask, QDistinct> distinctByTotalBytes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'mbPerSegment');
+      return query.addDistinctBy(r'totalBytes');
     });
   }
 }
@@ -594,9 +584,9 @@ extension DownloadTaskQueryProperty
     });
   }
 
-  QueryBuilder<DownloadTask, int, QQueryOperations> doneTasksCountProperty() {
+  QueryBuilder<DownloadTask, int, QQueryOperations> downloadedBytesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'doneTasksCount');
+      return query.addPropertyName(r'downloadedBytes');
     });
   }
 
@@ -607,9 +597,9 @@ extension DownloadTaskQueryProperty
     });
   }
 
-  QueryBuilder<DownloadTask, double, QQueryOperations> mbPerSegmentProperty() {
+  QueryBuilder<DownloadTask, int, QQueryOperations> totalBytesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'mbPerSegment');
+      return query.addPropertyName(r'totalBytes');
     });
   }
 }
