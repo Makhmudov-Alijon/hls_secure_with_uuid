@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import '../datas/datas.dart';
 
 Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
-  // print('>< >< enter the isolate');
   const limit = 10;
   var cancel = false;
   final mainReceivePort = ReceivePort();
@@ -36,6 +35,17 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
   int missionLength = full.tasks.length;
 
   final clients = <String, http.Client>{};
+  void closeClients() {
+    int c = 0;
+    for (final client in List<http.Client>.from(clients.values)) {
+      try {
+        print('>< >< close client : ${c++}');
+        client.close();
+      } catch (e) {
+        // print('<>< ><> close client exception : $e');
+      }
+    }
+  }
 
   int _retry = 0;
   bool canRetry() {
@@ -49,10 +59,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
     final uri = Uri.parse(task.url);
     final request = http.Request('GET', uri);
 
-    final idf = task.url.split('/').last;
-
-    Completer<MapEntry<String, String>?> completer =
-        Completer<MapEntry<String, String>?>();
+    final completer = Completer<MapEntry<String, String>?>();
 
     try {
       final response = await client.send(request).timeout(
@@ -61,32 +68,37 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
             ),
           );
 
-      final tempFile = File(task.tempFile);
-      final sink = tempFile.openWrite();
-      response.stream.listen(
-        (chunk) {
-          sink.add(chunk);
-          downloadedBytes += chunk.length;
-        },
-        onDone: () async {
-          await sink.close();
-          if (tempFile.existsSync()) {
-            await tempFile.rename(task.filePath);
-            completer.complete(null);
-          }
-        },
-        onError: (e) async {
-          await sink.close();
-          if (tempFile.existsSync()) {
-            // print('>< >< delete uncompleted file : $idf');
-            await tempFile.delete();
-          }
-          // print('>< >< on error : $idf   ');
+      try {
+        final tempFile = File(task.tempFile);
+        final sink = tempFile.openWrite();
+        response.stream.listen(
+          (chunk) {
+            sink.add(chunk);
+            downloadedBytes += chunk.length;
+          },
+          onDone: () async {
+            await sink.close();
+            if (tempFile.existsSync()) {
+              await tempFile.rename(task.filePath);
+              completer.complete(null);
+            }
+          },
+          onError: (e) async {
+            await sink.close();
+            if (tempFile.existsSync()) {
+              // print('>< >< delete uncompleted file : $idf');
+              await tempFile.delete();
+            }
+            // print('>< >< on error : $idf   ');
 
-          completer.complete(task);
-        },
-        cancelOnError: true,
-      );
+            completer.complete(task);
+          },
+          cancelOnError: true,
+        );
+      } catch (e) {
+        print('>< >< file exception : ${e.runtimeType}');
+        completer.complete(task);
+      }
     } catch (error) {
       // if (error is SocketException) {
       //   print('>< >< message: ${error.message}');
@@ -94,11 +106,15 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       //   print('>< >< osError: ${error.osError}');
       //   print('>< >< port: ${error.port}');
       // }
-      // print('>< >< on error : ${error.runtimeType}');
+      print('>< >< on error : ${error.runtimeType}');
 
       completer.complete(task);
     }
     final result = await completer.future;
+    try {
+      clients[task.key]?.close();
+      clients.remove(task.key);
+    } catch (e) {}
 
     // if (result != null) {
     //   print('>< >< complete for : $idf result: $result');
@@ -106,27 +122,99 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
     return result;
   }
 
+  // void baraban() {
+  //   final completer = Completer<void>();
+  //   int processCount = 0;
+  //   int count = 0;
+  //
+  //   void processNextTask() {
+  //     // Continue processing tasks while there are tasks and the limit is not exceeded
+  //     while (missionn.isNotEmpty && processCount < limit) {
+  //       if (cancel) {
+  //         break;
+  //       }
+  //       processCount++;
+  //
+  //       final task = missionn.entries.first;
+  //       missionn.remove(task.key);
+  //
+  //       // Execute the task
+  //       func(task).then(
+  //         (result) {
+  //           count++;
+  //           processCount--; // Decrement process count when the task finishes
+  //
+  //           // Handle task completion
+  //           if (result == null) {
+  //             full.sendPort.send(DM.doneFor);
+  //           } else {
+  //             failedTasks[result.key] = result.value;
+  //           }
+  //
+  //           // print(
+  //           //   '>< >< comp cond : ${count == missionLength} count: $count, length: ${missionLength}',
+  //           // );
+  //
+  //           // If all tasks are completed, mark the completer as done
+  //           if (count == missionLength) {
+  //             completer.complete();
+  //           } else {
+  //             // Recursively process the next task
+  //
+  //             // print(
+  //             //     '>< >< recursion mission length: ${missionn.length} procces count ${processCount} ');
+  //             processNextTask();
+  //           }
+  //         },
+  //       );
+  //     }
+  //   }
+  //
+  //   // Start processing tasks
+  //   processNextTask();
+  //
+  //   // Handle completion
+  //   completer.future.then(
+  //     (v) {
+  //       // print('>< >< failed tasks : ${failedTasks.length}');
+  //       if (failedTasks.isEmpty) {
+  //         mainReceivePort.close();
+  //         Future.delayed(Duration(milliseconds: 300), () {
+  //           full.sendPort.send((DM.doneFull, downloadedBytes));
+  //         });
+  //       } else {
+  //         if (canRetry()) {
+  //           missionn = failedTasks;
+  //           failedTasks = {};
+  //           missionLength = missionn.length;
+  //           baraban();
+  //         } else {
+  //           mainReceivePort.close();
+  //           full.sendPort.send(DM.error);
+  //         }
+  //       }
+  //     },
+  //   );
+  // }
   void baraban() {
     final completer = Completer<void>();
-    int processCount = 0;
     int count = 0;
 
     void processNextTask() {
       // Continue processing tasks while there are tasks and the limit is not exceeded
-      while (missionn.isNotEmpty && processCount < limit) {
-        if (cancel) {
-          break;
-        }
-        processCount++;
 
+      if (cancel) {
+        return;
+      }
+
+      if (missionn.isNotEmpty) {
         final task = missionn.entries.first;
         missionn.remove(task.key);
 
         // Execute the task
         func(task).then(
           (result) {
-            count++;
-            processCount--; // Decrement process count when the task finishes
+            count++; // Decrement process count when the task finishes
 
             // Handle task completion
             if (result == null) {
@@ -135,37 +223,29 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
               failedTasks[result.key] = result.value;
             }
 
-            // print(
-            //   '>< >< comp cond : ${count == missionLength} count: $count, length: ${missionLength}',
-            // );
-
             // If all tasks are completed, mark the completer as done
             if (count == missionLength) {
               completer.complete();
             } else {
-              // Recursively process the next task
-
-              // print(
-              //     '>< >< recursion mission length: ${missionn.length} procces count ${processCount} ');
               processNextTask();
             }
           },
         );
+      } else {
+        return;
       }
     }
-
     // Start processing tasks
-    processNextTask();
+    for (var i = 0; i < limit; i++) {
+      processNextTask();
+    }
 
     // Handle completion
     completer.future.then(
       (v) {
-        // print('>< >< failed tasks : ${failedTasks.length}');
         if (failedTasks.isEmpty) {
           mainReceivePort.close();
-          Future.delayed(Duration(milliseconds: 300), () {
-            full.sendPort.send((DM.doneFull, downloadedBytes));
-          });
+          full.sendPort.send((DM.doneFull, downloadedBytes));
         } else {
           if (canRetry()) {
             missionn = failedTasks;
@@ -193,15 +273,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
           message == DM.error) {
         cancel = true;
         mainReceivePort.close();
-        int c = 0;
-
-        for (final client in List<http.Client>.from(clients.values)) {
-          try {
-            client.close();
-          } catch (e) {
-            // print('<>< ><> close client exception : $e');
-          }
-        }
+        closeClients();
 
         // print('>< >< length : ${clients.length}');
         full.sendPort.send(message);

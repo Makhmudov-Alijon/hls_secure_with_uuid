@@ -231,8 +231,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
-    print(
-        '>< >< downloaded size : ${downloadTask.downloadedBytes} total: ${downloadTask.totalBytes}');
     DateTime startTime = DateTime.now();
     _startDownloading(where: 'line 222 ${startTime}');
     _downloadingHls = hls.iD;
@@ -268,7 +266,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       final allTasksCompleted = Completer<void>();
       if (tasks.isNotEmpty) {
         thePort = ReceivePort();
-        var countt = 0;
+        var count = 0;
 
         void checkState() {
           final check =
@@ -289,13 +287,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           if (state != HlsDownloaderState.downloading) {
             return;
           }
-          double progress = (downloadTask.downloadedBytes + data.$1) /
+          var progress = (downloadTask.downloadedBytes + data.$1) /
               downloadTask.totalBytes;
-          print(
-              '>< >< progress $progress : inprogressBytes: ${data.$1}, pre: ${downloadTask.downloadedBytes} total bytes: ${downloadTask.totalBytes}');
 
           if (progress > .98) {
-            final theCount = countt + preloadedTasksCount;
+            final theCount = count + preloadedTasksCount;
             if (theCount < downloadTask.items.length) {
               progress = .98;
             } else if (theCount == downloadTask.items.length) {
@@ -337,7 +333,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             if (message is (int, int)) {
               downloadedBytes = message.$2;
               resultState =
-                  countt + preloadedTasksCount == downloadTask.items.length
+                  count + preloadedTasksCount == downloadTask.items.length
                       ? LocalHlsCompleteState()
                       : LocalHlsErrorState();
               try {
@@ -369,9 +365,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                     if (message == DM.deleted) {
                       resultState = LocalHlsDeletedState();
                     } else {
-                      print('>< >< $countt : ${preloadedTasksCount}');
-
-                      resultState = countt + preloadedTasksCount ==
+                      resultState = count + preloadedTasksCount ==
                               downloadTask.items.length
                           ? LocalHlsCompleteState()
                           : message == DM.waitForNetwork
@@ -393,7 +387,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   }
                 case DM.doneFor:
                   {
-                    countt++;
+                    count++;
 
                     break;
                   }
