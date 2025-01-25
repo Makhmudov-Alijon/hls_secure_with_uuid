@@ -167,7 +167,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     refreshMovies();
     onDelete?.call(hlsGroup, ref);
   }
-
   Future<void> deleteHls({
     required LocalHlsModelIsar hls,
     FutureOr<void> Function(LocalHlsModelIsar hls, Ref ref)? onDeletee,
