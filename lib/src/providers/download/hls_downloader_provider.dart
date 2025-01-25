@@ -404,9 +404,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       _stopDownloading(where: 'line 414');
       if (downloadedBytes != null) {
-        print(
-            '>< >< downloaded bytes update : ${downloadedBytes} <> ${downloadTask.totalBytes} spent: ${DateTime.now().difference(startTime).inMicroseconds}');
-        await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
+         await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
             downloadedSize: downloadedBytes! + downloadTask.downloadedBytes);
       }
 

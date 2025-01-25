@@ -36,11 +36,9 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
 
   final clients = <String, http.Client>{};
   void closeClients() {
-    int c = 0;
     for (final client in List<http.Client>.from(clients.values)) {
       try {
-        print('>< >< close client : ${c++}');
-        client.close();
+         client.close();
       } catch (e) {
         // print('<>< ><> close client exception : $e');
       }
@@ -70,24 +68,29 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
 
       try {
         final tempFile = File(task.tempFile);
-        final sink = tempFile.openWrite();
+        IOSink? sink;
+
+        try {
+          sink = tempFile.openWrite();
+        } catch (e) {
+          completer.complete(task);
+        }
         response.stream.listen(
           (chunk) {
-            sink.add(chunk);
+            sink?.add(chunk);
             downloadedBytes += chunk.length;
           },
           onDone: () async {
-            await sink.close();
+            await sink?.close();
             if (tempFile.existsSync()) {
               await tempFile.rename(task.filePath);
               completer.complete(null);
             }
           },
           onError: (e) async {
-            await sink.close();
+            await sink?.close();
             if (tempFile.existsSync()) {
-              // print('>< >< delete uncompleted file : $idf');
-              await tempFile.delete();
+               await tempFile.delete(recursive: true);
             }
             // print('>< >< on error : $idf   ');
 
@@ -96,17 +99,9 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
           cancelOnError: true,
         );
       } catch (e) {
-        print('>< >< file exception : ${e.runtimeType}');
         completer.complete(task);
       }
     } catch (error) {
-      // if (error is SocketException) {
-      //   print('>< >< message: ${error.message}');
-      //   print('>< >< address: ${error.address}');
-      //   print('>< >< osError: ${error.osError}');
-      //   print('>< >< port: ${error.port}');
-      // }
-      // print('>< >< on error : ${error.runtimeType}');
 
       completer.complete(task);
     }
@@ -116,9 +111,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       clients.remove(task.key);
     } catch (e) {}
 
-    // if (result != null) {
-    //   print('>< >< complete for : $idf result: $result');
-    // }
+
     return result;
   }
 

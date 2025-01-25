@@ -107,7 +107,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
             status: LocalHlsWaitingForNetworkState().toLocalHlsStatus(),
             where: 'local_hls_movies_provider.dart 65');
         if (localeState is LocalHlsDownloadingState) {
-          await movieController(hls.iD).pauseDownloadd(isUpdate: false);
+          await movieController(hls.iD).pauseDownload(isUpdate: false);
 
          await Prefs.setWaitingForNetwork(hls.id);
         }
@@ -174,7 +174,11 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     bool isRefresh = true,
   }) async {
     await ref.read(localeHlsIsarProvider).delete(hls);
-    ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+    try {
+      ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+    } catch (e) {
+      print('>< >< the delete hls directory exception : ${e}');
+    }
     movieController(hls.iD).refresh();
     if (isRefresh) {
       await refreshMovies();

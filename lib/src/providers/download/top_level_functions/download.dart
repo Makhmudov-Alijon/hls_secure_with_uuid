@@ -45,8 +45,7 @@ void download(DownloadFullTask full) {
         .whenComplete(() {
           count++;
 
-          // print('>< >< when complete : $count key: $key');
-      if (count >= full.tasks.length) {
+       if (count >= full.tasks.length) {
         full.sendPort.send(
               DM.doneFull,
             );

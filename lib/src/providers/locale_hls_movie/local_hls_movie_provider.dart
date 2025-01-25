@@ -65,7 +65,7 @@ class LocalHlsMovieNotifier
     return r;
   }
 
-  Future<void> pauseDownloadd( {bool isUpdate = true})async {
+  Future<void> pauseDownload( {bool isUpdate = true})async {
     if (currentHls != null) {
      await downloaderController.pauseDownload(currentHls!,isUpdate: isUpdate);
     } else {
@@ -75,7 +75,7 @@ class LocalHlsMovieNotifier
 
   void cancelDownload() {
     if (currentHls != null) {
-      if (state is LocalHlsDownloadingState) {
+      if (state.value is LocalHlsDownloadingState) {
         downloaderController.cancelDownload(currentHls!);
       } else {
         moviesController.deleteHls(hls: currentHls!);

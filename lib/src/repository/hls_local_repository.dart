@@ -40,7 +40,11 @@ class HlsLocalRepository {
 
   void deleteHlsDirectory(LocalHlsModelIsar hls) {
     if (hls.masterDir.existsSync()) {
-      hls.masterDir.delete(recursive: true);
+      try {
+        hls.masterDir.delete(recursive: true);
+      } catch (e) {
+        print('<>< ><>  delete hls directory : ${hls.iD}');
+      }
     } else {
       final v = 0;
     }

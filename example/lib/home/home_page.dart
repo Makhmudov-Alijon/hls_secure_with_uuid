@@ -181,7 +181,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
     } else if (hlsState is LocalHlsDownloadingState ||
         hlsState is LocalHlsInQueueState) {
-      await movieController.pauseDownloadd();
+      await movieController.pauseDownload();
     }
   }
 
