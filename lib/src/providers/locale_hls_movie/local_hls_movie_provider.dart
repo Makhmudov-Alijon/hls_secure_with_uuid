@@ -89,7 +89,7 @@ class LocalHlsMovieNotifier
     required void Function(LocalHlsErrorState error)? onError,
   }) {
     if (currentHls != null) {
-      downloaderController.tryToDownloadd(
+      downloaderController.tryToDownload(
         hls: currentHls!,
         onError: onError,
         onDownloadComplete: onDownloadComplete,

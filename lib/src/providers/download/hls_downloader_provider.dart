@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../repository/isar/download_task/download_task_repository_impl.dart';
 import '../../repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 import 'datas/datas.dart';
-import 'top_level_functions/download_with_dio_and_watch_the_progress.dart';
+import 'top_level_functions/download.dart';
 
 enum HlsDownloaderState {
   downloading,
@@ -38,23 +38,18 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       );
 
   void _startDownloading({required String where}) {
-    _retry = 0;
     if (state == HlsDownloaderState.notDownloading) {
       state = HlsDownloaderState.downloading;
-    } else {
-      final v = 0;
     }
   }
 
   void _stopDownloading({required String where}) {
     if (state == HlsDownloaderState.downloading) {
       state = HlsDownloaderState.notDownloading;
-    } else {
-      final v = 0;
     }
   }
 
-  Future<void> addToQueuee(LocalHlsModelIsar hls) async {
+  Future<void> addToQueue(LocalHlsModelIsar hls) async {
     await moviesController.updateHlsStatus(
       hls.id,
       LocalHlsInQueueState(),
@@ -62,8 +57,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     );
   }
 
-  Future<void> pauseDownload(LocalHlsModelIsar hls,
-      {bool isUpdate = true}) async {
+  Future<void> pauseDownload(
+    LocalHlsModelIsar hls, {
+    bool isUpdate = true,
+  }) async {
     if (hls.iD == _downloadingHls) {
       _stopDownloading(where: 'pause download');
     }
@@ -84,14 +81,14 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     );
   }
 
-  void tryToDownloadd({
+  void tryToDownload({
     required LocalHlsModelIsar hls,
     required void Function(LocalHlsErrorState error)? onError,
     required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
         onDownloadComplete,
   }) async {
     if (state == HlsDownloaderState.downloading) {
-      await addToQueuee(hls);
+      await addToQueue(hls);
     } else {
       final downloadTask = await ref.read(downloadTaskIsarProvider).getById(
             hls.id,
@@ -103,9 +100,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           onDownloadComplete: onDownloadComplete,
           onError: onError,
         );
-      } else {
-        /// hls download task file does not exists
-        final v = 0;
       }
     }
   }
@@ -134,7 +128,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
       if (hls != null) {
         if (state == HlsDownloaderState.downloading) {
-          await addToQueuee(hls);
+          await addToQueue(hls);
         } else {
           if (!_isolateRunning) {
             await downloadOrContinue(
@@ -143,8 +137,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               onDownloadComplete: onDownloadComplete,
               onError: onError,
             );
-          } else {
-            final v = 0;
           }
         }
       }
@@ -172,48 +164,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         );
       }
     }
-  }
-
-  double calculateDownloadSpeed({
-    required DateTime startTime,
-    required double mbPerSegment,
-    required int downloadedSegments,
-  }) {
-    if (downloadedSegments == 0) {
-      return 0.0; // No segments downloaded yet
-    }
-
-    // Calculate the elapsed time in seconds
-    final elapsedTime = DateTime.now().difference(startTime).inSeconds;
-
-    if (elapsedTime <= 0) {
-      return 0.0; // Avoid division by zero
-    }
-
-    final segmentPerSecond = downloadedSegments / elapsedTime;
-
-    return segmentPerSecond * mbPerSegment;
-  }
-
-  double calculateProgresss({
-    required int totalLength,
-    required int doneLength,
-  }) {
-    if (totalLength == 0) {
-      return 0.0; // Avoid division by zero
-    }
-
-    // Calculate the progress as a percentage
-    final progress = doneLength / totalLength;
-
-    return progress;
-  }
-
-  int _retry = 0;
-
-  bool canRetry() {
-    _retry++;
-    return _retry <= 3;
   }
 
   /// ///////////////////////
@@ -432,8 +382,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           resultState is LocalHlsCompleteState &&
           theTarget != null) {
         await onDownloadComplete.call(theTarget, ref);
-      } else {
-        final v = 0;
       }
 
       await checkForNextQueue(
