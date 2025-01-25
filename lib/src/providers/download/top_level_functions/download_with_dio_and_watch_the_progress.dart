@@ -106,7 +106,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       //   print('>< >< osError: ${error.osError}');
       //   print('>< >< port: ${error.port}');
       // }
-      print('>< >< on error : ${error.runtimeType}');
+      // print('>< >< on error : ${error.runtimeType}');
 
       completer.complete(task);
     }
@@ -267,15 +267,13 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
 
   mainReceivePort.listen(
     (message) {
-      // print('>< >< got message : ${message}');
       if (message == DM.goBack ||
           message == DM.waitForNetwork ||
-          message == DM.error) {
+          message == DM.deleted) {
         cancel = true;
         mainReceivePort.close();
         closeClients();
 
-        // print('>< >< length : ${clients.length}');
         full.sendPort.send(message);
       }
     },
