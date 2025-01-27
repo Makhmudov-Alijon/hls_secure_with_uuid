@@ -25,7 +25,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       ref.read(localeHlsIsarProvider);
 
   LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
-    return ref.read(localHlsMovieProviderr(hlsId).notifier);
+    return ref.read(localHlsMovieProvider(hlsId).notifier);
   }
 
   LocalHlsGroupModel? getGroupById(int contentId) {

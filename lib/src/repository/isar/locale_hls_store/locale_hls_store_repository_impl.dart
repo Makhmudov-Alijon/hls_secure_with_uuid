@@ -86,16 +86,11 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
         try {
           final all = await isar.localHlsModelIsars.where().findAll();
 
-          print('>< >< all length : ${all.length}');
           final result = all.firstWhere((e) {
-            print('>< >< e id : ${e.hlsDetails.localHlsId}');
-            print('>< >< e id : $id');
-            print('>< >< ');
             return e.hlsDetails.localHlsId == id;
           });
           return result;
         } catch (e) {
-          print('>< >< error from get local hls id : ${e}');
           return null;
         }
       },
@@ -141,7 +136,6 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
         try {
           final all = await isar.localHlsModelIsars.where().findAll();
 
-          print('>< >< all in isar  length : ${all.length}');
           return all;
         } catch (e) {
           print('>< >< get all exception : ${e}');

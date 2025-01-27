@@ -138,7 +138,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   bool get canDownload =>
       selectedGroups.isNotEmpty && selectedResolution != null;
 
-  String getStatusBy(LocalHlsState hlsState) {
+  String getStatusBy(LocalHlsState? hlsState) {
     switch (hlsState.runtimeType) {
       case LocalHlsDownloadingState:
         return 'Загрузка';
@@ -159,7 +159,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  IconData? iconByStatus(LocalHlsState hlsState) {
+  IconData? iconByStatus(LocalHlsState? hlsState) {
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       return Icons.play_circle_fill;
     } else if (hlsState is LocalHlsDownloadingState) {
@@ -171,8 +171,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  Future<void> onIconPressed(LocalHlsState hlsState) async {
-    final movieController = ref.read(localHlsMovieProviderr(hlsIdd).notifier);
+  Future<void> onIconPressed(LocalHlsState? hlsState) async {
+    final movieController = ref.read(localHlsMovieProvider(hlsIdd).notifier);
 
     if (hlsState is LocalHlsPauseState || hlsState is LocalHlsErrorState) {
       movieController.tryContinueDownload(
@@ -221,17 +221,17 @@ class _HomePageState extends ConsumerState<HomePage> {
         // skipLoadingOnRefresh: true,
         // skipLoadingOnReload: true,
         builder: (data) {
-          final movieStatee = ref.watch(localHlsMovieProviderr(hlsIdd));
+          final data = ref.watch(localHlsMovieProvider(hlsIdd));
           final movieController =
-              ref.watch(localHlsMovieProviderr(hlsIdd).notifier);
-          return movieStatee.when(
-            data: (data) {
+              ref.watch(localHlsMovieProvider(hlsIdd).notifier);
+          // return movieStatee.when(
+          //   data: (data) {
               return RefreshIndicator(
                 onRefresh: () async {
                   await ref
                       .read(localHlsMoviesProvider.notifier)
                       .refreshMovies();
-                  ref.invalidate(localHlsMovieProviderr);
+                  ref.invalidate(localHlsMovieProvider);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -355,7 +355,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 Expanded(
                                   child: LinearProgressIndicator(
-                                    value: data.progress,
+                                    value: data?.progress,
                                   ),
                                 ),
                                 if (data is! LocalHlsCompleteState)
@@ -380,12 +380,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 ),
                                 if (data is! LocalHlsCompleteState)
                                   Text(
-                                    '${(data.progress * 100).toStringAsFixed(1)}%',
+                                    '${((data?.progress ?? 0.0) * 100).toStringAsFixed(1)}%',
                                   ),
                               ],
                             ),
                             Text(
-                              '${data.progress}',
+                              '${data?.progress}',
                             ),
                             if (data is LocalHlsDownloadingState)
                               Text(
@@ -398,16 +398,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
               );
-            },
-            error: (err, stackTrace) {
-              return Center(
-                child: Text(err.toString()),
-              );
-            },
-            loading: () => Center(
-              child: CupertinoActivityIndicator(),
-            ),
-          );
+            // },
+          //   error: (err, stackTrace) {
+          //     return Center(
+          //       child: Text(err.toString()),
+          //     );
+          //   },
+          //   loading: () => Center(
+          //     child: CupertinoActivityIndicator(),
+          //   ),
+          // );
         },
         // error: (error, stackTrace) {
         //   return Center(

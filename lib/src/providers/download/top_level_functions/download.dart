@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:download_manager/src/entities/local_hls_state.dart';
 import 'package:download_manager/src/utils/extension/int_extension.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,11 +13,11 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
   var cancel = false;
   final mainReceivePort = ReceivePort();
   int downloadedBytes = 0;
-  final stopwatch = Stopwatch()..start();
+  Stopwatch? stopwatch = Stopwatch()..start();
   Timer? progressTimer;
   void progress(timer) {
-    if (!cancel) {
-      final elapsedTime = stopwatch.elapsedMilliseconds / 1000;
+    if (!cancel && stopwatch != null) {
+      final elapsedTime = stopwatch!.elapsedMilliseconds / 1000;
       final speed = downloadedBytes.toMb / elapsedTime;
 
       full.sendPort.send((downloadedBytes, speed));
@@ -24,10 +25,12 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       progressTimer?.cancel();
       progressTimer = null;
     }
+
+    print('>< >< ding');
   }
 
   progressTimer = Timer.periodic(
-    const Duration(milliseconds: 300),
+    const Duration(milliseconds: 1000),
     progress,
   );
   Map<String, String> failedTasks = <String, String>{};
@@ -43,6 +46,14 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
         // print('<>< ><> close client exception : $e');
       }
     }
+  }
+
+  void dispose() {
+    cancel = true;
+    mainReceivePort.close();
+    stopwatch?.stop();
+    stopwatch = null;
+    closeClients();
   }
 
   int _retry = 0;
@@ -163,7 +174,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
     completer.future.then(
       (v) {
         if (failedTasks.isEmpty) {
-          mainReceivePort.close();
+          dispose();
           full.sendPort.send((DM.doneFull, downloadedBytes));
         } else {
           if (canRetry()) {
@@ -188,10 +199,14 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
     (message) {
       if (message == DM.goBack ||
           message == DM.waitForNetwork ||
-          message == DM.deleted) {
-        cancel = true;
-        mainReceivePort.close();
-        closeClients();
+          message == DM.deleted ||
+          message == DM.doneFull) {
+        dispose();
+
+        full.sendPort.send(message);
+      }
+      if (message is LocalHlsState) {
+        dispose();
 
         full.sendPort.send(message);
       }

@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../repository/isar/download_task/download_task_repository_impl.dart';
 
-final localHlsMovieProviderr = AutoDisposeAsyncNotifierProviderFamily<
-    LocalHlsMovieNotifier, LocalHlsState, LocalHlsId>(
+final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
+    LocalHlsMovieNotifier, LocalHlsState?, LocalHlsId>(
   LocalHlsMovieNotifier.new,
   dependencies: [
     localHlsMoviesProvider,
@@ -14,7 +14,7 @@ final localHlsMovieProviderr = AutoDisposeAsyncNotifierProviderFamily<
 );
 
 class LocalHlsMovieNotifier
-    extends AutoDisposeFamilyAsyncNotifier<LocalHlsState, LocalHlsId> {
+    extends AutoDisposeFamilyNotifier<LocalHlsState?, LocalHlsId> {
   LocalHlsModelIsar? currentHls;
   int? sizeToDownloadd;
 
@@ -28,20 +28,24 @@ class LocalHlsMovieNotifier
 
   HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
 
-
-
-  void updateProgress({required double progress, required double speed}) {
-    state =  AsyncData(
-      LocalHlsDownloadingState(
+  LocalHlsState? updateProgress(
+      {required double progress, required double speed}) {
+    if (state is LocalHlsDownloadingState) {
+      state = LocalHlsDownloadingState(
         speed: speed,
         progress: progress > 99 ? 99 : progress,
-      ),
-    );
+      );
+      return null;
+    } else {
+      print('>< >< state is now downloading  : ${state.runtimeType}');
+      return state;
+    }
   }
 
   void refresh() {
     checkState().then((v) {
-      state = AsyncData(v);
+      state = v;
+      _deactivate();
     });
   }
 
@@ -65,9 +69,14 @@ class LocalHlsMovieNotifier
     return r;
   }
 
+  void _deactivate() {
+    ref.read(downloadButtonSafetyProvider.notifier).deActivate();
+  }
+
   Future<void> pauseDownload( {bool isUpdate = true})async {
     if (currentHls != null) {
      await downloaderController.pauseDownload(currentHls!,isUpdate: isUpdate);
+      _deactivate();
     } else {
       final v = 0;
     }
@@ -75,7 +84,7 @@ class LocalHlsMovieNotifier
 
   void cancelDownload() {
     if (currentHls != null) {
-      if (state.value is LocalHlsDownloadingState) {
+      if (state is LocalHlsDownloadingState) {
         downloaderController.cancelDownload(currentHls!);
       } else {
         moviesController.deleteHls(hls: currentHls!);
@@ -100,12 +109,10 @@ class LocalHlsMovieNotifier
   }
 
   @override
-  FutureOr<LocalHlsState> build(LocalHlsId arg) {
-    return checkState();
+  LocalHlsState? build(LocalHlsId arg) {
+    checkState().then((v) {
+      state ??= v;
+    });
+    return null;
   }
-
-// @override
-// LocalHlsState build(LocalHlsId arg) {
-//   // return checkState();
-// }
 }

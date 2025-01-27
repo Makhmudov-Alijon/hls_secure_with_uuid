@@ -1,6 +1,6 @@
 import 'package:download_manager/download_manager.dart';
 
-extension Dibiding on LocalHlsState {
+extension LocaleHlsStateExtension on LocalHlsState {
   int get getOrder {
     switch (runtimeType) {
       case LocalHlsDownloadingState:

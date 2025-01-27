@@ -34,7 +34,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       );
 
   LocalHlsMovieNotifier localHlsMovieController(LocalHlsId hlsId) => ref.read(
-        localHlsMovieProviderr(hlsId).notifier,
+        localHlsMovieProvider(hlsId).notifier,
       );
 
   void _startDownloading({required String where}) {
@@ -124,10 +124,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         hlsDetails.localHlsId,
       );
 
-      hls = await moviesController.hlsById(hlsDetails.localHlsId);
 
       if (hls != null) {
-        if (state == HlsDownloaderState.downloading) {
+        if (state == HlsDownloaderState.downloading || _isolateRunning) {
           await addToQueue(hls);
         } else {
           if (!_isolateRunning) {
@@ -189,15 +188,17 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
     );
-    late SendPort isolateSendPort;
+    SendPort? isolateSendPort;
     Isolate? theIsolate;
     ReceivePort? thePort;
     late LocalHlsState resultState;
     int? downloadedBytes;
     void dispose() {
-      downloadedBytes = null;
       progressUpdateTimer?.cancel();
       progressUpdateTimer = null;
+
+      _downloadingHls = null;
+      _isolateRunning = false;
       thePort?.close();
       thePort = null;
       theIsolate?.kill(priority: Isolate.immediate);
@@ -225,16 +226,21 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   );
 
           if (check is LocalHlsWaitingForNetworkState) {
-            isolateSendPort.send(DM.waitForNetwork);
+            isolateSendPort?.send(DM.waitForNetwork);
           } else if (check is LocalHlsPauseState) {
-            isolateSendPort.send(DM.goBack);
+            isolateSendPort?.send(DM.goBack);
           } else if (check is LocalHlsDeletedState) {
-            isolateSendPort.send(DM.deleted);
+            isolateSendPort?.send(DM.deleted);
           }
         }
 
         void updateProgressAndSpeed((int, double) data) {
           if (state != HlsDownloaderState.downloading) {
+            print(
+                '>< >< not downloading : ${hls.iD} isolate port is null ${isolateSendPort == null}');
+
+            isolateSendPort?.send(LocalHlsPauseState());
+
             return;
           }
           var progress = (downloadTask.downloadedBytes + data.$1) /
@@ -248,10 +254,13 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               progress = 1;
             }
           }
-          localHlsMovieController(hls.iD).updateProgress(
+          final result = localHlsMovieController(hls.iD).updateProgress(
             progress: progress,
             speed: data.$2,
           );
+          if (result != null) {
+            isolateSendPort?.send(result);
+          }
 
           downloadedBytes = data.$1;
         }
@@ -280,6 +289,22 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
         thePort!.listen(
           (message) async {
+            if (message is LocalHlsState) {
+              resultState =
+                  count + preloadedTasksCount == downloadTask.items.length
+                      ? LocalHlsCompleteState()
+                      : message;
+              try {
+                if (!allTasksCompleted.isCompleted) {
+                  allTasksCompleted.complete();
+                } else {
+                  final v = 0;
+                }
+              } catch (e) {
+                print('<>< ><> complete exception doneFull : $e ');
+              }
+              return;
+            }
             if (message is (int, int)) {
               downloadedBytes = message.$2;
               resultState =
@@ -338,6 +363,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 case DM.doneFor:
                   {
                     count++;
+                    if(count + preloadedTasksCount == downloadTask.items.length){
+                      isolateSendPort?.send(DM.doneFull);
+                    }
+
+
 
                     break;
                   }
@@ -351,14 +381,14 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
 
       await allTasksCompleted.future;
-
+      dispose();
       _stopDownloading(where: 'line 414');
       if (downloadedBytes != null) {
          await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
             downloadedSize: downloadedBytes! + downloadTask.downloadedBytes);
+      } else {
+        print('>< >< downloadedBytes is null : ${downloadedBytes}');
       }
-
-      dispose();
 
       theTarget = await moviesController.updateHlsStatus(
         hls.id,
@@ -366,8 +396,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         where: 'after download complete 402',
       );
 
-      _downloadingHls = null;
-      _isolateRunning = false;
       if (resultState is LocalHlsErrorState) {
         onError?.call(LocalHlsErrorState());
       } else if (resultState is LocalHlsDeletedState) {
