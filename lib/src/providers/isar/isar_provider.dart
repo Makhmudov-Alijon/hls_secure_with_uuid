@@ -5,16 +5,16 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../../download_manager.dart';
 
-final isarProvider = NotifierProvider<IsarNotifierr, Isar>(
+final isarProviderr = NotifierProvider<IsarNotifier, Isar>(
   () {
     throw UnimplementedError();
   },
 );
 
-class IsarNotifierr extends Notifier<Isar> {
+class IsarNotifier extends Notifier<Isar> {
   final Isar _isar;
 
-  IsarNotifierr({required Isar isar}) : _isar = isar;
+  IsarNotifier({required Isar isar}) : _isar = isar;
 
   @override
   Isar build() {

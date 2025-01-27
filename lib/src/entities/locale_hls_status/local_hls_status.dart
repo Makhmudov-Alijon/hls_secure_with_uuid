@@ -20,7 +20,7 @@ enum LocalHlsStatusType {
 
 @Embedded(inheritance: false)
 class LocalHlsStatus extends Equatable {
-  LocalHlsStatus({
+   LocalHlsStatus({
     this.statusType = LocalHlsStatusType.notExist,
     int creationDate = -1,
     this.message,

@@ -5,7 +5,7 @@ import 'locale_hls_store_repository.dart';
 
 final localeHlsIsarProvider = Provider<LocaleHlsStoreRepository>(
   (ref) => LocalHlsStoreRepositoryImpl(
-    isar: ref.read(isarProvider),
+    isar: ref.read(isarProviderr),
   ),
 );
 
@@ -85,9 +85,17 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
       () async {
         try {
           final all = await isar.localHlsModelIsars.where().findAll();
-          final result = all.firstWhere((e) => e.hlsDetails.localHlsId == id);
+
+          print('>< >< all length : ${all.length}');
+          final result = all.firstWhere((e) {
+            print('>< >< e id : ${e.hlsDetails.localHlsId}');
+            print('>< >< e id : $id');
+            print('>< >< ');
+            return e.hlsDetails.localHlsId == id;
+          });
           return result;
         } catch (e) {
+          print('>< >< error from get local hls id : ${e}');
           return null;
         }
       },
@@ -104,7 +112,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
   }
 
   @override
-  LocalHlsState getHlsDownloadStatusTypee({
+  LocalHlsState getHlsDownloadStatusType({
     required Id hlsId,
   }) {
     final index = Prefs.getLocalHlsStatusIndex(hlsId);
@@ -132,8 +140,11 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
       () async {
         try {
           final all = await isar.localHlsModelIsars.where().findAll();
+
+          print('>< >< all in isar  length : ${all.length}');
           return all;
         } catch (e) {
+          print('>< >< get all exception : ${e}');
           return [];
         }
       },

@@ -2,13 +2,15 @@ import 'package:download_manager/src/utils/prefs/pref_keys.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
+export 'pref_keys.dart';
+
 class Prefs {
   Prefs._();
 
   static const String _boxName = 'shared_preferences_box';
 
   // Method to initialize the Hive box
-  static late Box<dynamic>? _box;
+  static Box<dynamic>? _box;
 
   static bool get initialized => _box != null;
 
@@ -17,6 +19,16 @@ class Prefs {
     Hive.init(path.path);
     _box = await Hive.openBox<dynamic>(_boxName);
   }
+
+  // Method to store a String value
+  static Future<void> setString(String key, String value) async {
+    await _box!.put(key, value);
+  } // Method to store a String value
+
+  static Future<String?> getString(String key) async {
+    final result = await _box!.get(key);
+    return result as String?;
+  } // Method to store a String value
 
   // Method to store a String value
   static Future<void> putLocalHlsStatusIndex(int key, int value) async {
@@ -43,7 +55,11 @@ class Prefs {
 
   // Method to clear all values in the box
   static Future<void> clear() async {
+    final docPath = await getString(PrefKeys.uuidOfDocPath);
     await _box!.clear();
+    if (docPath != null) {
+      await setString(PrefKeys.uuidOfDocPath, docPath);
+    }
   }
 
   // Method to check if a key exists in the box

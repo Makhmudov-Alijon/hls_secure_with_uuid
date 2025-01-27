@@ -220,7 +220,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
         void checkState() {
           final check =
-              ref.read(localeHlsIsarProvider).getHlsDownloadStatusTypee(
+              ref.read(localeHlsIsarProvider).getHlsDownloadStatusType(
                     hlsId: hls.id,
                   );
 

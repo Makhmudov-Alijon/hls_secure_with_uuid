@@ -28,13 +28,15 @@ class DownloadTask extends Equatable {
 
   @ignore
   double get getProgress {
-    double progress = downloadedBytes / totalBytes;
+    var progress = downloadedBytes / totalBytes;
     final downloadedTasks = items.where((v) => v.isDownloaded);
 
-    if (progress > .98 && downloadedTasks.length < items.length) {
-      progress = .98;
-    } else if (downloadedTasks.length == items.length) {
-      progress = 1;
+    if (progress > .98) {
+      if (downloadedTasks.length < items.length) {
+        progress = .98;
+      } else if (downloadedTasks.length == items.length) {
+        progress = 1;
+      }
     }
 
     return progress;

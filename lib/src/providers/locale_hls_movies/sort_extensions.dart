@@ -25,8 +25,8 @@ extension Dibiding on List<LocalHlsModelIsar> {
               bOrder,
             );
           } else {
-            return b.downloadStatus.creationDate.compareTo(
-              a.downloadStatus.creationDate,
+            return b.downloadStatus!.creationDate.compareTo(
+              a.downloadStatus!.creationDate,
             );
           }
         },

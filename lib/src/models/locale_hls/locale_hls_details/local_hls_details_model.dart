@@ -25,8 +25,6 @@ class LocalHlsDetailsModel extends Equatable {
   final bool isSerial;
   final int? episodeNum;
   final int? seasonNum;
-
-
   final LocalHlsId localHlsId;
 
   final HlsResolution resolution;

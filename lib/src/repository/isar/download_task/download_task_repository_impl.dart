@@ -5,7 +5,7 @@ import '../../../../download_manager.dart';
 
 final downloadTaskIsarProvider = Provider<DownloadTaskIsarRepository>(
   (ref) => DownloadTaskIsarRepositoryImpl(
-    isar: ref.read(isarProvider),
+    isar: ref.read(isarProviderr),
   ),
 );
 

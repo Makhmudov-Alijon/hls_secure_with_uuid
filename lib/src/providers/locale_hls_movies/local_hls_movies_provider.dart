@@ -44,7 +44,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
     for (var hls in total) {
       final localeState = hls.localHlsState();
-      if (localeState is LocalHlsDeletedState || !hls.validate()) {
+      if (localeState is LocalHlsDeletedState || !(await hls.validate())) {
         await hlsIsarRepo.delete(hls);
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
@@ -93,7 +93,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     final inQueue = total.getItemsInQueueExt;
     for (var hls in inQueue) {
       final localeState = hls.localHlsState();
-      if (localeState is LocalHlsDeletedState || !hls.validate()) {
+      if (localeState is LocalHlsDeletedState || !(await hls.validate())) {
         await hlsIsarRepo.delete(hls);
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
@@ -144,8 +144,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         .toList()
       ..sort(
         (a, b) {
-          return a.downloadStatus.creationDate.compareTo(
-            b.downloadStatus.creationDate,
+          return a.downloadStatus!.creationDate.compareTo(
+            b.downloadStatus!.creationDate,
           );
         },
       );
@@ -210,18 +210,21 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     if (isInitial) {
       await Prefs.clear();
     }
-    final total =
-        await ref.read(isarProvider).localHlsModelIsars.where().findAll();
+    final total = await ref.read(localeHlsIsarProvider).getAll();
     final hlsMovies = <LocalHlsModelIsar>[];
     for (var hls in total) {
       final localeState = hls.localHlsState();
       final rtt = localeState.runtimeType;
       final v = localeState is LocalHlsDownloadingState ||
           localeState is LocalHlsInQueueState;
-      if (localeState is LocalHlsDeletedState || !hls.validate()) {
-        await hlsIsarRepo.delete(hls);
+      final cond1 = localeState is LocalHlsDeletedState;
+      final cond2 = !(await hls.validate());
 
-        ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+      if (cond1 || cond2) {
+        // await hlsIsarRepo.delete(hls);
+        //
+        // ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+
         continue;
       }
       if (isInitial) {
@@ -248,11 +251,11 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       hlsMovies.add(hls);
     }
 
-    unawaited(sortt(hlsMovies));
+    unawaited(sort(hlsMovies));
   }
 
   /// Sorting threads
-  Future<void> sortt(List<LocalHlsModelIsar> total) async {
+  Future<void> sort(List<LocalHlsModelIsar> total) async {
     final receivePort = ReceivePort();
     await Isolate.spawn<SortIsolateParams>(
       _sortWorker,

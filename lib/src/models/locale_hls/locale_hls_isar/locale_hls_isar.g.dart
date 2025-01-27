@@ -93,9 +93,14 @@ int _localHlsModelIsarEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.baseDirPath.length * 3;
-  bytesCount += 3 +
-      LocalHlsStatusSchema.estimateSize(
-          object.downloadStatus, allOffsets[LocalHlsStatus]!, allOffsets);
+  {
+    final value = object.downloadStatus;
+    if (value != null) {
+      bytesCount += 3 +
+          LocalHlsStatusSchema.estimateSize(
+              value, allOffsets[LocalHlsStatus]!, allOffsets);
+    }
+  }
   bytesCount += 3 + object.getStatusKey.length * 3;
   bytesCount += 3 +
       LocalHlsDetailsModelSchema.estimateSize(
@@ -148,23 +153,22 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LocalHlsModelIsar(
-    baseDirPath: reader.readString(offsets[0]),
+    baseDirPath: reader.readStringOrNull(offsets[0]) ?? '',
     downloadStatus: reader.readObjectOrNull<LocalHlsStatus>(
-          offsets[1],
-          LocalHlsStatusSchema.deserialize,
-          allOffsets,
-        ) ??
-        LocalHlsStatus(),
+      offsets[1],
+      LocalHlsStatusSchema.deserialize,
+      allOffsets,
+    ),
     hlsDetails: reader.readObjectOrNull<LocalHlsDetailsModel>(
           offsets[3],
           LocalHlsDetailsModelSchema.deserialize,
           allOffsets,
         ) ??
-        LocalHlsDetailsModel(),
-    masterDirPath: reader.readString(offsets[5]),
-    masterFilePath: reader.readString(offsets[6]),
-    posterFilePath: reader.readString(offsets[7]),
-    totalSegments: reader.readLong(offsets[8]),
+        const LocalHlsDetailsModel(),
+    masterDirPath: reader.readStringOrNull(offsets[5]) ?? '',
+    masterFilePath: reader.readStringOrNull(offsets[6]) ?? '',
+    posterFilePath: reader.readStringOrNull(offsets[7]) ?? '',
+    totalSegments: reader.readLongOrNull(offsets[8]) ?? 0,
   );
   object.id = id;
   return object;
@@ -178,14 +182,13 @@ P _localHlsModelIsarDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 1:
       return (reader.readObjectOrNull<LocalHlsStatus>(
-            offset,
-            LocalHlsStatusSchema.deserialize,
-            allOffsets,
-          ) ??
-          LocalHlsStatus()) as P;
+        offset,
+        LocalHlsStatusSchema.deserialize,
+        allOffsets,
+      )) as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:
@@ -194,7 +197,7 @@ P _localHlsModelIsarDeserializeProp<P>(
             LocalHlsDetailsModelSchema.deserialize,
             allOffsets,
           ) ??
-          LocalHlsDetailsModel()) as P;
+          const LocalHlsDetailsModel()) as P;
     case 4:
       return (reader.readObjectOrNull<LocalHlsId>(
             offset,
@@ -203,13 +206,13 @@ P _localHlsModelIsarDeserializeProp<P>(
           ) ??
           LocalHlsId()) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 7:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? '') as P;
     case 8:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -443,6 +446,24 @@ extension LocalHlsModelIsarQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'baseDirPath',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      downloadStatusIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'downloadStatus',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      downloadStatusIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'downloadStatus',
       ));
     });
   }
@@ -1381,7 +1402,7 @@ extension LocalHlsModelIsarQueryProperty
     });
   }
 
-  QueryBuilder<LocalHlsModelIsar, LocalHlsStatus, QQueryOperations>
+  QueryBuilder<LocalHlsModelIsar, LocalHlsStatus?, QQueryOperations>
       downloadStatusProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'downloadStatus');
