@@ -92,11 +92,6 @@ class LocalHlsModelIsar extends Equatable {
   }
 
   @ignore
-  Future<bool> get videoMasterExistsS async {
-    return (await videoMasterFile.getDirWithReplacingUuid).existsSync();
-  }
-
-  @ignore
   bool get audioMastersExists {
     for (final masterFile in audioMasterFiles) {
       if (!masterFile.existsSync()) {
@@ -106,31 +101,13 @@ class LocalHlsModelIsar extends Equatable {
     return true;
   }
 
-  @ignore
-  Future<bool> get audioMastersExistsS async {
-    for (final masterFile in audioMasterFiles) {
-      if (!(await masterFile.getDirWithReplacingUuid).existsSync()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Future<bool> validate() async {
-    print('>< >< baseDir : ${baseDir.existsSync()}');
-    print('>< >< masterDir : ${masterDir.existsSync()}');
-    print('>< >< posterFile : ${posterFile.existsSync()}');
-    print('>< >< masterFile : ${masterFile.existsSync()}');
-    print('>< >< audioMastersExists : ${audioMastersExists}');
-    print('>< >< videoMasterExists : ${videoMasterExists}');
-
-    final result = (await baseDir.getDirWithReplacingUuid).existsSync() &&
-        (await masterDir.getDirWithReplacingUuid).existsSync() &&
-        (await posterFile.getDirWithReplacingUuid).existsSync() &&
-        (await masterFile.getDirWithReplacingUuid).existsSync() &&
-        await audioMastersExistsS &&
-        await videoMasterExistsS;
-    return result;
+  bool validate() {
+    return baseDir.existsSync() &&
+        masterDir.existsSync() &&
+        posterFile.existsSync() &&
+        masterFile.existsSync() &&
+        audioMastersExists &&
+        videoMasterExists;
   }
 
   @ignore
@@ -206,48 +183,5 @@ class LocalHlsModelIsar extends Equatable {
       return '${hlsDetails.localHlsId.contentId}-${hlsDetails.localHlsId.episodeId}';
     }
     return '${hlsDetails.localHlsId.contentId}';
-  }
-}
-extension DirExte on Directory {
-  Future<Directory> get getDirWithReplacingUuid {
-    return Prefs.getString(PrefKeys.uuidOfDocPath).then((v) {
-      if (v != null) {
-        final parts = path.split('/')..replaceRange(6, 7, [v]);
-        return Directory(parts.join('/'));
-      }
-      return this;
-    });
-  }
-
-  Future<void> setUuiToPrefs() async {
-    final parts = path.split('/');
-    String? uuid;
-    try {
-      uuid = parts[6];
-    } catch (e) {
-      final v = 0;
-    }
-    if (uuid != null) {
-      if (Prefs.initialized) {
-        await Prefs.setString(PrefKeys.uuidOfDocPath, uuid);
-      } else {
-        await Prefs.initt();
-        await Prefs.setString(PrefKeys.uuidOfDocPath, uuid);
-      }
-    } else {
-      final v = 0;
-    }
-  }
-}
-
-extension FieleExt on File {
-  Future<File> get getDirWithReplacingUuid {
-    return Prefs.getString(PrefKeys.uuidOfDocPath).then((v) {
-      if (v != null) {
-        final parts = path.split('/')..replaceRange(6, 7, [v]);
-        return File(parts.join('/'));
-      }
-      return this;
-    });
   }
 }

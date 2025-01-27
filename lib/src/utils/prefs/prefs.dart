@@ -21,14 +21,6 @@ class Prefs {
   }
 
   // Method to store a String value
-  static Future<void> setString(String key, String value) async {
-    await _box!.put(key, value);
-  } // Method to store a String value
-
-  static Future<String?> getString(String key) async {
-    final result = await _box!.get(key);
-    return result as String?;
-  } // Method to store a String value
 
   // Method to store a String value
   static Future<void> putLocalHlsStatusIndex(int key, int value) async {
@@ -55,11 +47,7 @@ class Prefs {
 
   // Method to clear all values in the box
   static Future<void> clear() async {
-    final docPath = await getString(PrefKeys.uuidOfDocPath);
     await _box!.clear();
-    if (docPath != null) {
-      await setString(PrefKeys.uuidOfDocPath, docPath);
-    }
   }
 
   // Method to check if a key exists in the box

@@ -214,16 +214,14 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     final hlsMovies = <LocalHlsModelIsar>[];
     for (var hls in total) {
       final localeState = hls.localHlsState();
-      final rtt = localeState.runtimeType;
-      final v = localeState is LocalHlsDownloadingState ||
-          localeState is LocalHlsInQueueState;
+
       final cond1 = localeState is LocalHlsDeletedState;
-      final cond2 = !(await hls.validate());
+      final cond2 = !hls.validate();
 
       if (cond1 || cond2) {
-        // await hlsIsarRepo.delete(hls);
-        //
-        // ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
+        await hlsIsarRepo.delete(hls);
+
+        ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
 
         continue;
       }
