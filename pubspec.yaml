@@ -12,6 +12,8 @@ dependencies:
   encrypt: ^5.0.3
   equatable: ^2.0.5
   shared_preferences: ^2.3.5
+  disk_space:
+    path: ../disk_space
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0

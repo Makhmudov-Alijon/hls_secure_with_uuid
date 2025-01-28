@@ -2,22 +2,15 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
+import 'package:equatable/equatable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../repository/isar/download_task/download_task_repository_impl.dart';
-import '../../repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
-import 'datas/datas.dart';
-import 'top_level_functions/download.dart';
-import 'dart:async';
-import 'dart:io';
+import '../../../repository/isar/download_task/download_task_repository_impl.dart';
+import '../../../repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
+import '../datas/datas.dart';
+import '../top_level_functions/download.dart';
 
-import 'package:disk_space/disk_space.dart';
-import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-enum HlsDownloaderState {
-  downloading,
-  notDownloading,
-}
+part 'hls_dowloader_state.dart';
 
 final hlsDownloaderProvider =
     NotifierProvider<HlsDownloaderNotifier, HlsDownloaderState>(
@@ -25,9 +18,13 @@ final hlsDownloaderProvider =
 );
 
 class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
+  void updateState(HlsDownloaderState v) {
+    state = v;
+  }
+
   @override
   HlsDownloaderState build() {
-    return HlsDownloaderState.notDownloading;
+    return const HlsDownloaderState();
   }
 
   bool _isolateRunning = false;
@@ -42,54 +39,24 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         localHlsMovieProvider(hlsId).notifier,
       );
 
-  Future<bool> isSpaceAvailable(int bytes) async {
-    var start = DateTime.now();
-    double? diskSpace;
-
-    diskSpace = await DiskSpace.getFreeDiskSpace;
-
-    List<Directory> directories;
-    Map<Directory, double> directorySpace = {};
-
-    if (Platform.isIOS) {
-      directories = [await getApplicationDocumentsDirectory()];
-    } else if (Platform.isAndroid) {
-      directories =
-      await getExternalStorageDirectories(type: StorageDirectory.movies)
-          .then(
-            (list) async => list ?? [await getApplicationDocumentsDirectory()],
-      );
-    } else {
-      directories = [];
-    }
-
-    for (var directory in directories) {
-      var space = await DiskSpace.getFreeDiskSpaceForPath(directory.path);
-      if (space != null) {
-        directorySpace.addEntries([MapEntry(directory, space)]);
-      }
-    }
-
-    if (!mounted) return;
-
-    setState(() {
-      print(
-          '>< >< spent : ${DateTime.now().difference(start).inMicroseconds} micro seconds');
-      _diskSpace = diskSpace;
-      _directorySpace = directorySpace;
-    });
-    return true;
+  Future<bool> isSpaceAvailablee(int bytes) async {
+    final info = await ref.read(diskSpaceInfoProvider.notifier).checkState();
+    return info.isAvailable(bytes);
   }
 
   void _startDownloading({required String where}) {
-    if (state == HlsDownloaderState.notDownloading) {
-      state = HlsDownloaderState.downloading;
+    if (state.status == HlsDownloaderStatus.notDownloading) {
+      updateState(state.copyWith(status: HlsDownloaderStatus.downloading));
     }
   }
 
   void _stopDownloading({required String where}) {
-    if (state == HlsDownloaderState.downloading) {
-      state = HlsDownloaderState.notDownloading;
+    if (state.status == HlsDownloaderStatus.downloading) {
+      updateState(
+        state.copyWith(
+          status: HlsDownloaderStatus.notDownloading,
+        ),
+      );
     }
   }
 
@@ -131,19 +98,24 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
         onDownloadComplete,
   }) async {
-    if (state == HlsDownloaderState.downloading) {
+    if (state.status == HlsDownloaderStatus.downloading) {
       await addToQueue(hls);
     } else {
       final downloadTask = await ref.read(downloadTaskIsarProvider).getById(
             hls.id,
           );
       if (downloadTask != null) {
-        await downloadOrContinue(
-          downloadTask: downloadTask,
-          hls: hls,
-          onDownloadComplete: onDownloadComplete,
-          onError: onError,
-        );
+        final available = await isSpaceAvailablee(downloadTask.remainingBytes);
+        if (available) {
+          await downloadOrContinue(
+            downloadTask: downloadTask,
+            hls: hls,
+            onDownloadComplete: onDownloadComplete,
+            onError: onError,
+          );
+        } else {
+          updateState(state.copyWith(noSpace: true));
+        }
       }
     }
   }
@@ -170,16 +142,24 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
 
       if (hls != null) {
-        if (state == HlsDownloaderState.downloading || _isolateRunning) {
+        if (state.status == HlsDownloaderStatus.downloading ||
+            _isolateRunning) {
           await addToQueue(hls);
         } else {
           if (!_isolateRunning) {
-            await downloadOrContinue(
-              downloadTask: downloadTask,
-              hls: hls,
-              onDownloadComplete: onDownloadComplete,
-              onError: onError,
-            );
+            final available =
+                await isSpaceAvailablee(downloadTask.remainingBytes);
+            if (available) {
+              await downloadOrContinue(
+                downloadTask: downloadTask,
+                hls: hls,
+                onDownloadComplete: onDownloadComplete,
+                onError: onError,
+              );
+            } else {
+              updateState(state.copyWith(noSpace: true));
+              return;
+            }
           }
         }
       }
@@ -198,13 +178,21 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       final downloadTask = await ref.read(downloadTaskIsarProvider).getById(
             nextHls.id,
           );
+
       if (downloadTask != null) {
-        await downloadOrContinue(
-          downloadTask: downloadTask,
-          hls: nextHls,
-          onDownloadComplete: onDownloadComplete,
-          onError: onError,
-        );
+        final available = await isSpaceAvailablee(downloadTask.remainingBytes);
+        if (available) {
+          await downloadOrContinue(
+            downloadTask: downloadTask,
+            hls: nextHls,
+            onDownloadComplete: onDownloadComplete,
+            onError: onError,
+          );
+        } else {
+          updateState(state.copyWith(noSpace: true));
+        }
+      } else {
+        ref.read(downloadButtonSafetyProvider.notifier).deActivate();
       }
     }
   }
@@ -279,7 +267,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         }
 
         void updateProgressAndSpeed((int, double) data) {
-          if (state != HlsDownloaderState.downloading) {
+          if (state.status != HlsDownloaderStatus.downloading) {
             print(
                 '>< >< not downloading : ${hls.iD} isolate port is null ${isolateSendPort == null}');
 
@@ -311,7 +299,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
         void _timer(Timer timer) {
           checkState();
-          if (state != HlsDownloaderState.downloading) {
+          if (state.status != HlsDownloaderStatus.downloading) {
             timer.cancel();
             progressUpdateTimer?.cancel();
             progressUpdateTimer = null;
@@ -425,6 +413,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       }
 
       await allTasksCompleted.future;
+      ref
+          .read(downloadButtonSafetyProvider.notifier)
+          .activate(hls.iD, where: 'download provider 416');
       dispose();
       _stopDownloading(where: 'line 414');
       if (downloadedBytes != null) {

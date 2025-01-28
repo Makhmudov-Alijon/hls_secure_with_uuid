@@ -23,7 +23,8 @@ export 'package:download_manager/src/models/master_playlist_model/master_playlis
 export 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
 export 'package:download_manager/src/providers/client_provider.dart';
-export 'package:download_manager/src/providers/download/hls_downloader_provider.dart';
+export 'package:download_manager/src/providers/disk_space_info/disk_space_info_provider.dart';
+export 'package:download_manager/src/providers/download/downloader/hls_downloader_provider.dart';
 export 'package:download_manager/src/providers/download_button_safety_provider.dart';
 export 'package:download_manager/src/providers/isar/isar_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movie/local_hls_movie_provider.dart';
@@ -49,5 +50,3 @@ export 'package:download_manager/src/utils/prefs/prefs.dart';
 export 'package:isar/isar.dart';
 
 export 'src/models/isar_models/local_hls_stat_models/hls_downloaded_stat_model/hls_downloaded_stat_model.dart';
-
-// final v = downloadButtonSafetyProvider;

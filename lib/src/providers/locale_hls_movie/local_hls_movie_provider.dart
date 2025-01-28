@@ -16,7 +16,7 @@ final localHlsMovieProvider = AutoDisposeNotifierProviderFamily<
 class LocalHlsMovieNotifier
     extends AutoDisposeFamilyNotifier<LocalHlsState?, LocalHlsId> {
   LocalHlsModelIsar? currentHls;
-  int? sizeToDownloadd;
+  int? sizeToDownload;
 
   HlsDownloaderNotifier get downloaderController => ref.read(
         hlsDownloaderProvider.notifier,
@@ -26,7 +26,8 @@ class LocalHlsMovieNotifier
         localHlsMoviesProvider.notifier,
       );
 
-  HlsDownloaderState get downloaderState => ref.read(hlsDownloaderProvider);
+  HlsDownloaderStatus get downloaderState =>
+      ref.read(hlsDownloaderProvider).status;
 
   LocalHlsState? updateProgress(
       {required double progress, required double speed}) {
@@ -53,9 +54,9 @@ class LocalHlsMovieNotifier
     final foundHls =
         await ref.read(localHlsMoviesProvider.notifier).hlsById(arg);
     currentHls = foundHls;
-    sizeToDownloadd ??= foundHls?.hlsDetails.sizeBytes;
+    sizeToDownload ??= foundHls?.hlsDetails.sizeBytes;
 
-     if (foundHls == null) {
+    if (foundHls == null) {
       return LocalHlsNotExistState();
     }
     final downloadTask =

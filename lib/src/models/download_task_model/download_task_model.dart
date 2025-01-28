@@ -41,4 +41,9 @@ class DownloadTask extends Equatable {
 
     return progress;
   }
+
+  @ignore
+  int get remainingBytes {
+    return totalBytes - downloadedBytes;
+  }
 }

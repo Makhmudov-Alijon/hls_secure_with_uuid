@@ -157,6 +157,17 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
   }
 
+  Future<void> deleteHlsByLocalHlsId(LocalHlsId id) async {
+    try {
+      final hls = await hlsById(id);
+      if (hls != null) {
+        await deleteHls(hls: hls);
+      }
+    } catch (e) {
+      print('<>< ><>  deleteHlsByLocalHlsId exception : ${e}');
+    }
+  }
+
   void deleteGroupOfHls({
     required LocalHlsGroupModel hlsGroup,
     FutureOr<void> Function(LocalHlsGroupModel group, Ref ref)? onDelete,

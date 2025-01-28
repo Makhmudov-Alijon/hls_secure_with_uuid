@@ -9,10 +9,12 @@ final downloadButtonSafetyProvider =
 class DownloadButtonSafetyNotifier extends StateNotifier<LocalHlsId?> {
   DownloadButtonSafetyNotifier(super.state);
 
-  void activate(LocalHlsId id) {
+  void activate(LocalHlsId id, {required String where}) {
     // if (state == null) {
     //   Future.delayed(const Duration(milliseconds: 3000), deActivate);
     // }
+
+    print('>< >< activated from : ${where}');
     state = id;
   }
 
