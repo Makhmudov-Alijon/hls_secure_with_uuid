@@ -8,7 +8,12 @@ import '../../repository/isar/download_task/download_task_repository_impl.dart';
 import '../../repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 import 'datas/datas.dart';
 import 'top_level_functions/download.dart';
+import 'dart:async';
+import 'dart:io';
 
+import 'package:disk_space/disk_space.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 enum HlsDownloaderState {
   downloading,
   notDownloading,
@@ -36,6 +41,45 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
   LocalHlsMovieNotifier localHlsMovieController(LocalHlsId hlsId) => ref.read(
         localHlsMovieProvider(hlsId).notifier,
       );
+
+  Future<bool> isSpaceAvailable(int bytes) async {
+    var start = DateTime.now();
+    double? diskSpace;
+
+    diskSpace = await DiskSpace.getFreeDiskSpace;
+
+    List<Directory> directories;
+    Map<Directory, double> directorySpace = {};
+
+    if (Platform.isIOS) {
+      directories = [await getApplicationDocumentsDirectory()];
+    } else if (Platform.isAndroid) {
+      directories =
+      await getExternalStorageDirectories(type: StorageDirectory.movies)
+          .then(
+            (list) async => list ?? [await getApplicationDocumentsDirectory()],
+      );
+    } else {
+      directories = [];
+    }
+
+    for (var directory in directories) {
+      var space = await DiskSpace.getFreeDiskSpaceForPath(directory.path);
+      if (space != null) {
+        directorySpace.addEntries([MapEntry(directory, space)]);
+      }
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      print(
+          '>< >< spent : ${DateTime.now().difference(start).inMicroseconds} micro seconds');
+      _diskSpace = diskSpace;
+      _directorySpace = directorySpace;
+    });
+    return true;
+  }
 
   void _startDownloading({required String where}) {
     if (state == HlsDownloaderState.notDownloading) {
