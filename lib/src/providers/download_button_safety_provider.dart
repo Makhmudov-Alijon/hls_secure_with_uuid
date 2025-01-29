@@ -2,12 +2,12 @@ import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 final downloadButtonSafetyProvider =
-    StateNotifierProvider<DownloadButtonSafetyNotifier, LocalHlsId?>((ref) {
-  return DownloadButtonSafetyNotifier(null);
+    NotifierProvider<DownloadButtonSafetyNotifier, LocalHlsId?>(() {
+  return DownloadButtonSafetyNotifier();
 });
 
-class DownloadButtonSafetyNotifier extends StateNotifier<LocalHlsId?> {
-  DownloadButtonSafetyNotifier(super.state);
+class DownloadButtonSafetyNotifier extends Notifier<LocalHlsId?> {
+  DownloadButtonSafetyNotifier();
 
   void activate(LocalHlsId id, {required String where}) {
     // if (state == null) {
@@ -23,7 +23,13 @@ class DownloadButtonSafetyNotifier extends StateNotifier<LocalHlsId?> {
   void deActivate() {
     deBouncer.run(() {
       print('>< >< deactivate : ${state}');
+      ref.invalidate(diskSpaceInfoProvider);
       state = null;
     });
+  }
+
+  @override
+  LocalHlsId? build() {
+    return null;
   }
 }

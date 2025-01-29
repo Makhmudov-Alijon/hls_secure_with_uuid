@@ -298,7 +298,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               progress = 1;
             }
           }
-          final result = localHlsMovieController(hls.iD).updateProgresss(
+          final result = localHlsMovieController(hls.iD).updateProgress(
             progress: progress,
             speed: data.$2,
           );
