@@ -18,7 +18,7 @@ class DownloadButtonSafetyNotifier extends StateNotifier<LocalHlsId?> {
     state = id;
   }
 
-  AppDeBouncer deBouncer = AppDeBouncer(milliseconds: 5000);
+  AppDeBouncer deBouncer = AppDeBouncer(milliseconds: 2000);
 
   void deActivate() {
     deBouncer.run(() {

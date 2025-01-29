@@ -29,7 +29,7 @@ class LocalHlsMovieNotifier
   HlsDownloaderStatus get downloaderState =>
       ref.read(hlsDownloaderProvider).status;
 
-  LocalHlsState? updateProgress(
+  LocalHlsState? updateProgresss(
       {required double progress, required double speed}) {
     if (state is LocalHlsDownloadingState) {
       state = LocalHlsDownloadingState(

@@ -114,7 +114,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             onError: onError,
           );
         } else {
-          updateState(state.copyWith(noSpace: true));
+          updateState(
+            state.copyWith(
+              noSpace: hls.iD,
+            ),
+          );
         }
       }
     }
@@ -157,7 +161,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 onError: onError,
               );
             } else {
-              updateState(state.copyWith(noSpace: true));
+              updateState(
+                state.copyWith(
+                  noSpace: hls.iD,
+                ),
+              );
               return;
             }
           }
@@ -189,7 +197,11 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             onError: onError,
           );
         } else {
-          updateState(state.copyWith(noSpace: true));
+          updateState(
+            state.copyWith(
+              noSpace: nextHls.iD,
+            ),
+          );
         }
       } else {
         ref.read(downloadButtonSafetyProvider.notifier).deActivate();
@@ -286,11 +298,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               progress = 1;
             }
           }
-          final result = localHlsMovieController(hls.iD).updateProgress(
+          final result = localHlsMovieController(hls.iD).updateProgresss(
             progress: progress,
             speed: data.$2,
           );
           if (result != null) {
+            print('>< >< update progress : ${result.runtimeType}');
             isolateSendPort?.send(result);
           }
 
