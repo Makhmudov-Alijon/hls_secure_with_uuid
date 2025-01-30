@@ -5,18 +5,17 @@ import '../../download_manager.dart';
 final class HlsEncrypter {
   HlsEncrypter._();
 
-  static const randomKey =
-      'NYxwDDWg4g6BWI4whCTIe3CfAUJ6aOlzj2j1SABX6DwKyh7HWCD5G1jHIhWPl0Dh';
+  static const randomKey = 'irKpwxm49X810zMBMvKXRXIaqIzsJ73S';
 
   static String getHlsEncryptionKey(LocalHlsId id) {
-    final key = randomKey.substring(0, 32);
+    final key = randomKey.substring(0, 16);
     final hlsString = [
       id.contentId.toString(),
       if (id.filmId != null) id.filmId.toString(),
       if (id.seasonId != null) id.seasonId.toString(),
       if (id.episodeId != null) id.episodeId.toString(),
     ].join();
-    return (key + hlsString).substring(0, 32);
+    return (key + hlsString).substring(0, 16);
   }
 
   static String encryptData({
