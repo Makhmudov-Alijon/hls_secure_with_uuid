@@ -8,8 +8,8 @@ class HlsPlaylistData {
   });
 
   final List<HlsPlaylistItem> playlistItems;
-  final HlsEncryptionKey encKey;
-  final String iv;
+  final HlsEncryptionKey? encKey;
+  final String? iv;
 
   @override
   String toString() {

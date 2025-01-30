@@ -27,6 +27,11 @@ class AudioSegmentPlaylistModel {
     final baseDir = pathManager.audioDir(audioTrack: audioTrack);
     final encKey = parsedPlaylist.encKey;
     final iv = parsedPlaylist.iv;
+    if (encKey == null) {
+      throw UnimplementedError('encKey not found');
+    } else if (iv == null) {
+      throw UnimplementedError('iv not found');
+    }
     keySwapper.addLinkFromFile(
       originalLink: encKey.url,
       file: pathManager.encKeyFile,

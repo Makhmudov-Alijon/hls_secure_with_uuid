@@ -95,12 +95,6 @@ class HlsParser {
       }
     }
 
-    if (encKey == null) {
-      throw UnimplementedError('encKey not found');
-    } else if (iv == null) {
-      throw UnimplementedError('IV not found');
-    }
-
     return HlsPlaylistData(
       playlistItems: playlistItems,
       encKey: encKey,
