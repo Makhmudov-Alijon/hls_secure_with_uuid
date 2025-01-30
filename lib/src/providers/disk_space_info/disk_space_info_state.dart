@@ -23,9 +23,7 @@ class DiskSpaceInfoState extends Equatable {
       );
 
   bool isAvailable(int bytes) {
-    print('>< >< is available : available ${available} bytes: ${bytes.toMb}');
     return bytes.toMb < available;
-    // return false;
   }
 
   // bool isAvailable(int bytes) => true;

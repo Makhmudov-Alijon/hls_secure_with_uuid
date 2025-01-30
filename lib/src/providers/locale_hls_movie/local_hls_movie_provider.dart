@@ -38,8 +38,7 @@ class LocalHlsMovieNotifier
       );
       return null;
     } else {
-      print('>< >< state is now downloading  : ${state.runtimeType}');
-      return state;
+       return state;
     }
   }
 

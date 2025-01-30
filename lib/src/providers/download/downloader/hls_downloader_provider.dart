@@ -281,10 +281,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         void updateProgressAndSpeed((int, double) data) {
           downloadedBytess = data.$1;
           if (state.status != HlsDownloaderStatus.downloading) {
-            print(
-                '>< >< not downloading : ${hls.iD} isolate port is null ${isolateSendPort == null}');
-
-            isolateSendPort?.send(LocalHlsPauseState());
+          isolateSendPort?.send(LocalHlsPauseState());
 
             return;
           }
@@ -304,8 +301,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             speed: data.$2,
           );
           if (result != null) {
-            print('>< >< update progress : ${result.runtimeType}');
-            isolateSendPort?.send(result);
+             isolateSendPort?.send(result);
           }
 
 
@@ -436,8 +432,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
          await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
               downloadedSize: downloadedBytess! + downloadTask.downloadedBytes,
             );
-      } else {
-        print('>< >< downloadedBytes is null : ${downloadedBytess}');
       }
 
       theTarget = await moviesController.updateHlsStatus(

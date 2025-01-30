@@ -138,7 +138,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
 
           return all;
         } catch (e) {
-          print('>< >< get all exception : ${e}');
+          print('<>< ><> get all exception : ${e}');
           return [];
         }
       },

@@ -26,7 +26,6 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       progressTimer = null;
     }
 
-    print('>< >< ding');
   }
 
   progressTimer = Timer.periodic(
@@ -103,7 +102,6 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
             if (tempFile.existsSync()) {
                await tempFile.delete(recursive: true);
             }
-            // print('>< >< on error : $idf   ');
 
             completer.complete(task);
           },

@@ -10,11 +10,7 @@ class DownloadButtonSafetyNotifier extends Notifier<LocalHlsId?> {
   DownloadButtonSafetyNotifier();
 
   void activate(LocalHlsId id, {required String where}) {
-    // if (state == null) {
-    //   Future.delayed(const Duration(milliseconds: 3000), deActivate);
-    // }
 
-    print('>< >< activated from : ${where}');
     state = id;
   }
 
@@ -22,7 +18,6 @@ class DownloadButtonSafetyNotifier extends Notifier<LocalHlsId?> {
 
   void deActivate() {
     deBouncer.run(() {
-      print('>< >< deactivate : ${state}');
       ref.invalidate(diskSpaceInfoProvider);
       state = null;
     });

@@ -187,7 +187,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     try {
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
     } catch (e) {
-      print('>< >< the delete hls directory exception : ${e}');
+      print('<>< ><> the delete hls directory exception : ${e}');
     }
     movieController(hls.iD).refresh();
     if (isRefresh) {
