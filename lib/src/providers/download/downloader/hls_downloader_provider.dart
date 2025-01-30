@@ -144,7 +144,6 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         hlsDetails.localHlsId,
       );
 
-
       if (hls != null) {
         if (state.status == HlsDownloaderStatus.downloading ||
             _isolateRunning) {
@@ -281,7 +280,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         void updateProgressAndSpeed((int, double) data) {
           downloadedBytess = data.$1;
           if (state.status != HlsDownloaderStatus.downloading) {
-          isolateSendPort?.send(LocalHlsPauseState());
+            isolateSendPort?.send(LocalHlsPauseState());
 
             return;
           }
@@ -301,10 +300,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             speed: data.$2,
           );
           if (result != null) {
-             isolateSendPort?.send(result);
+            isolateSendPort?.send(result);
           }
-
-
         }
 
         void _timer(Timer timer) {
@@ -339,9 +336,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               try {
                 if (!allTasksCompleted.isCompleted) {
                   allTasksCompleted.complete();
-                } else {
-                  final v = 0;
-                }
+                } else {}
               } catch (e) {
                 print('<>< ><> complete exception doneFull : $e ');
               }
@@ -356,9 +351,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               try {
                 if (!allTasksCompleted.isCompleted) {
                   allTasksCompleted.complete();
-                } else {
-                  final v = 0;
-                }
+                } else {}
               } catch (e) {
                 print('<>< ><> complete exception doneFull : $e ');
               }
@@ -405,11 +398,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                 case DM.doneFor:
                   {
                     count++;
-                    if(count + preloadedTasksCount == downloadTask.items.length){
+                    if (count + preloadedTasksCount ==
+                        downloadTask.items.length) {
                       isolateSendPort?.send(DM.doneFull);
                     }
-
-
 
                     break;
                   }
@@ -429,7 +421,8 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
       dispose();
       _stopDownloading(where: 'line 414');
       if (downloadedBytess != null) {
-         await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
+        await ref.read(downloadTaskIsarProvider).updateDownloadedSize(
+              hls.id,
               downloadedSize: downloadedBytess! + downloadTask.downloadedBytes,
             );
       }

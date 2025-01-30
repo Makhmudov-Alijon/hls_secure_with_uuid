@@ -7,6 +7,7 @@ import '../../../../download_manager.dart';
 part 'locale_hls_isar.g.dart';
 
 @Collection(inheritance: false)
+// ignore: must_be_immutable TODO:
 class LocalHlsModelIsar extends Equatable {
   LocalHlsModelIsar({
     this.baseDirPath = '',

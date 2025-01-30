@@ -13,16 +13,16 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 part 'locale_hls_movies_state.dart';
+
 final localHlsMoviesProvider =
-NotifierProvider<LocalHlsMoviesNotifier, LocaleHlsMoviesState>(
+    NotifierProvider<LocalHlsMoviesNotifier, LocaleHlsMoviesState>(
   LocalHlsMoviesNotifier.new,
 );
 
 class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   bool isInitial = true;
 
-  LocaleHlsStoreRepository get hlsIsarRepo =>
-      ref.read(localeHlsIsarProvider);
+  LocaleHlsStoreRepository get hlsIsarRepo => ref.read(localeHlsIsarProvider);
 
   LocalHlsMovieNotifier movieController(LocalHlsId hlsId) {
     return ref.read(localHlsMovieProvider(hlsId).notifier);
@@ -49,14 +49,13 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
 
-
         continue;
       }
 
       if (localeState is LocalHlsWaitingForNetworkState) {
         final isDownload = loading != null && loading == hls.id;
 
-         if (isDownload) {
+        if (isDownload) {
           movieController(hls.iD).tryContinueDownload(
             onError: (error) {
               // ShowSnackBar.errorText(
@@ -78,7 +77,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
             hlsId: hls.id,
             status: LocalHlsInQueueState().toLocalHlsStatus(),
             where: 'local_hls_movies_provider.dart 65');
-        final vv = 0;
         if (updatedHls != null) {
           movieController(hls.iD).refresh();
         }
@@ -91,9 +89,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   Future<void> setNoNetworkQueuee() async {
     final total = await ref.read(localeHlsIsarProvider).getAll();
     final inQueue = total.getItemsInQueueExt;
-    for (var hls in inQueue) {
+    for (final hls in inQueue) {
       final localeState = hls.localHlsState();
-      if (localeState is LocalHlsDeletedState || !(await hls.validate())) {
+      if (localeState is LocalHlsDeletedState || !hls.validate()) {
         await hlsIsarRepo.delete(hls);
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
@@ -109,9 +107,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         if (localeState is LocalHlsDownloadingState) {
           await movieController(hls.iD).pauseDownload(isUpdate: false);
 
-         await Prefs.setWaitingForNetwork(hls.id);
+          await Prefs.setWaitingForNetwork(hls.id);
         }
-        final vv = 0;
         if (updatedHls != null) {
           movieController(hls.iD).refresh();
         }
@@ -178,6 +175,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     refreshMovies();
     onDelete?.call(hlsGroup, ref);
   }
+
   Future<void> deleteHls({
     required LocalHlsModelIsar hls,
     FutureOr<void> Function(LocalHlsModelIsar hls, Ref ref)? onDeletee,
@@ -196,7 +194,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     onDeletee?.call(hls, ref);
   }
 
-  Future<LocalHlsModelIsar?> updateHlsStatus(Id hlsId,
+  Future<LocalHlsModelIsar?> updateHlsStatus(
+    Id hlsId,
     LocalHlsState hlsState, {
     required String where,
   }) async {
@@ -237,7 +236,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         continue;
       }
       if (isInitial) {
-        final v = 0;
         if (localeState is LocalHlsCompleteState && hls.timeLeft.inHours <= 0) {
           ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
           continue;
@@ -249,7 +247,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
               hlsId: hls.id,
               status: LocalHlsPauseState().toLocalHlsStatus(),
               where: 'local_hls_movies_provider.dart 180');
-          final vv = 0;
           if (updatedHls != null) {
             hls = updatedHls;
           } else {

@@ -45,8 +45,6 @@ class HlsLocalRepository {
       } catch (e) {
         print('<>< ><>  delete hls directory : ${hls.iD}');
       }
-    } else {
-      final v = 0;
     }
   }
 

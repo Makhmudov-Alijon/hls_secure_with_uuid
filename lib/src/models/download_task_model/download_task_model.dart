@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 part 'download_task_model.g.dart';
 
 @Collection(inheritance: false)
+// ignore: must_be_immutable TODO:
 class DownloadTask extends Equatable {
   DownloadTask({
     this.id = -1,

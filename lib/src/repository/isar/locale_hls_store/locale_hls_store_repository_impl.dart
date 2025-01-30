@@ -25,20 +25,13 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
             final result =
                 all.firstWhere((e) => e.hlsDetails.localHlsId == hls.iD);
             old = result;
-          } catch (e) {
-            final v = 0;
-          }
-        } catch (e) {
-          final v = 0;
-        }
+          } catch (_) {}
+        } catch (_) {}
 
         if (old != null) {
           hls.id = old.id;
         }
         final v = await isar.localHlsModelIsars.put(hls);
-        final theItem = await isar.localHlsModelIsars.get(v);
-
-        final vv = 0;
         return v;
       },
     );
@@ -117,9 +110,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
         statusType: type,
         progress: 0,
       );
-      if (result is LocalHlsDeletedState) {
-        final v = 0;
-      }
+      if (result is LocalHlsDeletedState) {}
 
       return result;
     } else {
@@ -148,44 +139,44 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
 
 LocalHlsState _getHlsDownloadStatusType({
   required LocalHlsStatusType statusType,
-    required double progress,
+  required double progress,
 }) {
   switch (statusType) {
-      case LocalHlsStatusType.error:
-        return LocalHlsErrorState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.inQueue:
-        return LocalHlsInQueueState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.paused:
-        return LocalHlsPauseState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.complete:
-        return LocalHlsCompleteState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.notExist:
-        return LocalHlsNotExistState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.downloading:
-        return LocalHlsDownloadingState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.deleted:
-        return LocalHlsDeletedState(
-          progress: progress,
-        );
-      case LocalHlsStatusType.prepared:
-        return LocalHlsPreparedState(
-          progress: progress,
-        );
+    case LocalHlsStatusType.error:
+      return LocalHlsErrorState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.inQueue:
+      return LocalHlsInQueueState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.paused:
+      return LocalHlsPauseState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.complete:
+      return LocalHlsCompleteState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.notExist:
+      return LocalHlsNotExistState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.downloading:
+      return LocalHlsDownloadingState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.deleted:
+      return LocalHlsDeletedState(
+        progress: progress,
+      );
+    case LocalHlsStatusType.prepared:
+      return LocalHlsPreparedState(
+        progress: progress,
+      );
     case LocalHlsStatusType.waitingForNetwork:
       return LocalHlsWaitingForNetworkState(
         progress: progress,
       );
   }
-  }
+}

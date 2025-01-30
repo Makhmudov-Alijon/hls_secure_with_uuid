@@ -38,7 +38,7 @@ class LocalHlsMovieNotifier
       );
       return null;
     } else {
-       return state;
+      return state;
     }
   }
 
@@ -67,7 +67,6 @@ class LocalHlsMovieNotifier
     }
     final r = foundHls.localHlsState(progresss: downloadTask.getProgress);
 
-
     return r;
   }
 
@@ -75,12 +74,10 @@ class LocalHlsMovieNotifier
     ref.read(downloadButtonSafetyProvider.notifier).deActivate();
   }
 
-  Future<void> pauseDownload( {bool isUpdate = true})async {
+  Future<void> pauseDownload({bool isUpdate = true}) async {
     if (currentHls != null) {
-     await downloaderController.pauseDownload(currentHls!,isUpdate: isUpdate);
+      await downloaderController.pauseDownload(currentHls!, isUpdate: isUpdate);
       _deactivate();
-    } else {
-      final v = 0;
     }
   }
 
@@ -105,8 +102,6 @@ class LocalHlsMovieNotifier
         onError: onError,
         onDownloadComplete: onDownloadComplete,
       );
-    } else {
-      final v = 0;
     }
   }
 

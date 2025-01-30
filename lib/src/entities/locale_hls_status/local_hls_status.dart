@@ -19,6 +19,7 @@ enum LocalHlsStatusType {
 }
 
 @Embedded(inheritance: false)
+// ignore: must_be_immutable TODO:
 class LocalHlsStatus extends Equatable {
    LocalHlsStatus({
     this.statusType = LocalHlsStatusType.notExist,

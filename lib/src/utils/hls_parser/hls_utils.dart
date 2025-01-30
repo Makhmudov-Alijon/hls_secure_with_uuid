@@ -41,7 +41,9 @@ class HlsUtils {
   }
 
   static Future<List<File>> searchFilesByNameInDirectory(
-      Directory directory, String fileName) async {
+    Directory directory,
+    String fileName,
+  ) async {
     final foundFiles = <File>[];
 
     if (!directory.existsSync()) {
@@ -49,7 +51,6 @@ class HlsUtils {
     }
 
     Future<void> searchDirectory(Directory directory) async {
-      final v = directory.list(followLinks: false);
       // v.listen((d){
       //   final dd = d;
       //   final path = d.path;

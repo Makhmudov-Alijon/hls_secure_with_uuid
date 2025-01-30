@@ -29,6 +29,7 @@ extension HlsAudioTrackTypeX on HlsAudioTrackType {
 }
 
 @Embedded(inheritance: false)
+// ignore: must_be_immutable // TODO:
 class HlsAudioTrack extends Equatable{
   HlsAudioTrack({
     this.trackType = HlsAudioTrackType.defaultTrack,

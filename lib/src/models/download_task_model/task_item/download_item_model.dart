@@ -7,6 +7,7 @@ import 'package:isar/isar.dart';
 part 'download_item_model.g.dart';
 
 @Embedded(inheritance: false)
+// ignore: must_be_immutable TODO:
 class DownloadItem extends Equatable {
   DownloadItem({
     this.url = '',

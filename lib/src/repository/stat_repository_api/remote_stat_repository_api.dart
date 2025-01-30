@@ -1,12 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:download_manager/src/repository/stat_repository_api/the_endpoints/the_end_point_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../download_manager.dart';
-import '../../models/isar_models/local_hls_stat_models/hls_deleted_stat_model/hls_deleted_stat_model.dart';
-import '../../models/isar_models/local_hls_stat_models/hls_downloaded_stat_model/hls_downloaded_stat_model.dart';
 import '../stat_repository/local_stat_repository.dart';
 import '../stat_repository/remote_stat_repository.dart';
 import 'local_stat_repository_api.dart';
@@ -37,8 +34,6 @@ class RemoteStatRepositoryApi implements RemoteStatRepository {
   Future<void> sendDeletedHlsStat({
     required HlsDeletedStatModel deletedHlsStat,
   }) async {
-    final endPoint = endPoints.removeDownloadedHlsState;
-
     try {
       await client.post<dynamic>(
         endPoints.removeDownloadedHlsState,
