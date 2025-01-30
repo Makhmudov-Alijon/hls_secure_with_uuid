@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/repository/hls_encrypter.dart';
 import 'package:download_manager/src/repository/isar/download_task/download_task_repository_impl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -34,8 +35,8 @@ class HlsRepository {
     required String key,
     required LocalHlsId hlsId,
     required bool forWatching,
+    required bool isAes,
     Map<String, dynamic>? headers,
-    bool isAes = false,
   }) async {
     try {
       final response = await dio.post<dynamic>(
@@ -84,38 +85,44 @@ class HlsRepository {
     try {
       final baseDir = await getApplicationDocumentsDirectory();
 
+      const isForWatching = false;
+
       final pathManager = HlsPathManager(
         baseDir: baseDir,
         localHlsId: hlsDetails.localHlsId,
-        isRemote: false,
+        isRemote: isForWatching,
       );
 
-      final masterDir = pathManager.masterDir..createIfNotExist();
-
-      final encKey = master.hlsData.enc;
-
-      if (encKey != null) {
-        pathManager.encKeyFile
-          ..createIfNotExist()
-          ..writeAsStringSync(encKey);
-      }
-
-      final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
+      final hlsFullPlaylist = await hlsService.fetchFullPlaylist(
         pathManager: pathManager,
         master: master,
-        isForWatching: false,
+        isForWatching: isForWatching,
         selectedResolutions: {hlsDetails.resolution},
         selectedTracks: hlsDetails.audioTracks.toSet(),
       );
-      final content = master.toLocalPlaylist(
-        linkExcluder: hlsFullPlaylist.masterLinkExcluder,
+
+      await saveAndEncryptMaster(
+        pathManager: pathManager,
+        fullPlaylist: hlsFullPlaylist,
+        masterPlaylist: master,
       );
 
-      final masterFile = pathManager.masterFile
-        ..createIfNotExist()
-        ..writeAsStringSync(
-          content,
-        );
+      await saveEncriptedEncKey(
+        iv: hlsFullPlaylist.iv,
+        enc: hlsFullPlaylist.enc,
+        pathManager: pathManager,
+      );
+
+      await saveAndEncryptPlaylists(
+        isForWatching: isForWatching,
+        pathManager: pathManager,
+        fullPlaylist: hlsFullPlaylist,
+      );
+
+      // await hlsService.saveThumbnailPlaylists(
+      //   thumbsPlaylists: master.hlsData.thumbsPlaylists,
+      //   pathManager: pathManager,
+      // );
 
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
         /// the download item created
@@ -138,8 +145,8 @@ class HlsRepository {
       final localHls = LocalHlsModelIsar(
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
-        masterFilePath: masterFile.path,
-        masterDirPath: masterDir.path,
+        masterFilePath: pathManager.masterFile.path,
+        masterDirPath: pathManager.masterDir.path,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -188,38 +195,125 @@ class HlsRepository {
         forWatching: isForWatching,
       );
 
-      pathManager.masterDir.createIfNotExist();
+      final hlsFullPlaylist = await hlsService.fetchFullPlaylist(
+        pathManager: pathManager,
+        master: master,
+        isForWatching: isForWatching,
+      );
 
-      final encKey = master.hlsData.enc;
+      await saveAndEncryptMaster(
+        pathManager: pathManager,
+        fullPlaylist: hlsFullPlaylist,
+        masterPlaylist: master,
+      );
 
-      if (encKey != null) {
-        pathManager.encKeyFile
-          ..createIfNotExist()
-          ..writeAsStringSync(encKey);
-      }
+      await saveEncriptedEncKey(
+        iv: hlsFullPlaylist.iv,
+        enc: hlsFullPlaylist.enc,
+        pathManager: pathManager,
+      );
+
+      await saveAndEncryptPlaylists(
+        isForWatching: isForWatching,
+        pathManager: pathManager,
+        fullPlaylist: hlsFullPlaylist,
+      );
 
       await hlsService.saveThumbnailPlaylists(
         thumbsPlaylists: master.hlsData.thumbsPlaylists,
         pathManager: pathManager,
       );
 
-      final hlsFullPlaylist = await hlsService.saveSegmentPlaylists(
+      return HlsWatchLink.fromPathManager(
         pathManager: pathManager,
-        master: master,
-        isForWatching: isForWatching,
+        fullPlaylist: hlsFullPlaylist,
       );
-
-      pathManager.masterFile
-        ..createIfNotExist()
-        ..writeAsStringSync(
-          master.toLocalPlaylist(
-            linkExcluder: hlsFullPlaylist.masterLinkExcluder,
-          ),
-        );
-      return HlsWatchLink.fromPathManager(pathManager);
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> saveAndEncryptMaster({
+    required HlsPathManager pathManager,
+    required HlsFullPlaylistModel fullPlaylist,
+    required MasterPlaylistModel masterPlaylist,
+  }) async {
+    final playlistStr = masterPlaylist.toLocalPlaylist(
+      linkExcluder: fullPlaylist.masterLinkExcluder,
+    );
+    final encryptedPlaylist = HlsEncrypter.encryptData(
+      id: pathManager.localHlsId,
+      data: playlistStr,
+    );
+    final masterFile = pathManager.masterFile..createIfNotExist();
+    await masterFile.writeAsString(
+      encryptedPlaylist,
+    );
+  }
+
+  Future<void> saveAndEncryptPlaylists({
+    required HlsFullPlaylistModel fullPlaylist,
+    required HlsPathManager pathManager,
+    required bool isForWatching,
+  }) async {
+    for (final audioPlaylist in fullPlaylist.audioPlaylists) {
+      final audioTrack = audioPlaylist.audioTrack;
+      pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
+
+      final audioMaster = pathManager.audioMasterFile(
+        audioTrack: audioTrack,
+      )..createIfNotExist();
+
+      final playlistStr = audioPlaylist.toLocalPlaylist(
+        isForWatching: isForWatching,
+      );
+
+      final encryptedPlaylistStr = HlsEncrypter.encryptData(
+        id: pathManager.localHlsId,
+        data: playlistStr,
+      );
+
+      await audioMaster.writeAsString(encryptedPlaylistStr);
+    }
+
+    for (final videoPlaylist in fullPlaylist.videoPlaylists) {
+      final resolution = videoPlaylist.resolution;
+      pathManager
+          .videoDir(resolutionType: resolution.resolution)
+          .createIfNotExist();
+
+      final videoMaster = pathManager.videoMasterFile(
+        resolutionType: resolution.resolution,
+      )..createIfNotExist();
+
+      final playlistStr = videoPlaylist.toLocalPlaylist(
+        isForWatching: isForWatching,
+      );
+
+      final encryptedPlaylist = HlsEncrypter.encryptData(
+        id: pathManager.localHlsId,
+        data: playlistStr,
+      );
+
+      await videoMaster.writeAsString(
+        encryptedPlaylist,
+      );
+    }
+  }
+
+  Future<void> saveEncriptedEncKey({
+    required String enc,
+    required String iv,
+    required HlsPathManager pathManager,
+  }) async {
+    final encrypted = HlsEncrypter.encryptEncKey(
+      id: pathManager.localHlsId,
+      iv: iv,
+      enc: enc,
+    );
+    pathManager.encKeyFile
+      ..createIfNotExist()
+      ..writeAsStringSync(encrypted);
   }
 
   Future<void> downloadItemm(DownloadItem downloadItem) async {

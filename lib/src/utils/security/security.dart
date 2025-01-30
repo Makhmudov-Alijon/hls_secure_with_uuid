@@ -3,24 +3,7 @@ import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-abstract class Security {
-  Future<String> getDTK(String key);
-
-  Future<Map<String, dynamic>> getDTD({
-    required String data,
-    required String key,
-    required String token,
-  });
-
-  Future<Map<String, dynamic>> getDTDs({
-    required String data,
-    required String token,
-    required String key,
-  });
-}
-
-class SecurityService extends Security {
-  @override
+class SecurityService {
   Future<String> getDTK(String key) async {
     await dotenv.load();
 
@@ -52,7 +35,6 @@ class SecurityService extends Security {
     return '${$1}${$2}${$3}';
   }
 
-  @override
   Future<Map<String, dynamic>> getDTDs({
     required String data,
     required String token,
@@ -80,7 +62,6 @@ class SecurityService extends Security {
     return source.substring(0, source.length - padding);
   }
 
-  @override
   Future<Map<String, dynamic>> getDTD({
     required String data,
     required String key,

@@ -3,6 +3,7 @@ import 'package:download_manager/download_manager.dart';
 class AudioSegmentPlaylistModel {
   const AudioSegmentPlaylistModel({
     required this.segments,
+    required this.iv,
     required this.totalDuration,
     required this.audioTrack,
     required HlsPlaylistData playlistData,
@@ -25,13 +26,12 @@ class AudioSegmentPlaylistModel {
 
     final baseDir = pathManager.audioDir(audioTrack: audioTrack);
     final encKey = parsedPlaylist.encKey;
-    if (encKey != null) {
-      keySwapper.addLinkFromFile(
-        originalLink: encKey.url,
-        file: pathManager.encKeyFile,
-        baseDir: baseDir,
-      );
-    }
+    final iv = parsedPlaylist.iv;
+    keySwapper.addLinkFromFile(
+      originalLink: encKey.url,
+      file: pathManager.encKeyFile,
+      baseDir: baseDir,
+    );
     var totalDuration = 0.0;
     for (final item in parsedPlaylist.playlistItems) {
       if (item.hlsKey == HlsKeyConstants.extInf) {
@@ -61,6 +61,7 @@ class AudioSegmentPlaylistModel {
     }
 
     return AudioSegmentPlaylistModel(
+      iv: iv,
       segments: segments,
       totalDuration: totalDuration,
       audioTrack: audioTrack,
@@ -89,4 +90,5 @@ class AudioSegmentPlaylistModel {
   final HlsLinkSwapper _keySwapper;
   final HlsPlaylistData _playlistData;
   final HlsEncryptionKey? encKey;
+  final String iv;
 }

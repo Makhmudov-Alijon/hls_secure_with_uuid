@@ -5,10 +5,11 @@ class VideoSegmentPlaylistModel {
     required this.segments,
     required this.totalDuration,
     required this.resolution,
+    required this.iv,
+    required this.encKey,
     required HlsPlaylistData playlistData,
     required HlsLinkSwapper linkSwapper,
     required HlsLinkSwapper keySwapper,
-    this.encKey,
   })  : _playlistData = playlistData,
         _linkSwapper = linkSwapper,
         _keySwapper = keySwapper;
@@ -24,13 +25,12 @@ class VideoSegmentPlaylistModel {
     final keySwapper = HlsLinkSwapper(useAbsolute: false);
     final baseDir = pathManager.videoDir(resolutionType: resolution.resolution);
     final encKey = parsedPlaylist.encKey;
-    if (encKey != null) {
-      keySwapper.addLinkFromFile(
-        originalLink: encKey.url,
-        file: pathManager.encKeyFile,
-        baseDir: baseDir,
-      );
-    }
+    final iv = parsedPlaylist.iv;
+    keySwapper.addLinkFromFile(
+      originalLink: encKey.url,
+      file: pathManager.encKeyFile,
+      baseDir: baseDir,
+    );
     var totalDuration = 0.0;
     for (final item in parsedPlaylist.playlistItems) {
       if (item.hlsKey == HlsKeyConstants.extInf) {
@@ -60,6 +60,7 @@ class VideoSegmentPlaylistModel {
     }
 
     return VideoSegmentPlaylistModel(
+      iv: iv,
       segments: segments,
       totalDuration: totalDuration,
       resolution: resolution,
@@ -86,6 +87,7 @@ class VideoSegmentPlaylistModel {
   final double totalDuration;
   final HlsLinkSwapper _linkSwapper;
   final HlsPlaylistData _playlistData;
-  final HlsEncryptionKey? encKey;
+  final HlsEncryptionKey encKey;
+  final String iv;
   final HlsLinkSwapper _keySwapper;
 }

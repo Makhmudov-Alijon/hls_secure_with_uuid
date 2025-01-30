@@ -7,12 +7,17 @@ class HlsWatchLink extends Equatable {
   const HlsWatchLink({
     required this.master,
     required this.masterDir,
+    required this.fullplaylist,
     this.mediumThumbnails,
     this.largeThumbnails,
   });
 
-  factory HlsWatchLink.fromPathManager(HlsPathManager pathManager) {
+  factory HlsWatchLink.fromPathManager({
+    required HlsPathManager pathManager,
+    required HlsFullPlaylistModel fullPlaylist,
+  }) {
     return HlsWatchLink(
+      fullplaylist: fullPlaylist,
       master: pathManager.masterFile,
       masterDir: pathManager.masterDir,
       largeThumbnails: pathManager.largeThumbnailsFile.existsSync()
@@ -28,6 +33,7 @@ class HlsWatchLink extends Equatable {
   final File? mediumThumbnails;
   final File? largeThumbnails;
   final Directory masterDir;
+  final HlsFullPlaylistModel fullplaylist;
 
   void close() {
     masterDir.deleteSync(recursive: true);
@@ -39,5 +45,6 @@ class HlsWatchLink extends Equatable {
         mediumThumbnails,
         largeThumbnails,
         masterDir,
+        fullplaylist,
       ];
 }

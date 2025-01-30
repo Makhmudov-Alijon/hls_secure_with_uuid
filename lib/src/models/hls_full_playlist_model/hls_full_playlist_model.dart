@@ -12,4 +12,7 @@ class HlsFullPlaylistModel {
   final List<VideoSegmentPlaylistModel> videoPlaylists;
   final List<AudioSegmentPlaylistModel> audioPlaylists;
   final HlsLinkExcluder masterLinkExcluder;
+
+  String get iv => videoPlaylists.first.iv;
+  String get enc => videoPlaylists.first.encKey.url;
 }

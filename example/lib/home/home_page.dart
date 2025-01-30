@@ -121,6 +121,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             token: token,
             hlsId: hlsIdd,
             forWatching: false,
+            isAes: false,
           );
       setState(() {
         resolutions = master.resolutions;

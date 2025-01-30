@@ -9,7 +9,7 @@ final hlsServiceProvider = Provider(
 );
 
 class HlsService {
-  Future<HlsFullPlaylistModel> saveSegmentPlaylists({
+  Future<HlsFullPlaylistModel> fetchFullPlaylist({
     required HlsPathManager pathManager,
     required MasterPlaylistModel master,
     required bool isForWatching,
@@ -33,18 +33,6 @@ class HlsService {
         );
 
         audioPlaylists.add(parsedPlaylist);
-
-        pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
-
-        final audioMaster = pathManager.audioMasterFile(
-          audioTrack: audioTrack,
-        )..createIfNotExist();
-
-        await audioMaster.writeAsString(
-          parsedPlaylist.toLocalPlaylist(
-            isForWatching: isForWatching,
-          ),
-        );
       }
     }
 
@@ -62,20 +50,6 @@ class HlsService {
       );
 
       videoPlaylists.add(parsedPlaylist);
-
-      pathManager
-          .videoDir(
-            resolutionType: resolution.resolution,
-          )
-          .createIfNotExist();
-
-      final videoMaster = pathManager.videoMasterFile(
-        resolutionType: resolution.resolution,
-      )..createIfNotExist();
-
-      await videoMaster.writeAsString(
-        parsedPlaylist.toLocalPlaylist(isForWatching: isForWatching),
-      );
     }
 
     return HlsFullPlaylistModel(
@@ -179,7 +153,8 @@ class HlsService {
         downloadItems.add(
           DownloadItem(
             url: segment.downloadLink,
-            saveDirPath: pathManager.audioDir(audioTrack: audioPlaylist.audioTrack).path,
+            saveDirPath:
+                pathManager.audioDir(audioTrack: audioPlaylist.audioTrack).path,
             fileName: pathManager
                 .fileFromAudio(
                   url: segment.downloadLink,
@@ -196,9 +171,11 @@ class HlsService {
       downloadItems.add(
         DownloadItem(
           url: segment.downloadLink,
-          saveDirPath: pathManager.videoDir(
-            resolutionType: resolutionType,
-          ).path,
+          saveDirPath: pathManager
+              .videoDir(
+                resolutionType: resolutionType,
+              )
+              .path,
           fileName: pathManager
               .fileFromVideo(
                 url: segment.downloadLink,

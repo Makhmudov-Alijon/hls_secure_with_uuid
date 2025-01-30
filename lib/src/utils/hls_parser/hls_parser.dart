@@ -14,6 +14,7 @@ class HlsParser {
     final playlistLines = playlist.split(exp);
     final playlistItems = <HlsPlaylistItem>[];
     HlsEncryptionKey? encKey;
+    String? iv;
 
     for (var i = 0; i < playlistLines.length; i++) {
       var line = playlistLines[i];
@@ -53,6 +54,9 @@ class HlsParser {
                   value.value.contains('enc.key')) {
                 encKey = HlsEncryptionKey(url: value.value.escapeQuotes);
               }
+              if (key == HlsParamConstants.iv) {
+                iv = value.value;
+              }
 
               valueParameters[key] = value;
             }
@@ -91,9 +95,16 @@ class HlsParser {
       }
     }
 
+    if (encKey == null) {
+      throw UnimplementedError('encKey not found');
+    } else if (iv == null) {
+      throw UnimplementedError('IV not found');
+    }
+
     return HlsPlaylistData(
       playlistItems: playlistItems,
       encKey: encKey,
+      iv: iv,
     );
   }
 }
