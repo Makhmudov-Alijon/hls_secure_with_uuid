@@ -45,7 +45,9 @@ class LocalHlsMovieNotifier
 
   void refresh() {
     checkState().then((v) {
+      _deactivate();
       state = v;
+    }).onError((error, s) {
       _deactivate();
     });
   }

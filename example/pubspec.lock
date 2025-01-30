@@ -164,9 +164,11 @@ packages:
   disk_space:
     dependency: transitive
     description:
-      path: "../../disk_space"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: a08c428f1a4e54d5e3622a29f2a64716c7bdc82b
+      url: "https://github.com/radiants-uz/disk_space.git"
+    source: git
     version: "0.2.1"
   download_manager:
     dependency: "direct main"

@@ -2,6 +2,7 @@ name: download_manager
 description: "A new Flutter plugin project."
 version: 0.0.1
 homepage: https://github.com/radiants-uz/download_manager.git
+publish_to: none
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,7 +14,8 @@ dependencies:
   equatable: ^2.0.5
   shared_preferences: ^2.3.5
   disk_space:
-    path: ../disk_space
+    git:
+      url: https://github.com/radiants-uz/disk_space.git
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0

@@ -236,7 +236,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     Isolate? theIsolate;
     ReceivePort? thePort;
     late LocalHlsState resultState;
-    int? downloadedBytes;
+    int? downloadedBytess;
     void dispose() {
       progressUpdateTimer?.cancel();
       progressUpdateTimer = null;
@@ -279,6 +279,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         }
 
         void updateProgressAndSpeed((int, double) data) {
+          downloadedBytess = data.$1;
           if (state.status != HlsDownloaderStatus.downloading) {
             print(
                 '>< >< not downloading : ${hls.iD} isolate port is null ${isolateSendPort == null}');
@@ -307,7 +308,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
             isolateSendPort?.send(result);
           }
 
-          downloadedBytes = data.$1;
+
         }
 
         void _timer(Timer timer) {
@@ -351,7 +352,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
               return;
             }
             if (message is (int, int)) {
-              downloadedBytes = message.$2;
+              downloadedBytess = message.$2;
               resultState =
                   count + preloadedTasksCount == downloadTask.items.length
                       ? LocalHlsCompleteState()
@@ -431,11 +432,12 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           .activate(hls.iD, where: 'download provider 416');
       dispose();
       _stopDownloading(where: 'line 414');
-      if (downloadedBytes != null) {
+      if (downloadedBytess != null) {
          await ref.read(downloadTaskIsarProvider).updateDownloadedSize(hls.id,
-            downloadedSize: downloadedBytes! + downloadTask.downloadedBytes);
+              downloadedSize: downloadedBytess! + downloadTask.downloadedBytes,
+            );
       } else {
-        print('>< >< downloadedBytes is null : ${downloadedBytes}');
+        print('>< >< downloadedBytes is null : ${downloadedBytess}');
       }
 
       theTarget = await moviesController.updateHlsStatus(
