@@ -115,6 +115,7 @@ class HlsService {
         )
         .data;
     return AudioSegmentPlaylistModel.parse(
+      encKey: hlsData.enc,
       playlist: playlist,
       audioTrack: track,
       pathManager: pathManager,
@@ -132,6 +133,7 @@ class HlsService {
       },
     ).data;
     return VideoSegmentPlaylistModel.parse(
+      encKey: hlsData.enc,
       playlist: playlist,
       pathManager: pathManager,
       resolution: resolution,

@@ -4,12 +4,13 @@ class AudioSegmentPlaylistModel {
   const AudioSegmentPlaylistModel({
     required this.segments,
     required this.iv,
+    required this.encKey,
     required this.totalDuration,
     required this.audioTrack,
     required HlsPlaylistData playlistData,
     required HlsLinkSwapper linkSwapper,
     required HlsLinkSwapper keySwapper,
-    this.encKey,
+    required this.encKeyUrl,
   })  : _playlistData = playlistData,
         _linkSwapper = linkSwapper,
         _keySwapper = keySwapper;
@@ -18,6 +19,7 @@ class AudioSegmentPlaylistModel {
     required String playlist,
     required HlsPathManager pathManager,
     required HlsAudioTrack audioTrack,
+    required String encKey,
   }) {
     final parsedPlaylist = HlsParser(playlist: playlist).parseData();
     final segments = <HlsSegment>[];
@@ -25,15 +27,15 @@ class AudioSegmentPlaylistModel {
     final keySwapper = HlsLinkSwapper(useAbsolute: false);
 
     final baseDir = pathManager.audioDir(audioTrack: audioTrack);
-    final encKey = parsedPlaylist.encKey;
+    final encKeyUrl = parsedPlaylist.encKeyUrl;
     final iv = parsedPlaylist.iv;
-    if (encKey == null) {
+    if (encKeyUrl == null) {
       throw UnimplementedError('encKey not found');
     } else if (iv == null) {
       throw UnimplementedError('iv not found');
     }
     keySwapper.addLinkFromFile(
-      originalLink: encKey.url,
+      originalLink: encKeyUrl.url,
       file: pathManager.encKeyFile,
       baseDir: baseDir,
     );
@@ -66,13 +68,14 @@ class AudioSegmentPlaylistModel {
     }
 
     return AudioSegmentPlaylistModel(
+      encKey: encKey,
       iv: iv,
       segments: segments,
       totalDuration: totalDuration,
       audioTrack: audioTrack,
       linkSwapper: linkSwapper,
       playlistData: parsedPlaylist,
-      encKey: encKey,
+      encKeyUrl: encKeyUrl,
       keySwapper: keySwapper,
     );
   }
@@ -94,6 +97,7 @@ class AudioSegmentPlaylistModel {
   final HlsLinkSwapper _linkSwapper;
   final HlsLinkSwapper _keySwapper;
   final HlsPlaylistData _playlistData;
-  final HlsEncryptionKey? encKey;
+  final HlsEncryptionKey encKeyUrl;
   final String iv;
+  final String encKey;
 }

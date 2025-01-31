@@ -7,6 +7,7 @@ class VideoSegmentPlaylistModel {
     required this.resolution,
     required this.iv,
     required this.encKey,
+    required this.encKeyUrl,
     required HlsPlaylistData playlistData,
     required HlsLinkSwapper linkSwapper,
     required HlsLinkSwapper keySwapper,
@@ -16,6 +17,7 @@ class VideoSegmentPlaylistModel {
 
   factory VideoSegmentPlaylistModel.parse({
     required String playlist,
+    required String encKey,
     required HlsPathManager pathManager,
     required HlsResolution resolution,
   }) {
@@ -24,15 +26,15 @@ class VideoSegmentPlaylistModel {
     final linkSwapper = HlsLinkSwapper(useAbsolute: false);
     final keySwapper = HlsLinkSwapper(useAbsolute: false);
     final baseDir = pathManager.videoDir(resolutionType: resolution.resolution);
-    final encKey = parsedPlaylist.encKey;
+    final encKeyUrl = parsedPlaylist.encKeyUrl;
     final iv = parsedPlaylist.iv;
-    if (encKey == null) {
+    if (encKeyUrl == null) {
       throw UnimplementedError('encKey not found');
     } else if (iv == null) {
       throw UnimplementedError('iv not found');
     }
     keySwapper.addLinkFromFile(
-      originalLink: encKey.url,
+      originalLink: encKeyUrl.url,
       file: pathManager.encKeyFile,
       baseDir: baseDir,
     );
@@ -71,8 +73,9 @@ class VideoSegmentPlaylistModel {
       resolution: resolution,
       linkSwapper: linkSwapper,
       playlistData: parsedPlaylist,
-      encKey: encKey,
+      encKeyUrl: encKeyUrl,
       keySwapper: keySwapper,
+      encKey: encKey,
     );
   }
 
@@ -92,7 +95,8 @@ class VideoSegmentPlaylistModel {
   final double totalDuration;
   final HlsLinkSwapper _linkSwapper;
   final HlsPlaylistData _playlistData;
-  final HlsEncryptionKey encKey;
+  final HlsEncryptionKey encKeyUrl;
   final String iv;
+  final String encKey;
   final HlsLinkSwapper _keySwapper;
 }

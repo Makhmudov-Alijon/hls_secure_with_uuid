@@ -20,7 +20,7 @@ _$HlsFullNonParsedModelImpl _$$HlsFullNonParsedModelImplFromJson(
           .toList(),
       thumbsPlaylists: const ThumbsConverter()
           .fromJson(json['thumbs_playlists'] as Map<String, dynamic>),
-      enc: json['enc'] as String?,
+      enc: json['enc'] as String,
     );
 
 Map<String, dynamic> _$$HlsFullNonParsedModelImplToJson(

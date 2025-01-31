@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:encrypt/encrypt.dart';
 
 import '../../download_manager.dart';
@@ -57,13 +59,15 @@ final class HlsEncrypter {
     required String enc,
   }) {
     final key = getHlsEncryptionKey(id);
+    log('key: $key');
     final encrypter = Encrypter(
       AES(
         Key.fromUtf8(key),
         mode: AESMode.cbc,
       ),
     );
-    final encrypted = encrypter.encrypt(enc, iv: IV.fromUtf8(iv));
+    final encrypted =
+        encrypter.encrypt(enc, iv: IV.fromBase16(iv.replaceFirst('0x', '')));
     return encrypted.base64;
   }
 
@@ -81,6 +85,23 @@ final class HlsEncrypter {
     );
     return encrypter.decrypt(
       Encrypted.fromBase64(encryptedEncKey),
+      iv: IV.fromBase16(iv.replaceFirst('0x', '')),
     );
+  }
+
+  static String? tryDecryptEnc({
+    required LocalHlsId id,
+    required String encryptedEncKey,
+    required String iv,
+  }) {
+    try {
+      return decryptEnc(
+        id: id,
+        encryptedEncKey: encryptedEncKey,
+        iv: iv,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 }

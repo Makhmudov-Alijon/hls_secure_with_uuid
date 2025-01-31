@@ -12,7 +12,7 @@ class HlsFullNonParsedModel with _$HlsFullNonParsedModel {
     required List<HlsPlaylistDetailsModel> videoPlaylists,
     required List<HlsPlaylistDetailsModel> audioPlaylists,
     @ThumbsConverter() required List<ThumbsPlaylist> thumbsPlaylists,
-    String? enc,
+    required String enc,
   }) = _HlsFullNonParsedModel;
 
   factory HlsFullNonParsedModel.fromJson(Map<String, dynamic> json) =>

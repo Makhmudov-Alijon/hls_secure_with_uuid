@@ -97,7 +97,7 @@ class HlsParser {
 
     return HlsPlaylistData(
       playlistItems: playlistItems,
-      encKey: encKey,
+      encKeyUrl: encKey,
       iv: iv,
     );
   }

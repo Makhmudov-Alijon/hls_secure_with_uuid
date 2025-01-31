@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -109,7 +110,7 @@ class HlsRepository {
 
       await saveEncriptedEncKey(
         iv: hlsFullPlaylist.iv,
-        enc: hlsFullPlaylist.enc,
+        enc: master.hlsData.enc,
         pathManager: pathManager,
       );
 
@@ -143,6 +144,7 @@ class HlsRepository {
       );
 
       final localHls = LocalHlsModelIsar(
+        fullPlaylist: hlsFullPlaylist,
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: pathManager.masterFile.path,
@@ -306,6 +308,7 @@ class HlsRepository {
     required String iv,
     required HlsPathManager pathManager,
   }) async {
+    log('enc: $enc, iv: $iv, hlsId: ${pathManager.localHlsId}');
     final encrypted = HlsEncrypter.encryptEncKey(
       id: pathManager.localHlsId,
       iv: iv,

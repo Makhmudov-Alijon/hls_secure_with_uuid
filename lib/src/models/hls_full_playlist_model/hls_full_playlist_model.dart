@@ -14,5 +14,5 @@ class HlsFullPlaylistModel {
   final HlsLinkExcluder masterLinkExcluder;
 
   String get iv => videoPlaylists.first.iv;
-  String get enc => videoPlaylists.first.encKey.url;
+  String get enc => videoPlaylists.first.encKey;
 }

@@ -29,7 +29,7 @@ mixin _$HlsFullNonParsedModel {
   @ThumbsConverter()
   List<ThumbsPlaylist> get thumbsPlaylists =>
       throw _privateConstructorUsedError;
-  String? get enc => throw _privateConstructorUsedError;
+  String get enc => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -48,7 +48,7 @@ abstract class $HlsFullNonParsedModelCopyWith<$Res> {
       List<HlsPlaylistDetailsModel> videoPlaylists,
       List<HlsPlaylistDetailsModel> audioPlaylists,
       @ThumbsConverter() List<ThumbsPlaylist> thumbsPlaylists,
-      String? enc});
+      String enc});
 }
 
 /// @nodoc
@@ -69,7 +69,7 @@ class _$HlsFullNonParsedModelCopyWithImpl<$Res,
     Object? videoPlaylists = null,
     Object? audioPlaylists = null,
     Object? thumbsPlaylists = null,
-    Object? enc = freezed,
+    Object? enc = null,
   }) {
     return _then(_value.copyWith(
       master: null == master
@@ -88,10 +88,10 @@ class _$HlsFullNonParsedModelCopyWithImpl<$Res,
           ? _value.thumbsPlaylists
           : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
               as List<ThumbsPlaylist>,
-      enc: freezed == enc
+      enc: null == enc
           ? _value.enc
           : enc // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
     ) as $Val);
   }
 }
@@ -110,7 +110,7 @@ abstract class _$$HlsFullNonParsedModelImplCopyWith<$Res>
       List<HlsPlaylistDetailsModel> videoPlaylists,
       List<HlsPlaylistDetailsModel> audioPlaylists,
       @ThumbsConverter() List<ThumbsPlaylist> thumbsPlaylists,
-      String? enc});
+      String enc});
 }
 
 /// @nodoc
@@ -129,7 +129,7 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
     Object? videoPlaylists = null,
     Object? audioPlaylists = null,
     Object? thumbsPlaylists = null,
-    Object? enc = freezed,
+    Object? enc = null,
   }) {
     return _then(_$HlsFullNonParsedModelImpl(
       master: null == master
@@ -148,10 +148,10 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
           ? _value._thumbsPlaylists
           : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
               as List<ThumbsPlaylist>,
-      enc: freezed == enc
+      enc: null == enc
           ? _value.enc
           : enc // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
     ));
   }
 }
@@ -164,7 +164,7 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
       required final List<HlsPlaylistDetailsModel> videoPlaylists,
       required final List<HlsPlaylistDetailsModel> audioPlaylists,
       @ThumbsConverter() required final List<ThumbsPlaylist> thumbsPlaylists,
-      this.enc})
+      required this.enc})
       : _videoPlaylists = videoPlaylists,
         _audioPlaylists = audioPlaylists,
         _thumbsPlaylists = thumbsPlaylists;
@@ -200,7 +200,7 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
   }
 
   @override
-  final String? enc;
+  final String enc;
 
   @override
   String toString() {
@@ -253,7 +253,7 @@ abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
       required final List<HlsPlaylistDetailsModel> videoPlaylists,
       required final List<HlsPlaylistDetailsModel> audioPlaylists,
       @ThumbsConverter() required final List<ThumbsPlaylist> thumbsPlaylists,
-      final String? enc}) = _$HlsFullNonParsedModelImpl;
+      required final String enc}) = _$HlsFullNonParsedModelImpl;
 
   factory _HlsFullNonParsedModel.fromJson(Map<String, dynamic> json) =
       _$HlsFullNonParsedModelImpl.fromJson;
@@ -268,7 +268,7 @@ abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
   @ThumbsConverter()
   List<ThumbsPlaylist> get thumbsPlaylists;
   @override
-  String? get enc;
+  String get enc;
   @override
   @JsonKey(ignore: true)
   _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>

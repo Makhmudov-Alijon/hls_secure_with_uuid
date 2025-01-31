@@ -3,12 +3,12 @@ import 'package:download_manager/download_manager.dart';
 class HlsPlaylistData {
   const HlsPlaylistData({
     required this.playlistItems,
-    required this.encKey,
+    required this.encKeyUrl,
     required this.iv,
   });
 
   final List<HlsPlaylistItem> playlistItems;
-  final HlsEncryptionKey? encKey;
+  final HlsEncryptionKey? encKeyUrl;
   final String? iv;
 
   @override
