@@ -15,7 +15,7 @@ class LocalHlsModelIsar extends Equatable {
     this.posterFilePath = '',
     this.masterFilePath = '',
     this.totalSegments = 0,
-    required this.fullPlaylist,
+      this.iv = '',
     this.hlsDetails = const LocalHlsDetailsModel(),
     this.downloadStatus,
   });
@@ -26,8 +26,8 @@ class LocalHlsModelIsar extends Equatable {
   String masterDirPath;
   String posterFilePath;
   String masterFilePath;
-  
-  HlsFullPlaylistModel fullPlaylist;
+
+    String iv;
 
   int totalSegments;
 

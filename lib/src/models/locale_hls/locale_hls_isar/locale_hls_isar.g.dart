@@ -45,23 +45,28 @@ const LocalHlsModelIsarSchema = CollectionSchema(
       type: IsarType.object,
       target: r'LocalHlsId',
     ),
-    r'masterDirPath': PropertySchema(
+    r'iv': PropertySchema(
       id: 5,
+      name: r'iv',
+      type: IsarType.string,
+    ),
+    r'masterDirPath': PropertySchema(
+      id: 6,
       name: r'masterDirPath',
       type: IsarType.string,
     ),
     r'masterFilePath': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'masterFilePath',
       type: IsarType.string,
     ),
     r'posterFilePath': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'posterFilePath',
       type: IsarType.string,
     ),
     r'totalSegments': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'totalSegments',
       type: IsarType.long,
     )
@@ -108,6 +113,7 @@ int _localHlsModelIsarEstimateSize(
   bytesCount += 3 +
       LocalHlsIdSchema.estimateSize(
           object.iD, allOffsets[LocalHlsId]!, allOffsets);
+  bytesCount += 3 + object.iv.length * 3;
   bytesCount += 3 + object.masterDirPath.length * 3;
   bytesCount += 3 + object.masterFilePath.length * 3;
   bytesCount += 3 + object.posterFilePath.length * 3;
@@ -140,10 +146,11 @@ void _localHlsModelIsarSerialize(
     LocalHlsIdSchema.serialize,
     object.iD,
   );
-  writer.writeString(offsets[5], object.masterDirPath);
-  writer.writeString(offsets[6], object.masterFilePath);
-  writer.writeString(offsets[7], object.posterFilePath);
-  writer.writeLong(offsets[8], object.totalSegments);
+  writer.writeString(offsets[5], object.iv);
+  writer.writeString(offsets[6], object.masterDirPath);
+  writer.writeString(offsets[7], object.masterFilePath);
+  writer.writeString(offsets[8], object.posterFilePath);
+  writer.writeLong(offsets[9], object.totalSegments);
 }
 
 LocalHlsModelIsar _localHlsModelIsarDeserialize(
@@ -165,10 +172,11 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
           allOffsets,
         ) ??
         const LocalHlsDetailsModel(),
-    masterDirPath: reader.readStringOrNull(offsets[5]) ?? '',
-    masterFilePath: reader.readStringOrNull(offsets[6]) ?? '',
-    posterFilePath: reader.readStringOrNull(offsets[7]) ?? '',
-    totalSegments: reader.readLongOrNull(offsets[8]) ?? 0,
+    iv: reader.readStringOrNull(offsets[5]) ?? '',
+    masterDirPath: reader.readStringOrNull(offsets[6]) ?? '',
+    masterFilePath: reader.readStringOrNull(offsets[7]) ?? '',
+    posterFilePath: reader.readStringOrNull(offsets[8]) ?? '',
+    totalSegments: reader.readLongOrNull(offsets[9]) ?? 0,
   );
   object.id = id;
   return object;
@@ -212,6 +220,8 @@ P _localHlsModelIsarDeserializeProp<P>(
     case 7:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 8:
+      return (reader.readStringOrNull(offset) ?? '') as P;
+    case 9:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -656,6 +666,142 @@ extension LocalHlsModelIsarQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'iv',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'iv',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'iv',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'iv',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
+      ivIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'iv',
+        value: '',
       ));
     });
   }
@@ -1182,6 +1328,19 @@ extension LocalHlsModelIsarQuerySortBy
     });
   }
 
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy> sortByIv() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'iv', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
+      sortByIvDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'iv', Sort.desc);
+    });
+  }
+
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       sortByMasterDirPath() {
     return QueryBuilder.apply(this, (query) {
@@ -1282,6 +1441,19 @@ extension LocalHlsModelIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy> thenByIv() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'iv', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
+      thenByIvDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'iv', Sort.desc);
+    });
+  }
+
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       thenByMasterDirPath() {
     return QueryBuilder.apply(this, (query) {
@@ -1352,6 +1524,13 @@ extension LocalHlsModelIsarQueryWhereDistinct
       distinctByGetStatusKey({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'getStatusKey', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct> distinctByIv(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'iv', caseSensitive: caseSensitive);
     });
   }
 
@@ -1426,6 +1605,12 @@ extension LocalHlsModelIsarQueryProperty
   QueryBuilder<LocalHlsModelIsar, LocalHlsId, QQueryOperations> iDProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'iD');
+    });
+  }
+
+  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations> ivProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'iv');
     });
   }
 

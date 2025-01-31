@@ -34,7 +34,7 @@ class HlsParamValue extends Equatable {
   @override
   List<Object?> get props => [value];
 }
-@Embedded(inheritance: false)
+
 class HlsParam extends Equatable {
   const HlsParam({required this.parameter});
   final String parameter;
@@ -55,7 +55,7 @@ class HlsParam extends Equatable {
   @override
   List<Object?> get props => [parameter];
 }
-@Embedded(inheritance: false)
+
 class HlsPlaylistItem {
   const HlsPlaylistItem({
     required this.hlsKey,

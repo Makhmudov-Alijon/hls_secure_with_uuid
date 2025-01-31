@@ -1,5 +1,5 @@
 import 'package:download_manager/download_manager.dart';
-@Embedded(inheritance: false)
+
 class HlsPlaylistData {
   const HlsPlaylistData({
     required this.playlistItems,

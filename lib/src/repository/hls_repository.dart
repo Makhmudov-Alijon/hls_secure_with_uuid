@@ -144,7 +144,7 @@ class HlsRepository {
       );
 
       final localHls = LocalHlsModelIsar(
-        fullPlaylist: hlsFullPlaylist,
+        iv: hlsFullPlaylist.iv,
         baseDirPath: baseDir.path,
         posterFilePath: pathManager.posterFile.path,
         masterFilePath: pathManager.masterFile.path,
