@@ -1,5 +1,6 @@
 import 'package:download_manager/download_manager.dart';
 
+@Embedded(inheritance: false)
 class HlsFullPlaylistModel {
   HlsFullPlaylistModel({
     required this.master,

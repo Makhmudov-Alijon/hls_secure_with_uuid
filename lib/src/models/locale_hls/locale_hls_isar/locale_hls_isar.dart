@@ -26,7 +26,8 @@ class LocalHlsModelIsar extends Equatable {
   String masterDirPath;
   String posterFilePath;
   String masterFilePath;
-  final HlsFullPlaylistModel fullPlaylist;
+  
+  HlsFullPlaylistModel fullPlaylist;
 
   int totalSegments;
 

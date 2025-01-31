@@ -1,6 +1,6 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-
+@Embedded(inheritance: false)
 class MasterPlaylistModel extends Equatable {
   const MasterPlaylistModel({
     required this.resolutions,
