@@ -65,17 +65,17 @@ class RemoteStatRepositoryApi implements RemoteStatRepository {
 
   @override
   Future<void> checkHlsStats() async {
-    log("checking hls stats");
+    log('checking hls stats');
     final downloaded = await localRepository.getAllDownloadedHls();
-    log("downloaded: $downloaded");
+    log('downloaded: $downloaded');
     final deleted = await localRepository.getAllDeletedHls();
-    log("deleted: $deleted");
+    log('deleted: $deleted');
 
-    for (var item in downloaded) {
+    for (final item in downloaded) {
       await sendDownloadedHlsStat(downloadedHlsStat: item);
     }
 
-    for (var item in deleted) {
+    for (final item in deleted) {
       await sendDeletedHlsStat(deletedHlsStat: item);
     }
   }

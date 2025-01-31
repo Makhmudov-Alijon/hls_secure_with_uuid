@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/repository/hls_encrypter.dart';
 import 'package:download_manager/src/repository/isar/download_task/download_task_repository_impl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -308,7 +306,6 @@ class HlsRepository {
     required String iv,
     required HlsPathManager pathManager,
   }) async {
-    log('enc: $enc, iv: $iv, hlsId: ${pathManager.localHlsId}');
     final encrypted = HlsEncrypter.encryptEncKey(
       id: pathManager.localHlsId,
       iv: iv,

@@ -1,13 +1,40 @@
-import 'dart:developer';
-
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:encrypt/encrypt.dart';
 
 import '../../download_manager.dart';
+
+final class HlsEncrypterHeaders {
+  HlsEncrypterHeaders._();
+  static const xHeader = 'X-Key';
+}
 
 final class HlsEncrypter {
   HlsEncrypter._();
 
   static const randomKey = 'irKpwxm49X810zMBMvKXRXIaqIzsJ73S';
+
+  static String getJwt(LocalHlsId id) {
+    final signKey = getHlsEncryptionKey(id);
+    final jwt = JWT({
+      'contentId': id.contentId.toString(),
+      'seasonId': id.seasonId?.toString(),
+      'episodeId': id.episodeId?.toString(),
+      'filmId': id.filmId?.toString(),
+      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+    final token = jwt.sign(SecretKey(signKey));
+    return token;
+  }
+
+  static bool verifyJwt(LocalHlsId id, String token) {
+    final signKey = getHlsEncryptionKey(id);
+
+    final jwt = JWT.tryVerify(
+      token,
+      SecretKey(signKey),
+    );
+    return jwt != null;
+  }
 
   static String getHlsEncryptionKey(LocalHlsId id) {
     final key = randomKey.substring(0, 16);
@@ -59,7 +86,6 @@ final class HlsEncrypter {
     required String enc,
   }) {
     final key = getHlsEncryptionKey(id);
-    log('key: $key');
     final encrypter = Encrypter(
       AES(
         Key.fromUtf8(key),
