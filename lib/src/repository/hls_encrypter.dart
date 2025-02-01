@@ -11,6 +11,8 @@ final class HlsEncrypterHeaders {
 final class HlsEncrypter {
   HlsEncrypter._();
 
+  static bool useEncrypt = true;
+
   static const randomKey = 'irKpwxm49X810zMBMvKXRXIaqIzsJ73S';
 
   static String getJwt(LocalHlsId id) {
@@ -51,6 +53,9 @@ final class HlsEncrypter {
     required LocalHlsId id,
     required String data,
   }) {
+    if (!useEncrypt) {
+      return data;
+    }
     final key = getHlsEncryptionKey(id);
     final encrypter = Encrypter(
       AES(
@@ -85,6 +90,9 @@ final class HlsEncrypter {
     required String iv,
     required String enc,
   }) {
+    if (!useEncrypt) {
+      return enc;
+    }
     final key = getHlsEncryptionKey(id);
     final encrypter = Encrypter(
       AES(
