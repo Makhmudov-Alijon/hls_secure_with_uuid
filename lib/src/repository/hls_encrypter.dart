@@ -21,7 +21,7 @@ final class HlsEncrypter {
       'contentId': id.contentId.toString(),
       'seasonId': id.seasonId?.toString(),
       'episodeId': id.episodeId?.toString(),
-      'filmId': id.filmId?.toString(),
+      'uuid': id.uuid,
       'date': DateTime.now().millisecondsSinceEpoch.toString(),
     });
     final token = jwt.sign(SecretKey(signKey));
@@ -42,7 +42,7 @@ final class HlsEncrypter {
     final key = randomKey.substring(0, 16);
     final hlsString = [
       id.contentId.toString(),
-      if (id.filmId != null) id.filmId.toString(),
+      if (id.uuid != null) id.uuid,
       if (id.seasonId != null) id.seasonId.toString(),
       if (id.episodeId != null) id.episodeId.toString(),
     ].join();

@@ -57,7 +57,7 @@ class HlsPathManager {
 
   String get contentIdFolder {
     final contentId = localHlsId.contentId;
-    final filmId = localHlsId.filmId;
+    final filmId = localHlsId.uuid;
     final seasonId = localHlsId.seasonId;
     final episodeId = localHlsId.episodeId;
 
@@ -230,10 +230,6 @@ class HlsPathManager {
           fileName: HlsFilenames.hlsPoster,
         ),
       );
-
-
-
-
 
   File get encKeyFile => File(
         _masterPath(

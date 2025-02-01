@@ -10,19 +10,19 @@ part 'local_hls_id.g.dart';
 class LocalHlsId extends Equatable {
   const LocalHlsId({
     this.contentId = -1,
-    this.filmId,
+    this.uuid,
     this.seasonId,
     this.episodeId,
   });
 
   final int contentId;
-  final int? filmId;
+  final String? uuid;
   final int? seasonId;
   final int? episodeId;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'filmId': filmId,
+      'uuid': uuid,
       'seasonId': seasonId,
       'episodeId': episodeId,
       'contentId': contentId,
@@ -30,12 +30,12 @@ class LocalHlsId extends Equatable {
   }
 
   String toStringId() {
-    return '$filmId-$seasonId-$episodeId';
+    return '$uuid-$seasonId-$episodeId';
   }
 
   factory LocalHlsId.fromMap(Map<String, dynamic> map) {
     return LocalHlsId(
-      filmId: map['filmId'] as int?,
+      uuid: map['uuid'] as String?,
       seasonId: map['seasonId'] as int?,
       episodeId: map['episodeId'] as int?,
       contentId: map['contentId'] as int,
@@ -51,13 +51,13 @@ class LocalHlsId extends Equatable {
   @ignore
   List<Object?> get props => [
         contentId,
-        filmId,
+        uuid,
         seasonId,
         episodeId,
       ];
 
   @override
   String toString() {
-    return '''contentId: $contentId, filmId: $filmId, seasonId: $seasonId, episodeId: $episodeId''';
+    return '''contentId: $contentId, uuid: $uuid, seasonId: $seasonId, episodeId: $episodeId''';
   }
 }
