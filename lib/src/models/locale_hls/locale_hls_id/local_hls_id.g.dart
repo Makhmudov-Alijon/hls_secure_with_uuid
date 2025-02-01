@@ -23,15 +23,15 @@ const LocalHlsIdSchema = Schema(
       name: r'episodeId',
       type: IsarType.long,
     ),
-    r'filmId': PropertySchema(
-      id: 2,
-      name: r'filmId',
-      type: IsarType.long,
-    ),
     r'seasonId': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'seasonId',
       type: IsarType.long,
+    ),
+    r'uuid': PropertySchema(
+      id: 3,
+      name: r'uuid',
+      type: IsarType.string,
     )
   },
   estimateSize: _localHlsIdEstimateSize,
@@ -46,6 +46,12 @@ int _localHlsIdEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.uuid;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -57,8 +63,8 @@ void _localHlsIdSerialize(
 ) {
   writer.writeLong(offsets[0], object.contentId);
   writer.writeLong(offsets[1], object.episodeId);
-  writer.writeLong(offsets[2], object.filmId);
-  writer.writeLong(offsets[3], object.seasonId);
+  writer.writeLong(offsets[2], object.seasonId);
+  writer.writeString(offsets[3], object.uuid);
 }
 
 LocalHlsId _localHlsIdDeserialize(
@@ -70,8 +76,8 @@ LocalHlsId _localHlsIdDeserialize(
   final object = LocalHlsId(
     contentId: reader.readLongOrNull(offsets[0]) ?? -1,
     episodeId: reader.readLongOrNull(offsets[1]),
-    filmId: reader.readLongOrNull(offsets[2]),
-    seasonId: reader.readLongOrNull(offsets[3]),
+    seasonId: reader.readLongOrNull(offsets[2]),
+    uuid: reader.readStringOrNull(offsets[3]),
   );
   return object;
 }
@@ -90,7 +96,7 @@ P _localHlsIdDeserializeProp<P>(
     case 2:
       return (reader.readLongOrNull(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -224,76 +230,6 @@ extension LocalHlsIdQueryFilter
     });
   }
 
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> filmIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'filmId',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      filmIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'filmId',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> filmIdEqualTo(
-      int? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'filmId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> filmIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'filmId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> filmIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'filmId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> filmIdBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'filmId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> seasonIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -361,6 +297,152 @@ extension LocalHlsIdQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'uuid',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'uuid',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'uuid',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'uuid',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'uuid',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'uuid',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'uuid',
+        value: '',
       ));
     });
   }
