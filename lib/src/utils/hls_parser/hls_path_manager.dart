@@ -56,15 +56,10 @@ class HlsPathManager {
       localHlsId.seasonId != null && localHlsId.episodeId != null;
 
   String get contentIdFolder {
-    final contentId = localHlsId.contentId;
     final filmId = localHlsId.uuid;
-    final seasonId = localHlsId.seasonId;
-    final episodeId = localHlsId.episodeId;
 
-    if (filmId != null && seasonId == null && episodeId == null) {
-      return 'movies/${contentId}_$filmId';
-    } else if (filmId == null && seasonId != null && episodeId != null) {
-      return 'series/$contentId/season_$seasonId/episode_$episodeId';
+    if (filmId != null) {
+      return 'media/$filmId';
     }
 
     throw UnimplementedError('Not specified required id');
