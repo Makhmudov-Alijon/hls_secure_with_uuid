@@ -31,7 +31,7 @@ class MasterPlaylistModel extends Equatable {
             if (trackType != null) {
               final resolutionDetailsIndex =
                   hlsData.videoPlaylists.indexWhere((element) {
-                return element.path == itemUrl;
+                return element.uri == itemUrl;
               });
 
               if (resolutionDetailsIndex >= 0) {
@@ -67,7 +67,7 @@ class MasterPlaylistModel extends Equatable {
             item.hlsValueParameters[HlsParamConstants.name]?.value.escapeQuotes;
         if (trackType != null && trackUrl != null && trackName != null) {
           final trackDetailsIndex = hlsData.audioPlaylists.indexWhere(
-            (element) => element.path == trackUrl,
+            (element) => element.uri == trackUrl,
           );
 
           if (trackDetailsIndex >= 0) {

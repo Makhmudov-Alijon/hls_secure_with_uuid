@@ -22,14 +22,16 @@ HlsFullNonParsedModel _$HlsFullNonParsedModelFromJson(
 /// @nodoc
 mixin _$HlsFullNonParsedModel {
   String get master => throw _privateConstructorUsedError;
+  String get baseUrl => throw _privateConstructorUsedError;
   List<HlsPlaylistDetailsModel> get videoPlaylists =>
       throw _privateConstructorUsedError;
   List<HlsPlaylistDetailsModel> get audioPlaylists =>
       throw _privateConstructorUsedError;
-  @ThumbsConverter()
-  List<ThumbsPlaylist> get thumbsPlaylists =>
+  @ThumbsSerializer()
+  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists =>
       throw _privateConstructorUsedError;
   String get enc => throw _privateConstructorUsedError;
+  String? get token => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -45,10 +47,13 @@ abstract class $HlsFullNonParsedModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String master,
+      String baseUrl,
       List<HlsPlaylistDetailsModel> videoPlaylists,
       List<HlsPlaylistDetailsModel> audioPlaylists,
-      @ThumbsConverter() List<ThumbsPlaylist> thumbsPlaylists,
-      String enc});
+      @ThumbsSerializer()
+      Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+      String enc,
+      String? token});
 }
 
 /// @nodoc
@@ -66,15 +71,21 @@ class _$HlsFullNonParsedModelCopyWithImpl<$Res,
   @override
   $Res call({
     Object? master = null,
+    Object? baseUrl = null,
     Object? videoPlaylists = null,
     Object? audioPlaylists = null,
     Object? thumbsPlaylists = null,
     Object? enc = null,
+    Object? token = freezed,
   }) {
     return _then(_value.copyWith(
       master: null == master
           ? _value.master
           : master // ignore: cast_nullable_to_non_nullable
+              as String,
+      baseUrl: null == baseUrl
+          ? _value.baseUrl
+          : baseUrl // ignore: cast_nullable_to_non_nullable
               as String,
       videoPlaylists: null == videoPlaylists
           ? _value.videoPlaylists
@@ -87,11 +98,15 @@ class _$HlsFullNonParsedModelCopyWithImpl<$Res,
       thumbsPlaylists: null == thumbsPlaylists
           ? _value.thumbsPlaylists
           : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
-              as List<ThumbsPlaylist>,
+              as Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>,
       enc: null == enc
           ? _value.enc
           : enc // ignore: cast_nullable_to_non_nullable
               as String,
+      token: freezed == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -107,10 +122,13 @@ abstract class _$$HlsFullNonParsedModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String master,
+      String baseUrl,
       List<HlsPlaylistDetailsModel> videoPlaylists,
       List<HlsPlaylistDetailsModel> audioPlaylists,
-      @ThumbsConverter() List<ThumbsPlaylist> thumbsPlaylists,
-      String enc});
+      @ThumbsSerializer()
+      Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+      String enc,
+      String? token});
 }
 
 /// @nodoc
@@ -126,15 +144,21 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? master = null,
+    Object? baseUrl = null,
     Object? videoPlaylists = null,
     Object? audioPlaylists = null,
     Object? thumbsPlaylists = null,
     Object? enc = null,
+    Object? token = freezed,
   }) {
     return _then(_$HlsFullNonParsedModelImpl(
       master: null == master
           ? _value.master
           : master // ignore: cast_nullable_to_non_nullable
+              as String,
+      baseUrl: null == baseUrl
+          ? _value.baseUrl
+          : baseUrl // ignore: cast_nullable_to_non_nullable
               as String,
       videoPlaylists: null == videoPlaylists
           ? _value._videoPlaylists
@@ -147,11 +171,15 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
       thumbsPlaylists: null == thumbsPlaylists
           ? _value._thumbsPlaylists
           : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
-              as List<ThumbsPlaylist>,
+              as Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>,
       enc: null == enc
           ? _value.enc
           : enc // ignore: cast_nullable_to_non_nullable
               as String,
+      token: freezed == token
+          ? _value.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -161,10 +189,14 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
 class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
   _$HlsFullNonParsedModelImpl(
       {required this.master,
+      required this.baseUrl,
       required final List<HlsPlaylistDetailsModel> videoPlaylists,
       required final List<HlsPlaylistDetailsModel> audioPlaylists,
-      @ThumbsConverter() required final List<ThumbsPlaylist> thumbsPlaylists,
-      required this.enc})
+      @ThumbsSerializer()
+      required final Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>
+          thumbsPlaylists,
+      required this.enc,
+      this.token})
       : _videoPlaylists = videoPlaylists,
         _audioPlaylists = audioPlaylists,
         _thumbsPlaylists = thumbsPlaylists;
@@ -174,6 +206,8 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
 
   @override
   final String master;
+  @override
+  final String baseUrl;
   final List<HlsPlaylistDetailsModel> _videoPlaylists;
   @override
   List<HlsPlaylistDetailsModel> get videoPlaylists {
@@ -190,21 +224,23 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
     return EqualUnmodifiableListView(_audioPlaylists);
   }
 
-  final List<ThumbsPlaylist> _thumbsPlaylists;
+  final Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> _thumbsPlaylists;
   @override
-  @ThumbsConverter()
-  List<ThumbsPlaylist> get thumbsPlaylists {
-    if (_thumbsPlaylists is EqualUnmodifiableListView) return _thumbsPlaylists;
+  @ThumbsSerializer()
+  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists {
+    if (_thumbsPlaylists is EqualUnmodifiableMapView) return _thumbsPlaylists;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_thumbsPlaylists);
+    return EqualUnmodifiableMapView(_thumbsPlaylists);
   }
 
   @override
   final String enc;
+  @override
+  final String? token;
 
   @override
   String toString() {
-    return 'HlsFullNonParsedModel(master: $master, videoPlaylists: $videoPlaylists, audioPlaylists: $audioPlaylists, thumbsPlaylists: $thumbsPlaylists, enc: $enc)';
+    return 'HlsFullNonParsedModel(master: $master, baseUrl: $baseUrl, videoPlaylists: $videoPlaylists, audioPlaylists: $audioPlaylists, thumbsPlaylists: $thumbsPlaylists, enc: $enc, token: $token)';
   }
 
   @override
@@ -213,13 +249,15 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
         (other.runtimeType == runtimeType &&
             other is _$HlsFullNonParsedModelImpl &&
             (identical(other.master, master) || other.master == master) &&
+            (identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl) &&
             const DeepCollectionEquality()
                 .equals(other._videoPlaylists, _videoPlaylists) &&
             const DeepCollectionEquality()
                 .equals(other._audioPlaylists, _audioPlaylists) &&
             const DeepCollectionEquality()
                 .equals(other._thumbsPlaylists, _thumbsPlaylists) &&
-            (identical(other.enc, enc) || other.enc == enc));
+            (identical(other.enc, enc) || other.enc == enc) &&
+            (identical(other.token, token) || other.token == token));
   }
 
   @JsonKey(ignore: true)
@@ -227,10 +265,12 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
   int get hashCode => Object.hash(
       runtimeType,
       master,
+      baseUrl,
       const DeepCollectionEquality().hash(_videoPlaylists),
       const DeepCollectionEquality().hash(_audioPlaylists),
       const DeepCollectionEquality().hash(_thumbsPlaylists),
-      enc);
+      enc,
+      token);
 
   @JsonKey(ignore: true)
   @override
@@ -250,10 +290,14 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
 abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
   factory _HlsFullNonParsedModel(
       {required final String master,
+      required final String baseUrl,
       required final List<HlsPlaylistDetailsModel> videoPlaylists,
       required final List<HlsPlaylistDetailsModel> audioPlaylists,
-      @ThumbsConverter() required final List<ThumbsPlaylist> thumbsPlaylists,
-      required final String enc}) = _$HlsFullNonParsedModelImpl;
+      @ThumbsSerializer()
+      required final Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>
+          thumbsPlaylists,
+      required final String enc,
+      final String? token}) = _$HlsFullNonParsedModelImpl;
 
   factory _HlsFullNonParsedModel.fromJson(Map<String, dynamic> json) =
       _$HlsFullNonParsedModelImpl.fromJson;
@@ -261,14 +305,18 @@ abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
   @override
   String get master;
   @override
+  String get baseUrl;
+  @override
   List<HlsPlaylistDetailsModel> get videoPlaylists;
   @override
   List<HlsPlaylistDetailsModel> get audioPlaylists;
   @override
-  @ThumbsConverter()
-  List<ThumbsPlaylist> get thumbsPlaylists;
+  @ThumbsSerializer()
+  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists;
   @override
   String get enc;
+  @override
+  String? get token;
   @override
   @JsonKey(ignore: true)
   _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>

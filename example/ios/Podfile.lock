@@ -1,6 +1,10 @@
 PODS:
   - Cache (6.0.0)
+  - disk_space (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
+  - flutter_downloader (0.0.1):
+    - Flutter
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
@@ -8,6 +12,8 @@ PODS:
     - GCDWebServer (~> 3.5)
     - PINCache (>= 3.0.1-beta.3)
   - integration_test (0.0.1):
+    - Flutter
+  - isar_flutter_libs (1.0.0):
     - Flutter
   - media_kit_libs_ios_video (1.0.4):
     - Flutter
@@ -36,6 +42,9 @@ PODS:
     - PINCache
   - screen_brightness_ios (0.1.0):
     - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - video_player_avfoundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -45,8 +54,11 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - disk_space (from `.symlinks/plugins/disk_space/ios`)
   - Flutter (from `Flutter`)
+  - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - isar_flutter_libs (from `.symlinks/plugins/isar_flutter_libs/ios`)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_native_event_loop (from `.symlinks/plugins/media_kit_native_event_loop/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
@@ -54,6 +66,7 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - river_player (from `.symlinks/plugins/river_player/ios`)
   - screen_brightness_ios (from `.symlinks/plugins/screen_brightness_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
   - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
@@ -67,10 +80,16 @@ SPEC REPOS:
     - PINOperation
 
 EXTERNAL SOURCES:
+  disk_space:
+    :path: ".symlinks/plugins/disk_space/ios"
   Flutter:
     :path: Flutter
+  flutter_downloader:
+    :path: ".symlinks/plugins/flutter_downloader/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  isar_flutter_libs:
+    :path: ".symlinks/plugins/isar_flutter_libs/ios"
   media_kit_libs_ios_video:
     :path: ".symlinks/plugins/media_kit_libs_ios_video/ios"
   media_kit_native_event_loop:
@@ -85,6 +104,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/river_player/ios"
   screen_brightness_ios:
     :path: ".symlinks/plugins/screen_brightness_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   volume_controller:
@@ -94,10 +115,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
+  disk_space: e94d34bbdf77954adfb39e60bde9cc5c7233eda6
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
   media_kit_libs_ios_video: a5fe24bc7875ccd6378a0978c13185e1344651c1
   media_kit_native_event_loop: e6b2ab20cf0746eb1c33be961fcf79667304fa2a
   media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
@@ -107,10 +131,11 @@ SPEC CHECKSUMS:
   PINOperation: fb563bcc9c32c26d6c78aaff967d405aa2ee74a7
   river_player: ba880eae2d34deaff38fdf53a96b63edc654c9bf
   screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
   volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
   wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

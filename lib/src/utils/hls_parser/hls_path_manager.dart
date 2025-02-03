@@ -2,7 +2,8 @@
 import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';
+
+import '../../entities/thumbs_playlist_type.dart';
 
 extension FileSystemEntityExtension on FileSystemEntity {
   String get fileName => path.split('?').first.split('/').last;
@@ -230,10 +231,6 @@ class HlsPathManager {
           fileName: HlsFilenames.hlsPoster,
         ),
       );
-
-
-
-
 
   File get encKeyFile => File(
         _masterPath(

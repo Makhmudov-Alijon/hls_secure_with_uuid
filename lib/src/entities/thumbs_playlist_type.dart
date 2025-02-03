@@ -1,0 +1,4 @@
+enum ThumbsPlaylistType {
+  medium,
+  large;
+}

@@ -1,27 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'hls_playlist_details_model.dart';
+part of 'thumbs_playlist_details_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$HlsPlaylistDetailsModelImpl _$$HlsPlaylistDetailsModelImplFromJson(
+_$ThumbsPlaylistDetailsModelImpl _$$ThumbsPlaylistDetailsModelImplFromJson(
         Map<String, dynamic> json) =>
-    _$HlsPlaylistDetailsModelImpl(
-      baseUrl: json['base_url'] as String,
+    _$ThumbsPlaylistDetailsModelImpl(
       uri: json['uri'] as String,
-      data: json['data'] as String,
+      baseUrl: json['base_url'] as String,
+      name: json['name'] as String,
       size: (json['size'] as num).toInt(),
       filesCount: (json['files_count'] as num).toInt(),
+      data: json['data'] as String,
     );
 
-Map<String, dynamic> _$$HlsPlaylistDetailsModelImplToJson(
-        _$HlsPlaylistDetailsModelImpl instance) =>
+Map<String, dynamic> _$$ThumbsPlaylistDetailsModelImplToJson(
+        _$ThumbsPlaylistDetailsModelImpl instance) =>
     <String, dynamic>{
-      'base_url': instance.baseUrl,
       'uri': instance.uri,
-      'data': instance.data,
+      'base_url': instance.baseUrl,
+      'name': instance.name,
       'size': instance.size,
       'files_count': instance.filesCount,
+      'data': instance.data,
     };

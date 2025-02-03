@@ -1,7 +1,9 @@
 import 'package:download_manager/download_manager.dart';
+import 'package:download_manager/src/entities/thumbs_playlist_type.dart';
+import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';
 import '../utils/security/security.dart';
 
 final hlsServiceProvider = Provider(
@@ -82,7 +84,16 @@ class HlsService {
           key: key,
         );
       }
-
+      final baseDir = await getApplicationDocumentsDirectory();
+      final pathManager = HlsPathManager(
+        baseDir: baseDir,
+        localHlsId: const LocalHlsId(contentId: 9060, filmId: 1000),
+        isRemote: true,
+      );
+      pathManager.masterFile.createIfNotExist();
+      await pathManager.masterFile.writeAsString(
+        decrypted.toString(),
+      );
       return HlsFullNonParsedModel.fromJson(decrypted);
     } else if (data is Map<String, dynamic>) {
       return HlsFullNonParsedModel.fromJson(data);
@@ -92,7 +103,8 @@ class HlsService {
   }
 
   Future<void> saveThumbnailPlaylists({
-    required List<ThumbsPlaylist> thumbsPlaylists,
+    required Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>
+        thumbsPlaylists,
     required HlsPathManager pathManager,
   }) async {
     for (final playlist in thumbsPlaylists) {

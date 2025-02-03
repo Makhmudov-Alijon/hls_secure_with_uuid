@@ -6,7 +6,8 @@ part 'hls_playlist_details_model.g.dart';
 @freezed
 class HlsPlaylistDetailsModel with _$HlsPlaylistDetailsModel {
   factory HlsPlaylistDetailsModel({
-    required String path,
+    required String baseUrl,
+    required String uri,
     required String data,
     required int size,
     required int filesCount,

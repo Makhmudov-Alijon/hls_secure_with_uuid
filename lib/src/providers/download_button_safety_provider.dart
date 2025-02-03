@@ -11,6 +11,7 @@ class DownloadButtonSafetyNotifier extends Notifier<LocalHlsId?> {
 
   void activate(LocalHlsId id, {required String where}) {
 
+ print('in activate');
     state = id;
   }
 

@@ -21,7 +21,8 @@ HlsPlaylistDetailsModel _$HlsPlaylistDetailsModelFromJson(
 
 /// @nodoc
 mixin _$HlsPlaylistDetailsModel {
-  String get path => throw _privateConstructorUsedError;
+  String get baseUrl => throw _privateConstructorUsedError;
+  String get uri => throw _privateConstructorUsedError;
   String get data => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
   int get filesCount => throw _privateConstructorUsedError;
@@ -38,7 +39,8 @@ abstract class $HlsPlaylistDetailsModelCopyWith<$Res> {
           $Res Function(HlsPlaylistDetailsModel) then) =
       _$HlsPlaylistDetailsModelCopyWithImpl<$Res, HlsPlaylistDetailsModel>;
   @useResult
-  $Res call({String path, String data, int size, int filesCount});
+  $Res call(
+      {String baseUrl, String uri, String data, int size, int filesCount});
 }
 
 /// @nodoc
@@ -55,15 +57,20 @@ class _$HlsPlaylistDetailsModelCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = null,
+    Object? baseUrl = null,
+    Object? uri = null,
     Object? data = null,
     Object? size = null,
     Object? filesCount = null,
   }) {
     return _then(_value.copyWith(
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
+      baseUrl: null == baseUrl
+          ? _value.baseUrl
+          : baseUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      uri: null == uri
+          ? _value.uri
+          : uri // ignore: cast_nullable_to_non_nullable
               as String,
       data: null == data
           ? _value.data
@@ -90,7 +97,8 @@ abstract class _$$HlsPlaylistDetailsModelImplCopyWith<$Res>
       __$$HlsPlaylistDetailsModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String path, String data, int size, int filesCount});
+  $Res call(
+      {String baseUrl, String uri, String data, int size, int filesCount});
 }
 
 /// @nodoc
@@ -106,15 +114,20 @@ class __$$HlsPlaylistDetailsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? path = null,
+    Object? baseUrl = null,
+    Object? uri = null,
     Object? data = null,
     Object? size = null,
     Object? filesCount = null,
   }) {
     return _then(_$HlsPlaylistDetailsModelImpl(
-      path: null == path
-          ? _value.path
-          : path // ignore: cast_nullable_to_non_nullable
+      baseUrl: null == baseUrl
+          ? _value.baseUrl
+          : baseUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      uri: null == uri
+          ? _value.uri
+          : uri // ignore: cast_nullable_to_non_nullable
               as String,
       data: null == data
           ? _value.data
@@ -136,7 +149,8 @@ class __$$HlsPlaylistDetailsModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
   _$HlsPlaylistDetailsModelImpl(
-      {required this.path,
+      {required this.baseUrl,
+      required this.uri,
       required this.data,
       required this.size,
       required this.filesCount});
@@ -145,7 +159,9 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
       _$$HlsPlaylistDetailsModelImplFromJson(json);
 
   @override
-  final String path;
+  final String baseUrl;
+  @override
+  final String uri;
   @override
   final String data;
   @override
@@ -155,7 +171,7 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
 
   @override
   String toString() {
-    return 'HlsPlaylistDetailsModel(path: $path, data: $data, size: $size, filesCount: $filesCount)';
+    return 'HlsPlaylistDetailsModel(baseUrl: $baseUrl, uri: $uri, data: $data, size: $size, filesCount: $filesCount)';
   }
 
   @override
@@ -163,7 +179,8 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HlsPlaylistDetailsModelImpl &&
-            (identical(other.path, path) || other.path == path) &&
+            (identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl) &&
+            (identical(other.uri, uri) || other.uri == uri) &&
             (identical(other.data, data) || other.data == data) &&
             (identical(other.size, size) || other.size == size) &&
             (identical(other.filesCount, filesCount) ||
@@ -172,7 +189,8 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, path, data, size, filesCount);
+  int get hashCode =>
+      Object.hash(runtimeType, baseUrl, uri, data, size, filesCount);
 
   @JsonKey(ignore: true)
   @override
@@ -191,7 +209,8 @@ class _$HlsPlaylistDetailsModelImpl implements _HlsPlaylistDetailsModel {
 
 abstract class _HlsPlaylistDetailsModel implements HlsPlaylistDetailsModel {
   factory _HlsPlaylistDetailsModel(
-      {required final String path,
+      {required final String baseUrl,
+      required final String uri,
       required final String data,
       required final int size,
       required final int filesCount}) = _$HlsPlaylistDetailsModelImpl;
@@ -200,7 +219,9 @@ abstract class _HlsPlaylistDetailsModel implements HlsPlaylistDetailsModel {
       _$HlsPlaylistDetailsModelImpl.fromJson;
 
   @override
-  String get path;
+  String get baseUrl;
+  @override
+  String get uri;
   @override
   String get data;
   @override
