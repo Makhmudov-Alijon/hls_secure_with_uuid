@@ -4,8 +4,6 @@ import 'package:download_manager/src/models/thumbs_parsed_playlist_model/thumbs_
 import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../utils/security/security.dart';
-
 final hlsServiceProvider = Provider(
   (ref) => HlsService(),
 );
@@ -64,31 +62,16 @@ class HlsService {
 
   Future<HlsFullNonParsedModel> decryptPlaylistData({
     required String token,
-    required String url,
-    required String key,
-    bool isAes = false,
-    dynamic data,
+    required String data,
   }) async {
-    if (data is String) {
-      Map<String, dynamic> decrypted;
-      if (isAes) {
-        decrypted = await SecurityService().getDTDs(
-          data: data,
-          token: token,
-          key: key,
-        );
-      } else {
-        decrypted = await SecurityService().getDTD(
-          data: data,
-          token: token,
-          key: key,
-        );
-      }
+    try {
+      final decrypted = await HlsEncrypter.getDecryptedHlsData(
+        data: data,
+        access: token,
+      );
       return HlsFullNonParsedModel.fromJson(decrypted);
-    } else if (data is Map<String, dynamic>) {
-      return HlsFullNonParsedModel.fromJson(data);
-    } else {
-      throw const FormatException('Playlist data type is not correct');
+    } catch (e) {
+      throw const FormatException('Error while decrypting hlsData');
     }
   }
 
@@ -125,6 +108,7 @@ class HlsService {
         )
         .data;
     return AudioSegmentPlaylistModel.parse(
+      token: hlsData.token,
       baseUrl: hlsData.baseUrl,
       playlistBaseUrl: track.playlistBaseUrl,
       encKey: hlsData.enc,
@@ -145,6 +129,7 @@ class HlsService {
       },
     ).data;
     return VideoSegmentPlaylistModel.parse(
+      token: hlsData.token,
       baseUrl: hlsData.baseUrl,
       playlistBaseUrl: resolution.playlistBaseUrl,
       encKey: hlsData.enc,
@@ -167,7 +152,6 @@ class HlsService {
       size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
         final downloadLink = segment.downloadLink;
-        print(downloadLink);
         downloadItems.add(
           DownloadItem(
             url: downloadLink,
@@ -187,7 +171,6 @@ class HlsService {
     for (final segment in videoPlaylist.segments) {
       final resolutionType = videoPlaylist.resolution.resolution;
       final downloadLink = segment.downloadLink;
-      print(downloadLink);
       downloadItems.add(
         DownloadItem(
           url: downloadLink,

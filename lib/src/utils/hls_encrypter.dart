@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../download_manager.dart';
 
@@ -14,6 +17,37 @@ final class HlsEncrypter {
   static bool useEncrypt = true;
 
   static const randomKey = 'irKpwxm49X810zMBMvKXRXIaqIzsJ73S';
+
+  static const hlsDataDotEnvKey = 'API_DT_KY';
+
+  static Future<Map<String, dynamic>> getDecryptedHlsData({
+    required String data,
+    required String access,
+  }) async {
+    await dotenv.load();
+    const dotEnvKey = hlsDataDotEnvKey;
+    final sKey = dotenv.env[dotEnvKey];
+    if (sKey == null) {
+      throw const FormatException(
+        'DotEnv not found: $dotEnvKey',
+      );
+    }
+
+    final reversedTokenPart = access.split('.')[2].split('').reversed.join();
+    var keyStr = sKey.substring(0, 8) +
+        reversedTokenPart.substring(0, 27) +
+        sKey.substring(sKey.length - 9);
+    keyStr = keyStr.replaceAll(RegExp('[+-]'), '_').substring(0, 32);
+
+    final keyUtf = Key.fromUtf8(keyStr);
+    final enc = Encrypter(AES(keyUtf, mode: AESMode.ecb));
+
+    final encryptedBytes = base64.decode(data);
+    final dec = enc.decrypt(Encrypted(encryptedBytes));
+
+    final json = jsonDecode(dec) as Map<String, dynamic>;
+    return json;
+  }
 
   static String getJwt(LocalHlsId id) {
     final signKey = getHlsEncryptionKey(id);

@@ -102,7 +102,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       await ref.read(hlsRepositoryProvider).prepareDataForWatching(
             url: link,
             token: token,
-            key: key,
             hlsId: hlsIdd,
           );
     } catch (e) {
@@ -116,11 +115,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     try {
       final master = await ref.read(hlsRepositoryProvider).fetchMasterPlaylist(
             url: link,
-            key: key,
             token: token,
             hlsId: hlsIdd,
             forWatching: false,
-            isAes: false,
           );
       setState(() {
         resolutions = master.resolutions;

@@ -30,14 +30,12 @@ class HlsRepository {
   Future<MasterPlaylistModel> fetchMasterPlaylist({
     required String url,
     required String token,
-    required String key,
     required LocalHlsId hlsId,
     required bool forWatching,
-    required bool isAes,
     Map<String, dynamic>? headers,
   }) async {
     try {
-      final response = await dio.post<dynamic>(
+      final response = await dio.post<String>(
         url,
         options: Options(
           headers: {
@@ -47,12 +45,16 @@ class HlsRepository {
         ),
       );
 
+      final decryptedHlsData = response.data;
+      if (decryptedHlsData == null) {
+        throw const FormatException(
+          'decrypted data cant be null',
+        );
+      }
+
       final hlsData = await hlsService.decryptPlaylistData(
         token: token,
-        url: url,
-        key: key,
-        isAes: isAes,
-        data: response.data,
+        data: response.data!,
       );
 
       final baseDir = HlsDirectoryHelper.instance.appDir;
@@ -164,10 +166,8 @@ class HlsRepository {
   Future<HlsWatchLink> prepareDataForWatching({
     required String url,
     required String token,
-    required String key,
     required LocalHlsId hlsId,
     Map<String, dynamic>? headers,
-    bool isAes = false,
   }) async {
     try {
       final baseDir = HlsDirectoryHelper.instance.appDir;
@@ -183,9 +183,7 @@ class HlsRepository {
       final master = await fetchMasterPlaylist(
         url: url,
         token: token,
-        key: key,
         hlsId: hlsId,
-        isAes: isAes,
         headers: headers,
         forWatching: isForWatching,
       );

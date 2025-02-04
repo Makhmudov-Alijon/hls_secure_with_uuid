@@ -22,12 +22,17 @@ class AudioSegmentPlaylistModel {
     required String encKey,
     required String? playlistBaseUrl,
     required String baseUrl,
+    required String? token,
   }) {
     final parsedPlaylist = HlsParser(playlist: playlist).parseData(
       swapper: (link) {
-        return playlistBaseUrl == null
+        final updatedLink = playlistBaseUrl == null
             ? link
             : <String>[baseUrl, playlistBaseUrl, link].join('/');
+        if (token != null) {
+          return '$updatedLink?t=$token';
+        }
+        return updatedLink;
       },
     );
     final segments = <HlsSegment>[];
