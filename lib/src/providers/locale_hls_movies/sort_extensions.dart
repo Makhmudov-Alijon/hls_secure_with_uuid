@@ -34,7 +34,9 @@ extension Dibiding on List<LocalHlsModelIsar> {
     return result;
   }
 
-  List<LocalHlsGroupModel> get getGroupedItemsExt {
+  List<LocalHlsGroupModel> getGroupedItemsExt({
+    required String appDirPath,
+  }) {
     // return [];
     final groupMap = <int, List<LocalHlsModelIsar>>{};
 
@@ -86,7 +88,7 @@ extension Dibiding on List<LocalHlsModelIsar> {
         title: details.title,
         season: details.seasonNum,
         isSerial: details.isSerial,
-        posterFile: items.first.posterFile,
+        posterFile: items.first.posterFileForIsolate(appDirPath),
         movies: items,
       );
     }).toList();

@@ -42,10 +42,12 @@ class SortIsolateParams {
   const SortIsolateParams({
     required this.data,
     required this.sendPort,
+    required this.appDirPath,
   });
 
   final SendPort sendPort;
   final List<LocalHlsModelIsar> data;
+  final String appDirPath;
 }
 
 class LoadMoviesParams {

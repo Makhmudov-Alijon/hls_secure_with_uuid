@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:download_manager/src/utils/hls_directory_helper.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../download_manager.dart';
@@ -39,6 +38,10 @@ class LocalHlsModelIsar extends Equatable {
   File get posterFile => pathManager.posterFile;
 
   @ignore
+  File posterFileForIsolate(String appDir) =>
+      pathManagerForIsolate(appDir).posterFile;
+
+  @ignore
   File get masterFile => pathManager.masterFile;
 
   /// getters
@@ -52,6 +55,15 @@ class LocalHlsModelIsar extends Equatable {
   HlsPathManager get pathManager {
     return HlsPathManager(
       baseDir: HlsDirectoryHelper.instance.appDir,
+      localHlsId: iD,
+      isRemote: false,
+    );
+  }
+
+  @ignore
+  HlsPathManager pathManagerForIsolate(String appDir) {
+    return HlsPathManager(
+      baseDir: Directory(appDir),
       localHlsId: iD,
       isRemote: false,
     );

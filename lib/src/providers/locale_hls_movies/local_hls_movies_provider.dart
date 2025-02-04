@@ -11,6 +11,7 @@ import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'locale_hls_movies_state.dart';
 
@@ -222,14 +223,12 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
     final total = await ref.read(localeHlsIsarProvider).getAll();
     final hlsMovies = <LocalHlsModelIsar>[];
-    print('>< >< total: ${total.length}');
+
     for (var hls in total) {
       final localeState = hls.localHlsState();
 
       final cond1 = localeState is LocalHlsDeletedState;
       final cond2 = !hls.validate();
- print('>< >< cond 1: $cond1');
- print('>< >< cond 2: $cond2');
       if (cond1 || cond2) {
         await hlsIsarRepo.delete(hls);
 
@@ -265,9 +264,11 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
   /// Sorting threads
   Future<void> sort(List<LocalHlsModelIsar> total) async {
     final receivePort = ReceivePort();
+    final appDir = await getApplicationDocumentsDirectory();
     await Isolate.spawn<SortIsolateParams>(
       _sortWorker,
       SortIsolateParams(
+        appDirPath: appDir.path,
         sendPort: receivePort.sendPort,
         data: total,
       ),
@@ -283,7 +284,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         }
       },
     );
-    // updateState(state.copyWith(trigger: !state.trigger, rawItems: state.total));
   }
 
   void updateState(LocaleHlsMoviesState v) {
@@ -304,7 +304,8 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 void _sortWorker(SortIsolateParams params) {
   try {
     final rawItems = params.data.getItemsInQueueExt;
-    final downloadeds = params.data.getGroupedItemsExt;
+    final downloadeds =
+        params.data.getGroupedItemsExt(appDirPath: params.appDirPath);
 
     Isolate.exit(
       params.sendPort,
