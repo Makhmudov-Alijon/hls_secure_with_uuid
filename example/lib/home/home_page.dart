@@ -3,7 +3,6 @@ import 'package:download_manager_example/utils/widget_extension.dart';
 import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:system_files_viewer/system_files_viewer.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -192,7 +191,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final dir = await getApplicationDocumentsDirectory();
+              final dir = HlsDirectoryHelper.instance.appDir;
               if (context.mounted) {
                 SystemFilesViewer.openDirectoryPage(
                   context: context,

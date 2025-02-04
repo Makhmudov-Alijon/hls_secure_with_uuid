@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/repository/isar/download_task/download_task_repository_impl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
 import 'isar/locale_hls_store/locale_hls_store_repository_impl.dart';
@@ -56,7 +55,7 @@ class HlsRepository {
         data: response.data,
       );
 
-      final baseDir = await getApplicationDocumentsDirectory();
+      final baseDir = HlsDirectoryHelper.instance.appDir;
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
@@ -82,7 +81,7 @@ class HlsRepository {
     required String? posterLink,
   }) async {
     try {
-      final baseDir = await getApplicationDocumentsDirectory();
+      final baseDir = HlsDirectoryHelper.instance.appDir;
 
       const isForWatching = false;
 
@@ -143,10 +142,6 @@ class HlsRepository {
 
       final localHls = LocalHlsModelIsar(
         iv: hlsFullPlaylist.iv,
-        baseDirPath: baseDir.path,
-        posterFilePath: pathManager.posterFile.path,
-        masterFilePath: pathManager.masterFile.path,
-        masterDirPath: pathManager.masterDir.path,
         totalSegments: downloadTask.items.length,
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
@@ -175,7 +170,7 @@ class HlsRepository {
     bool isAes = false,
   }) async {
     try {
-      final baseDir = await getApplicationDocumentsDirectory();
+      final baseDir = HlsDirectoryHelper.instance.appDir;
 
       const isForWatching = true;
 
@@ -247,9 +242,7 @@ class HlsRepository {
       data: playlistStr,
     );
     final masterFile = pathManager.masterFile..createIfNotExist();
-    await masterFile.writeAsString(
-      encryptedPlaylist,
-    );
+    await masterFile.writeAsString(encryptedPlaylist);
   }
 
   Future<void> saveAndEncryptPlaylists({

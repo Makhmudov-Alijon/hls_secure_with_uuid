@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:download_manager/src/utils/hls_directory_helper.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../download_manager.dart';
@@ -10,24 +11,15 @@ part 'locale_hls_isar.g.dart';
 // ignore: must_be_immutable TODO:
 class LocalHlsModelIsar extends Equatable {
   LocalHlsModelIsar({
-    this.baseDirPath = '',
-    this.masterDirPath = '',
-    this.posterFilePath = '',
-    this.masterFilePath = '',
     this.totalSegments = 0,
-      this.iv = '',
+    this.iv = '',
     required this.hlsDetails,
     this.downloadStatus,
   });
 
   Id id = Isar.autoIncrement;
 
-  String baseDirPath;
-  String masterDirPath;
-  String posterFilePath;
-  String masterFilePath;
-
-    String iv;
+  String iv;
 
   int totalSegments;
 
@@ -35,26 +27,19 @@ class LocalHlsModelIsar extends Equatable {
 
   LocalHlsStatus? downloadStatus;
 
-  /// transients
+  String get baseDirPath => HlsDirectoryHelper.instance.appDir.path;
+
   @ignore
   Directory get baseDir => Directory(baseDirPath);
 
-  set baseDir(Directory dir) => baseDirPath = dir.path;
+  @ignore
+  Directory get masterDir => pathManager.masterDir;
 
   @ignore
-  Directory get masterDir => Directory(masterDirPath);
-
-  set masterDir(Directory dir) => masterDirPath = dir.path;
+  File get posterFile => pathManager.posterFile;
 
   @ignore
-  File get posterFile => File(posterFilePath);
-
-  set posterFile(File file) => posterFilePath = file.path;
-
-  @ignore
-  File get masterFile => File(masterFilePath);
-
-  set masterFile(File file) => masterFilePath = file.path;
+  File get masterFile => pathManager.masterFile;
 
   /// getters
   LocalHlsId get iD {
@@ -66,7 +51,7 @@ class LocalHlsModelIsar extends Equatable {
   @ignore
   HlsPathManager get pathManager {
     return HlsPathManager(
-      baseDir: baseDir,
+      baseDir: HlsDirectoryHelper.instance.appDir,
       localHlsId: iD,
       isRemote: false,
     );

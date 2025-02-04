@@ -1,17 +1,3 @@
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
-
-class HlsPathConstants {
-  static Future<Directory> get baseDir => getApplicationDocumentsDirectory();
-
-  static Future<Directory> get mediaDir async {
-    return Directory(
-      '${(await baseDir).path}/${HlsFolders.media}/${HlsFolders.local}',
-    );
-  }
-}
-
 class HlsFolders {
   static const media = 'media';
 
@@ -25,9 +11,7 @@ class HlsFolders {
 }
 
 class HlsFilenames {
-
   static const hlsPoster = 'poster.png';
-
 
   static const master = 'master.m3u8';
 

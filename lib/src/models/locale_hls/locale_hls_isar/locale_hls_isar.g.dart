@@ -50,23 +50,8 @@ const LocalHlsModelIsarSchema = CollectionSchema(
       name: r'iv',
       type: IsarType.string,
     ),
-    r'masterDirPath': PropertySchema(
-      id: 6,
-      name: r'masterDirPath',
-      type: IsarType.string,
-    ),
-    r'masterFilePath': PropertySchema(
-      id: 7,
-      name: r'masterFilePath',
-      type: IsarType.string,
-    ),
-    r'posterFilePath': PropertySchema(
-      id: 8,
-      name: r'posterFilePath',
-      type: IsarType.string,
-    ),
     r'totalSegments': PropertySchema(
-      id: 9,
+      id: 6,
       name: r'totalSegments',
       type: IsarType.long,
     )
@@ -114,9 +99,6 @@ int _localHlsModelIsarEstimateSize(
       LocalHlsIdSchema.estimateSize(
           object.iD, allOffsets[LocalHlsId]!, allOffsets);
   bytesCount += 3 + object.iv.length * 3;
-  bytesCount += 3 + object.masterDirPath.length * 3;
-  bytesCount += 3 + object.masterFilePath.length * 3;
-  bytesCount += 3 + object.posterFilePath.length * 3;
   return bytesCount;
 }
 
@@ -147,10 +129,7 @@ void _localHlsModelIsarSerialize(
     object.iD,
   );
   writer.writeString(offsets[5], object.iv);
-  writer.writeString(offsets[6], object.masterDirPath);
-  writer.writeString(offsets[7], object.masterFilePath);
-  writer.writeString(offsets[8], object.posterFilePath);
-  writer.writeLong(offsets[9], object.totalSegments);
+  writer.writeLong(offsets[6], object.totalSegments);
 }
 
 LocalHlsModelIsar _localHlsModelIsarDeserialize(
@@ -160,7 +139,6 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LocalHlsModelIsar(
-    baseDirPath: reader.readStringOrNull(offsets[0]) ?? '',
     downloadStatus: reader.readObjectOrNull<LocalHlsStatus>(
       offsets[1],
       LocalHlsStatusSchema.deserialize,
@@ -173,10 +151,7 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
         ) ??
         LocalHlsDetailsModel(),
     iv: reader.readStringOrNull(offsets[5]) ?? '',
-    masterDirPath: reader.readStringOrNull(offsets[6]) ?? '',
-    masterFilePath: reader.readStringOrNull(offsets[7]) ?? '',
-    posterFilePath: reader.readStringOrNull(offsets[8]) ?? '',
-    totalSegments: reader.readLongOrNull(offsets[9]) ?? 0,
+    totalSegments: reader.readLongOrNull(offsets[6]) ?? 0,
   );
   object.id = id;
   return object;
@@ -190,7 +165,7 @@ P _localHlsModelIsarDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readString(offset)) as P;
     case 1:
       return (reader.readObjectOrNull<LocalHlsStatus>(
         offset,
@@ -216,12 +191,6 @@ P _localHlsModelIsarDeserializeProp<P>(
     case 5:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 6:
-      return (reader.readStringOrNull(offset) ?? '') as P;
-    case 7:
-      return (reader.readStringOrNull(offset) ?? '') as P;
-    case 8:
-      return (reader.readStringOrNull(offset) ?? '') as P;
-    case 9:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -807,414 +776,6 @@ extension LocalHlsModelIsarQueryFilter
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'masterDirPath',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'masterDirPath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'masterDirPath',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'masterDirPath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterDirPathIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'masterDirPath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'masterFilePath',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'masterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'masterFilePath',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'masterFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      masterFilePathIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'masterFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'posterFilePath',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'posterFilePath',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'posterFilePath',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'posterFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
-      posterFilePathIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'posterFilePath',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterFilterCondition>
       totalSegmentsEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1342,48 +903,6 @@ extension LocalHlsModelIsarQuerySortBy
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByMasterDirPath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterDirPath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByMasterDirPathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterDirPath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByMasterFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByMasterFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByPosterFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'posterFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      sortByPosterFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'posterFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       sortByTotalSegments() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalSegments', Sort.asc);
@@ -1455,48 +974,6 @@ extension LocalHlsModelIsarQuerySortThenBy
   }
 
   QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByMasterDirPath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterDirPath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByMasterDirPathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterDirPath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByMasterFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByMasterFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'masterFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByPosterFilePath() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'posterFilePath', Sort.asc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
-      thenByPosterFilePathDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'posterFilePath', Sort.desc);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QAfterSortBy>
       thenByTotalSegments() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalSegments', Sort.asc);
@@ -1531,30 +1008,6 @@ extension LocalHlsModelIsarQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'iv', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
-      distinctByMasterDirPath({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'masterDirPath',
-          caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
-      distinctByMasterFilePath({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'masterFilePath',
-          caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, LocalHlsModelIsar, QDistinct>
-      distinctByPosterFilePath({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'posterFilePath',
-          caseSensitive: caseSensitive);
     });
   }
 
@@ -1611,27 +1064,6 @@ extension LocalHlsModelIsarQueryProperty
   QueryBuilder<LocalHlsModelIsar, String, QQueryOperations> ivProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'iv');
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
-      masterDirPathProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'masterDirPath');
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
-      masterFilePathProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'masterFilePath');
-    });
-  }
-
-  QueryBuilder<LocalHlsModelIsar, String, QQueryOperations>
-      posterFilePathProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'posterFilePath');
     });
   }
 

@@ -1,3 +1,5 @@
+import 'download_manager.dart';
+
 export 'package:download_manager/src/entities/hls_audio/hls_audio.dart';
 export 'package:download_manager/src/entities/hls_enctyption_key.dart';
 export 'package:download_manager/src/entities/hls_playlist_data.dart';
@@ -30,7 +32,6 @@ export 'package:download_manager/src/providers/isar/isar_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movie/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movies/local_hls_movies_provider.dart';
 export 'package:download_manager/src/providers/network_connection/network_connection_provider.dart';
-export 'package:download_manager/src/repository/hls_encrypter.dart';
 export 'package:download_manager/src/repository/hls_repository.dart';
 export 'package:download_manager/src/repository/hls_service.dart';
 export 'package:download_manager/src/repository/stat_repository_api/remote_stat_repository_api.dart';
@@ -39,6 +40,8 @@ export 'package:download_manager/src/utils/app_constants.dart';
 export 'package:download_manager/src/utils/extension/int_extension.dart';
 export 'package:download_manager/src/utils/extension/list_extension.dart';
 export 'package:download_manager/src/utils/extension/string_extension.dart';
+export 'package:download_manager/src/utils/hls_directory_helper.dart';
+export 'package:download_manager/src/utils/hls_encrypter.dart';
 export 'package:download_manager/src/utils/hls_link_excluder/hls_link_excluder.dart';
 export 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper.dart';
 export 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper_group.dart';
@@ -51,3 +54,13 @@ export 'package:download_manager/src/utils/prefs/prefs.dart';
 export 'package:isar/isar.dart';
 
 export 'src/models/isar_models/local_hls_stat_models/hls_downloaded_stat_model/hls_downloaded_stat_model.dart';
+
+class DownloadManager {
+  DownloadManager._();
+
+  static DownloadManager instance = DownloadManager._();
+
+  static Future<void> initialize() async {
+    await HlsDirectoryHelper.instance.initialize();
+  }
+}

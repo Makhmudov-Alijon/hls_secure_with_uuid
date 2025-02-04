@@ -23,7 +23,13 @@ class VideoSegmentPlaylistModel {
     required String? playlistBaseUrl,
     required String baseUrl,
   }) {
-    final parsedPlaylist = HlsParser(playlist: playlist).parseData();
+    final parsedPlaylist = HlsParser(playlist: playlist).parseData(
+      swapper: (link) {
+        return playlistBaseUrl == null
+            ? link
+            : <String>[baseUrl, playlistBaseUrl, link].join('/');
+      },
+    );
     final segments = <HlsSegment>[];
     final linkSwapper = HlsLinkSwapper(useAbsolute: false);
     final keySwapper = HlsLinkSwapper(useAbsolute: false);
@@ -46,9 +52,7 @@ class VideoSegmentPlaylistModel {
         final duration = double.parse(
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
-        final url = playlistBaseUrl == null
-            ? item.url!
-            : <String>[baseUrl, playlistBaseUrl, item.url!].join('/');
+        final url = item.url!;
         totalDuration += duration;
         final saveFile = pathManager.fileFromVideo(
           url: url,

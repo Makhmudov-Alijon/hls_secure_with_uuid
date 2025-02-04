@@ -222,12 +222,14 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     }
     final total = await ref.read(localeHlsIsarProvider).getAll();
     final hlsMovies = <LocalHlsModelIsar>[];
+    print('>< >< total: ${total.length}');
     for (var hls in total) {
       final localeState = hls.localHlsState();
 
       final cond1 = localeState is LocalHlsDeletedState;
       final cond2 = !hls.validate();
-
+ print('>< >< cond 1: $cond1');
+ print('>< >< cond 2: $cond2');
       if (cond1 || cond2) {
         await hlsIsarRepo.delete(hls);
 

@@ -9,7 +9,9 @@ class HlsParser {
   /// Playlist data that came in response
   final String playlist;
 
-  HlsPlaylistData parseData() {
+  HlsPlaylistData parseData({
+    String Function(String link)? swapper,
+  }) {
     final exp = RegExp(r'\r?\n');
     final playlistLines = playlist.split(exp);
     final playlistItems = <HlsPlaylistItem>[];
@@ -79,7 +81,7 @@ class HlsParser {
               HlsPlaylistItem(
                 hlsKey: HlsKey(key: lineKey),
                 hlsValueParameters: valueParameters,
-                url: nextLine,
+                url: swapper?.call(nextLine) ?? nextLine,
               ),
             );
           } else {
