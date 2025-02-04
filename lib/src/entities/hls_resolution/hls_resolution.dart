@@ -43,18 +43,21 @@ class HlsResolution extends Equatable {
     this.trackType = HlsAudioTrackType.defaultTrack,
     this.filesCount = 0,
     this.size = 0,
+    this.playlistBaseUrl,
   });
 
   @enumerated
   final HlsResolutionType resolution;
-  final String videoPlaylistUrl; 
+  final String videoPlaylistUrl;
   final int size;
   final int filesCount;
   @enumerated // Store enum as byte
   final HlsAudioTrackType trackType;
+  final String? playlistBaseUrl;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'playlistBaseUrl': playlistBaseUrl,
       'resolution': resolution.title,
       'videoPlaylistUrl': videoPlaylistUrl,
       'trackType': trackType.name,
@@ -65,6 +68,7 @@ class HlsResolution extends Equatable {
 
   factory HlsResolution.fromMap(Map<String, dynamic> map) {
     return HlsResolution(
+      playlistBaseUrl: map['playlistBaseUrl'] as String?,
       size: map['size'] as int,
       filesCount: map['filesCount'] as int,
       resolution: HlsResolutionType.values.first
@@ -88,5 +92,6 @@ class HlsResolution extends Equatable {
         trackType,
         size,
         filesCount,
+        playlistBaseUrl,
       ];
 }

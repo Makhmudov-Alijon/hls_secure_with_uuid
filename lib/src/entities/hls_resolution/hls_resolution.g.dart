@@ -18,25 +18,30 @@ const HlsResolutionSchema = Schema(
       name: r'filesCount',
       type: IsarType.long,
     ),
-    r'resolution': PropertySchema(
+    r'playlistBaseUrl': PropertySchema(
       id: 1,
+      name: r'playlistBaseUrl',
+      type: IsarType.string,
+    ),
+    r'resolution': PropertySchema(
+      id: 2,
       name: r'resolution',
       type: IsarType.byte,
       enumMap: _HlsResolutionresolutionEnumValueMap,
     ),
     r'size': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'size',
       type: IsarType.long,
     ),
     r'trackType': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'trackType',
       type: IsarType.byte,
       enumMap: _HlsResolutiontrackTypeEnumValueMap,
     ),
     r'videoPlaylistUrl': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'videoPlaylistUrl',
       type: IsarType.string,
     )
@@ -53,6 +58,12 @@ int _hlsResolutionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.playlistBaseUrl;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.videoPlaylistUrl.length * 3;
   return bytesCount;
 }
@@ -64,10 +75,11 @@ void _hlsResolutionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.filesCount);
-  writer.writeByte(offsets[1], object.resolution.index);
-  writer.writeLong(offsets[2], object.size);
-  writer.writeByte(offsets[3], object.trackType.index);
-  writer.writeString(offsets[4], object.videoPlaylistUrl);
+  writer.writeString(offsets[1], object.playlistBaseUrl);
+  writer.writeByte(offsets[2], object.resolution.index);
+  writer.writeLong(offsets[3], object.size);
+  writer.writeByte(offsets[4], object.trackType.index);
+  writer.writeString(offsets[5], object.videoPlaylistUrl);
 }
 
 HlsResolution _hlsResolutionDeserialize(
@@ -78,14 +90,15 @@ HlsResolution _hlsResolutionDeserialize(
 ) {
   final object = HlsResolution(
     filesCount: reader.readLongOrNull(offsets[0]) ?? 0,
+    playlistBaseUrl: reader.readStringOrNull(offsets[1]),
     resolution: _HlsResolutionresolutionValueEnumMap[
-            reader.readByteOrNull(offsets[1])] ??
+            reader.readByteOrNull(offsets[2])] ??
         HlsResolutionType.v480p,
-    size: reader.readLongOrNull(offsets[2]) ?? 0,
+    size: reader.readLongOrNull(offsets[3]) ?? 0,
     trackType: _HlsResolutiontrackTypeValueEnumMap[
-            reader.readByteOrNull(offsets[3])] ??
+            reader.readByteOrNull(offsets[4])] ??
         HlsAudioTrackType.defaultTrack,
-    videoPlaylistUrl: reader.readStringOrNull(offsets[4]) ?? '',
+    videoPlaylistUrl: reader.readStringOrNull(offsets[5]) ?? '',
   );
   return object;
 }
@@ -100,16 +113,18 @@ P _hlsResolutionDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
+      return (reader.readStringOrNull(offset)) as P;
+    case 2:
       return (_HlsResolutionresolutionValueEnumMap[
               reader.readByteOrNull(offset)] ??
           HlsResolutionType.v480p) as P;
-    case 2:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 3:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 4:
       return (_HlsResolutiontrackTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           HlsAudioTrackType.defaultTrack) as P;
-    case 4:
+    case 5:
       return (reader.readStringOrNull(offset) ?? '') as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -199,6 +214,160 @@ extension HlsResolutionQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'playlistBaseUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'playlistBaseUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'playlistBaseUrl',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'playlistBaseUrl',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playlistBaseUrl',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsResolution, HlsResolution, QAfterFilterCondition>
+      playlistBaseUrlIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'playlistBaseUrl',
+        value: '',
       ));
     });
   }

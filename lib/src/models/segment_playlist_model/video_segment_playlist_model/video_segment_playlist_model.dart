@@ -20,6 +20,8 @@ class VideoSegmentPlaylistModel {
     required String encKey,
     required HlsPathManager pathManager,
     required HlsResolution resolution,
+    required String? playlistBaseUrl,
+    required String baseUrl,
   }) {
     final parsedPlaylist = HlsParser(playlist: playlist).parseData();
     final segments = <HlsSegment>[];
@@ -44,10 +46,12 @@ class VideoSegmentPlaylistModel {
         final duration = double.parse(
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
-        final url = item.url!;
+        final url = playlistBaseUrl == null
+            ? item.url!
+            : <String>[baseUrl, playlistBaseUrl, item.url!].join('/');
         totalDuration += duration;
         final saveFile = pathManager.fileFromVideo(
-          url: item.url!,
+          url: url,
           resolutionType: resolution.resolution,
         );
         linkSwapper.addLinkFromUrl(

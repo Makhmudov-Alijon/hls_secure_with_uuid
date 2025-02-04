@@ -30,19 +30,21 @@ extension HlsAudioTrackTypeX on HlsAudioTrackType {
 
 @Embedded(inheritance: false)
 // ignore: must_be_immutable // TODO:
-class HlsAudioTrack extends Equatable{
+class HlsAudioTrack extends Equatable {
   HlsAudioTrack({
     this.trackType = HlsAudioTrackType.defaultTrack,
     this.trackUrl = '',
     this.trackName = '',
     this.filesCount = 0,
     this.size = 0,
+    this.playlistBaseUrl,
   });
 
   final String trackName;
   final String trackUrl;
   final int size;
   final int filesCount;
+  final String? playlistBaseUrl;
   @enumerated
   HlsAudioTrackType trackType;
 
@@ -60,6 +62,7 @@ class HlsAudioTrack extends Equatable{
 
   Map<String, dynamic> toMap() {
     return {
+      'playlistBaseUrl': playlistBaseUrl,
       'trackType': trackType.name,
       'trackName': trackName,
       'trackUrl': trackUrl,
@@ -70,6 +73,7 @@ class HlsAudioTrack extends Equatable{
 
   factory HlsAudioTrack.fromMap(Map<String, dynamic> json) {
     return HlsAudioTrack(
+      playlistBaseUrl: json['playlistBaseUrl'] as String?,
       filesCount: json['filesCount'] as int,
       size: json['size'] as int,
       trackType: HlsAudioTrackType.values.first
@@ -89,14 +93,15 @@ class HlsAudioTrack extends Equatable{
     );
   }
 
-@override
-@ignore
+  @override
+  @ignore
   List<Object?> get props => [
         trackType,
         trackUrl,
         trackName,
         size,
         filesCount,
+        playlistBaseUrl,
       ];
 }
 

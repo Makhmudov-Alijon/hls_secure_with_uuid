@@ -13,8 +13,8 @@ part 'local_hls_details_model.g.dart';
 class LocalHlsDetailsModel extends Equatable {
   const LocalHlsDetailsModel({
     this.localHlsId = const LocalHlsId(),
-    this.resolution = const HlsResolution(),
     this.title = '',
+    this.resolution = const HlsResolution(),
     this.isSerial = false,
     this.episodeNum = -1,
     this.seasonNum = -1,

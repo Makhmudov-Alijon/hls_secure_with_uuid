@@ -39,6 +39,7 @@ class MasterPlaylistModel extends Equatable {
                     hlsData.videoPlaylists[resolutionDetailsIndex];
                 resolutions.add(
                   HlsResolution(
+                    playlistBaseUrl: resolutionDetails.baseUrl,
                     resolution: resolution,
                     videoPlaylistUrl: itemUrl,
                     filesCount: resolutionDetails.filesCount,
@@ -73,6 +74,7 @@ class MasterPlaylistModel extends Equatable {
           if (trackDetailsIndex >= 0) {
             final trackDetails = hlsData.audioPlaylists[trackDetailsIndex];
             final track = HlsAudioTrack(
+              playlistBaseUrl: trackDetails.baseUrl,
               filesCount: trackDetails.filesCount,
               size: trackDetails.size,
               trackType: HlsAudioTrackType.values.first.fromString(trackType),

@@ -18,24 +18,29 @@ const HlsAudioTrackSchema = Schema(
       name: r'filesCount',
       type: IsarType.long,
     ),
-    r'size': PropertySchema(
+    r'playlistBaseUrl': PropertySchema(
       id: 1,
+      name: r'playlistBaseUrl',
+      type: IsarType.string,
+    ),
+    r'size': PropertySchema(
+      id: 2,
       name: r'size',
       type: IsarType.long,
     ),
     r'trackName': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'trackName',
       type: IsarType.string,
     ),
     r'trackType': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'trackType',
       type: IsarType.byte,
       enumMap: _HlsAudioTracktrackTypeEnumValueMap,
     ),
     r'trackUrl': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'trackUrl',
       type: IsarType.string,
     )
@@ -52,6 +57,12 @@ int _hlsAudioTrackEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.playlistBaseUrl;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.trackName.length * 3;
   bytesCount += 3 + object.trackUrl.length * 3;
   return bytesCount;
@@ -64,10 +75,11 @@ void _hlsAudioTrackSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.filesCount);
-  writer.writeLong(offsets[1], object.size);
-  writer.writeString(offsets[2], object.trackName);
-  writer.writeByte(offsets[3], object.trackType.index);
-  writer.writeString(offsets[4], object.trackUrl);
+  writer.writeString(offsets[1], object.playlistBaseUrl);
+  writer.writeLong(offsets[2], object.size);
+  writer.writeString(offsets[3], object.trackName);
+  writer.writeByte(offsets[4], object.trackType.index);
+  writer.writeString(offsets[5], object.trackUrl);
 }
 
 HlsAudioTrack _hlsAudioTrackDeserialize(
@@ -78,12 +90,13 @@ HlsAudioTrack _hlsAudioTrackDeserialize(
 ) {
   final object = HlsAudioTrack(
     filesCount: reader.readLongOrNull(offsets[0]) ?? 0,
-    size: reader.readLongOrNull(offsets[1]) ?? 0,
-    trackName: reader.readStringOrNull(offsets[2]) ?? '',
+    playlistBaseUrl: reader.readStringOrNull(offsets[1]),
+    size: reader.readLongOrNull(offsets[2]) ?? 0,
+    trackName: reader.readStringOrNull(offsets[3]) ?? '',
     trackType: _HlsAudioTracktrackTypeValueEnumMap[
-            reader.readByteOrNull(offsets[3])] ??
+            reader.readByteOrNull(offsets[4])] ??
         HlsAudioTrackType.defaultTrack,
-    trackUrl: reader.readStringOrNull(offsets[4]) ?? '',
+    trackUrl: reader.readStringOrNull(offsets[5]) ?? '',
   );
   return object;
 }
@@ -98,14 +111,16 @@ P _hlsAudioTrackDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readStringOrNull(offset) ?? '') as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 3:
+      return (reader.readStringOrNull(offset) ?? '') as P;
+    case 4:
       return (_HlsAudioTracktrackTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           HlsAudioTrackType.defaultTrack) as P;
-    case 4:
+    case 5:
       return (reader.readStringOrNull(offset) ?? '') as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -177,6 +192,160 @@ extension HlsAudioTrackQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'playlistBaseUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'playlistBaseUrl',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'playlistBaseUrl',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'playlistBaseUrl',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'playlistBaseUrl',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playlistBaseUrl',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+      playlistBaseUrlIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'playlistBaseUrl',
+        value: '',
       ));
     });
   }

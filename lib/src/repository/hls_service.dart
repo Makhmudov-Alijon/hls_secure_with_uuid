@@ -1,5 +1,6 @@
 import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/entities/thumbs_playlist_type.dart';
+import 'package:download_manager/src/models/thumbs_parsed_playlist_model/thumbs_parsed_playlist_model.dart';
 import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
@@ -105,14 +106,22 @@ class HlsService {
   Future<void> saveThumbnailPlaylists({
     required Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>
         thumbsPlaylists,
+    required String baseUrl,
     required HlsPathManager pathManager,
   }) async {
-    for (final playlist in thumbsPlaylists) {
+    for (final playlistEntry in thumbsPlaylists.entries) {
+      final parsedPlaylist = ThumbsParsedPlaylistModel.fromPlaylistDetails(
+        details: playlistEntry.value,
+        baseUrl: baseUrl,
+      );
+      final playlistType = playlistEntry.key;
       final file = pathManager.thumbnailFile(
-        playlistType: playlist.playlistType,
+        playlistType: playlistType,
       )..createIfNotExist();
 
-      await file.writeAsString(playlist.content);
+      await file.writeAsString(
+        parsedPlaylist.toString(),
+      );
     }
   }
 
@@ -123,10 +132,12 @@ class HlsService {
   }) {
     final playlist = hlsData.audioPlaylists
         .firstWhere(
-          (element) => element.path == track.trackUrl,
+          (element) => element.uri == track.trackUrl,
         )
         .data;
     return AudioSegmentPlaylistModel.parse(
+      baseUrl: hlsData.baseUrl,
+      playlistBaseUrl: track.playlistBaseUrl,
       encKey: hlsData.enc,
       playlist: playlist,
       audioTrack: track,
@@ -141,10 +152,12 @@ class HlsService {
   }) {
     final playlist = hlsData.videoPlaylists.firstWhere(
       (element) {
-        return element.path == resolution.videoPlaylistUrl;
+        return element.uri == resolution.videoPlaylistUrl;
       },
     ).data;
     return VideoSegmentPlaylistModel.parse(
+      baseUrl: hlsData.baseUrl,
+      playlistBaseUrl: resolution.playlistBaseUrl,
       encKey: hlsData.enc,
       playlist: playlist,
       pathManager: pathManager,

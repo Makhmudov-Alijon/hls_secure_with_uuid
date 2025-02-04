@@ -20,6 +20,8 @@ class AudioSegmentPlaylistModel {
     required HlsPathManager pathManager,
     required HlsAudioTrack audioTrack,
     required String encKey,
+    required String? playlistBaseUrl,
+    required String baseUrl,
   }) {
     final parsedPlaylist = HlsParser(playlist: playlist).parseData();
     final segments = <HlsSegment>[];
@@ -45,10 +47,13 @@ class AudioSegmentPlaylistModel {
         final duration = double.parse(
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
-        final url = item.url!;
+        final url = playlistBaseUrl == null
+            ? item.url!
+            : <String>[baseUrl, playlistBaseUrl, item.url!].join('/');
+        print([url, playlistBaseUrl, baseUrl]);
         totalDuration += duration;
         final saveFile = pathManager.fileFromAudio(
-          url: item.url!,
+          url: url,
           audioTrack: audioTrack,
         );
         linkSwapper.addLinkFromUrl(

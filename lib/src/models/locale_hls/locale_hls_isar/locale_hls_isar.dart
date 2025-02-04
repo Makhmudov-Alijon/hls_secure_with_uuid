@@ -16,7 +16,7 @@ class LocalHlsModelIsar extends Equatable {
     this.masterFilePath = '',
     this.totalSegments = 0,
       this.iv = '',
-    this.hlsDetails = const LocalHlsDetailsModel(),
+    required this.hlsDetails,
     this.downloadStatus,
   });
 

@@ -171,7 +171,7 @@ LocalHlsModelIsar _localHlsModelIsarDeserialize(
           LocalHlsDetailsModelSchema.deserialize,
           allOffsets,
         ) ??
-        const LocalHlsDetailsModel(),
+        LocalHlsDetailsModel(),
     iv: reader.readStringOrNull(offsets[5]) ?? '',
     masterDirPath: reader.readStringOrNull(offsets[6]) ?? '',
     masterFilePath: reader.readStringOrNull(offsets[7]) ?? '',
@@ -205,7 +205,7 @@ P _localHlsModelIsarDeserializeProp<P>(
             LocalHlsDetailsModelSchema.deserialize,
             allOffsets,
           ) ??
-          const LocalHlsDetailsModel()) as P;
+          LocalHlsDetailsModel()) as P;
     case 4:
       return (reader.readObjectOrNull<LocalHlsId>(
             offset,

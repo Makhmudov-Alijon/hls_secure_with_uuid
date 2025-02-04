@@ -222,6 +222,7 @@ class HlsRepository {
       await hlsService.saveThumbnailPlaylists(
         thumbsPlaylists: master.hlsData.thumbsPlaylists,
         pathManager: pathManager,
+        baseUrl: master.hlsData.baseUrl,
       );
 
       return HlsWatchLink.fromPathManager(
