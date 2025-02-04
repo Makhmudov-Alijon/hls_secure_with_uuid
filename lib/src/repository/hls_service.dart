@@ -166,9 +166,11 @@ class HlsService {
     for (final audioPlaylist in audioPlaylists) {
       size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
+        final downloadLink = segment.downloadLink;
+        print(downloadLink);
         downloadItems.add(
           DownloadItem(
-            url: segment.downloadLink,
+            url: downloadLink,
             saveDirPath:
                 pathManager.audioDir(audioTrack: audioPlaylist.audioTrack).path,
             fileName: pathManager
@@ -184,9 +186,11 @@ class HlsService {
 
     for (final segment in videoPlaylist.segments) {
       final resolutionType = videoPlaylist.resolution.resolution;
+      final downloadLink = segment.downloadLink;
+      print(downloadLink);
       downloadItems.add(
         DownloadItem(
-          url: segment.downloadLink,
+          url: downloadLink,
           saveDirPath: pathManager
               .videoDir(
                 resolutionType: resolutionType,

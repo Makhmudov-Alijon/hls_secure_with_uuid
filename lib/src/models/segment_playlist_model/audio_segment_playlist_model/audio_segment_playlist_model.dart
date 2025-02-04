@@ -53,9 +53,7 @@ class AudioSegmentPlaylistModel {
         final duration = double.parse(
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
-        final url = playlistBaseUrl == null
-            ? item.url!
-            : <String>[baseUrl, playlistBaseUrl, item.url!].join('/');
+        final url = item.url!;
         totalDuration += duration;
         final saveFile = pathManager.fileFromAudio(
           url: url,
