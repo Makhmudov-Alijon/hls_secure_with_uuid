@@ -1,5 +1,6 @@
 import 'dart:io';
 
+
 import 'package:path_provider/path_provider.dart';
 
 class HlsDirectoryHelper {
@@ -7,9 +8,17 @@ class HlsDirectoryHelper {
 
   static HlsDirectoryHelper instance = HlsDirectoryHelper._();
 
-  late final Directory appDir;
+  Directory? _appDir;
+
+  Directory get appDir {
+    try {
+      return _appDir!;
+    } catch (e) {
+      throw Exception('HlsDirectoryHelper');
+    }
+  }
 
   Future<void> initialize() async {
-    appDir = await getApplicationDocumentsDirectory();
+    _appDir = await getApplicationDocumentsDirectory();
   }
 }
