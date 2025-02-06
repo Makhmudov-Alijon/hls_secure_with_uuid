@@ -21,11 +21,6 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin disk_space, de.appgewaltig.disk_space.DiskSpacePlugin", e);
     }
     try {
-      flutterEngine.getPlugins().add(new vn.hunghd.flutterdownloader.FlutterDownloaderPlugin());
-    } catch (Exception e) {
-      Log.e(TAG, "Error registering plugin flutter_downloader, vn.hunghd.flutterdownloader.FlutterDownloaderPlugin", e);
-    }
-    try {
       flutterEngine.getPlugins().add(new dev.isar.isar_flutter_libs.IsarFlutterLibsPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin isar_flutter_libs, dev.isar.isar_flutter_libs.IsarFlutterLibsPlugin", e);

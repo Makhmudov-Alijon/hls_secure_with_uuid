@@ -41,11 +41,12 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
 
   Future<void> checkWaitingForNetworkQueue() async {
     final total = await ref.read(localeHlsIsarProvider).getAll();
-    final int? loading = Prefs.getWaitingForNetworkDownloadingHlsId();
+    final loading = Prefs.getWaitingForNetworkDownloadingHlsId();
 
-    for (var hls in total) {
+    for (final hls in total) {
+
       final localeState = hls.localHlsState();
-      if (localeState is LocalHlsDeletedState || !(await hls.validate())) {
+      if (localeState is LocalHlsDeletedState || !hls.validate()) {
         await hlsIsarRepo.delete(hls);
 
         ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
