@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'download_manager.dart';
 
 export 'package:download_manager/src/entities/hls_audio/hls_audio.dart';
@@ -62,5 +64,46 @@ class DownloadManager {
 
   static Future<void> initialize() async {
     await HlsDirectoryHelper.instance.initialize();
+  }
+
+  static Exception Function(Object error, StackTrace stackTrace)
+      exceptionHandler = (error, stackTrace) {
+    return Exception(error);
+  };
+}
+
+class DownloadManagerWrapper extends StatefulWidget {
+  const DownloadManagerWrapper({
+    required this.exceptionHandler,
+    required this.child,
+    super.key,
+  });
+
+  final Exception Function(Object error, StackTrace stackTrace)
+      exceptionHandler;
+  final Widget child;
+
+  @override
+  State<DownloadManagerWrapper> createState() => _DownloadManagerWrapperState();
+}
+
+class _DownloadManagerWrapperState extends State<DownloadManagerWrapper> {
+  @override
+  void initState() {
+    DownloadManager.exceptionHandler = widget.exceptionHandler;
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant DownloadManagerWrapper oldWidget) {
+    if (widget.exceptionHandler != oldWidget.exceptionHandler) {
+      DownloadManager.exceptionHandler = widget.exceptionHandler;
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

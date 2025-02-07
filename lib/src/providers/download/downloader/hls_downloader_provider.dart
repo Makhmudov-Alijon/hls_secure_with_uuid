@@ -138,35 +138,32 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           hlsDetails: hlsDetails,
           posterLink: posterLink,
         );
-    if (downloadTask != null) {
-      await moviesController.refreshMovies();
-      var hls = await moviesController.hlsById(
-        hlsDetails.localHlsId,
-      );
+    await moviesController.refreshMovies();
+    final hls = await moviesController.hlsById(
+      hlsDetails.localHlsId,
+    );
 
-      if (hls != null) {
-        if (state.status == HlsDownloaderStatus.downloading ||
-            _isolateRunning) {
-          await addToQueue(hls);
-        } else {
-          if (!_isolateRunning) {
-            final available =
-                await isSpaceAvailablee(downloadTask.remainingBytes);
-            if (available) {
-              await downloadOrContinue(
-                downloadTask: downloadTask,
-                hls: hls,
-                onDownloadComplete: onDownloadComplete,
-                onError: onError,
-              );
-            } else {
-              updateState(
-                state.copyWith(
-                  noSpace: hls.iD,
-                ),
-              );
-              return;
-            }
+    if (hls != null) {
+      if (state.status == HlsDownloaderStatus.downloading || _isolateRunning) {
+        await addToQueue(hls);
+      } else {
+        if (!_isolateRunning) {
+          final available =
+              await isSpaceAvailablee(downloadTask.remainingBytes);
+          if (available) {
+            await downloadOrContinue(
+              downloadTask: downloadTask,
+              hls: hls,
+              onDownloadComplete: onDownloadComplete,
+              onError: onError,
+            );
+          } else {
+            updateState(
+              state.copyWith(
+                noSpace: hls.iD,
+              ),
+            );
+            return;
           }
         }
       }

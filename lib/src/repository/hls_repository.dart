@@ -71,13 +71,13 @@ class HlsRepository {
         pathManager: pathManager,
       );
       return result;
-    } catch (e) {
-      rethrow;
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
     }
   }
 
   /// prepare playlists
-  Future<DownloadTask?> preparePlaylists({
+  Future<DownloadTask> preparePlaylists({
     required MasterPlaylistModel master,
     required LocalHlsDetailsModel hlsDetails,
     required String? posterLink,
@@ -119,13 +119,7 @@ class HlsRepository {
         fullPlaylist: hlsFullPlaylist,
       );
 
-      // await hlsService.saveThumbnailPlaylists(
-      //   thumbsPlaylists: master.hlsData.thumbsPlaylists,
-      //   pathManager: pathManager,
-      // );
-
       if (posterLink != null && !pathManager.posterFile.existsSync()) {
-        /// the download item created
         await downloadItemm(
           DownloadItem(
             groupId: hlsDetails.localHlsId.toStringId(),
@@ -148,7 +142,6 @@ class HlsRepository {
         hlsDetails: hlsDetails,
         downloadStatus: LocalHlsStatus(
           statusType: LocalHlsStatusType.prepared,
-          // creationDate: DateTime.now(),
         ),
       );
 
@@ -158,8 +151,8 @@ class HlsRepository {
       await ref.read(downloadTaskIsarProvider).create(downloadTask);
 
       return downloadTask;
-    } catch (e) {
-      return null;
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
     }
   }
 
@@ -222,8 +215,8 @@ class HlsRepository {
         pathManager: pathManager,
         fullPlaylist: hlsFullPlaylist,
       );
-    } catch (e) {
-      rethrow;
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
     }
   }
 
@@ -232,15 +225,19 @@ class HlsRepository {
     required HlsFullPlaylistModel fullPlaylist,
     required MasterPlaylistModel masterPlaylist,
   }) async {
-    final playlistStr = masterPlaylist.toLocalPlaylist(
-      linkExcluder: fullPlaylist.masterLinkExcluder,
-    );
-    final encryptedPlaylist = HlsEncrypter.encryptData(
-      id: pathManager.localHlsId,
-      data: playlistStr,
-    );
-    final masterFile = pathManager.masterFile..createIfNotExist();
-    await masterFile.writeAsString(encryptedPlaylist);
+    try {
+      final playlistStr = masterPlaylist.toLocalPlaylist(
+        linkExcluder: fullPlaylist.masterLinkExcluder,
+      );
+      final encryptedPlaylist = HlsEncrypter.encryptData(
+        id: pathManager.localHlsId,
+        data: playlistStr,
+      );
+      final masterFile = pathManager.masterFile..createIfNotExist();
+      await masterFile.writeAsString(encryptedPlaylist);
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
+    }
   }
 
   Future<void> saveAndEncryptPlaylists({
@@ -248,48 +245,52 @@ class HlsRepository {
     required HlsPathManager pathManager,
     required bool isForWatching,
   }) async {
-    for (final audioPlaylist in fullPlaylist.audioPlaylists) {
-      final audioTrack = audioPlaylist.audioTrack;
-      pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
+    try {
+      for (final audioPlaylist in fullPlaylist.audioPlaylists) {
+        final audioTrack = audioPlaylist.audioTrack;
+        pathManager.audioDir(audioTrack: audioTrack).createIfNotExist();
 
-      final audioMaster = pathManager.audioMasterFile(
-        audioTrack: audioTrack,
-      )..createIfNotExist();
+        final audioMaster = pathManager.audioMasterFile(
+          audioTrack: audioTrack,
+        )..createIfNotExist();
 
-      final playlistStr = audioPlaylist.toLocalPlaylist(
-        isForWatching: isForWatching,
-      );
+        final playlistStr = audioPlaylist.toLocalPlaylist(
+          isForWatching: isForWatching,
+        );
 
-      final encryptedPlaylistStr = HlsEncrypter.encryptData(
-        id: pathManager.localHlsId,
-        data: playlistStr,
-      );
+        final encryptedPlaylistStr = HlsEncrypter.encryptData(
+          id: pathManager.localHlsId,
+          data: playlistStr,
+        );
 
-      await audioMaster.writeAsString(encryptedPlaylistStr);
-    }
+        await audioMaster.writeAsString(encryptedPlaylistStr);
+      }
 
-    for (final videoPlaylist in fullPlaylist.videoPlaylists) {
-      final resolution = videoPlaylist.resolution;
-      pathManager
-          .videoDir(resolutionType: resolution.resolution)
-          .createIfNotExist();
+      for (final videoPlaylist in fullPlaylist.videoPlaylists) {
+        final resolution = videoPlaylist.resolution;
+        pathManager
+            .videoDir(resolutionType: resolution.resolution)
+            .createIfNotExist();
 
-      final videoMaster = pathManager.videoMasterFile(
-        resolutionType: resolution.resolution,
-      )..createIfNotExist();
+        final videoMaster = pathManager.videoMasterFile(
+          resolutionType: resolution.resolution,
+        )..createIfNotExist();
 
-      final playlistStr = videoPlaylist.toLocalPlaylist(
-        isForWatching: isForWatching,
-      );
+        final playlistStr = videoPlaylist.toLocalPlaylist(
+          isForWatching: isForWatching,
+        );
 
-      final encryptedPlaylist = HlsEncrypter.encryptData(
-        id: pathManager.localHlsId,
-        data: playlistStr,
-      );
+        final encryptedPlaylist = HlsEncrypter.encryptData(
+          id: pathManager.localHlsId,
+          data: playlistStr,
+        );
 
-      await videoMaster.writeAsString(
-        encryptedPlaylist,
-      );
+        await videoMaster.writeAsString(
+          encryptedPlaylist,
+        );
+      }
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
     }
   }
 
@@ -298,14 +299,18 @@ class HlsRepository {
     required String iv,
     required HlsPathManager pathManager,
   }) async {
-    final encrypted = HlsEncrypter.encryptEncKey(
-      id: pathManager.localHlsId,
-      iv: iv,
-      enc: enc,
-    );
-    pathManager.encKeyFile
-      ..createIfNotExist()
-      ..writeAsStringSync(encrypted);
+    try {
+      final encrypted = HlsEncrypter.encryptEncKey(
+        id: pathManager.localHlsId,
+        iv: iv,
+        enc: enc,
+      );
+      pathManager.encKeyFile
+        ..createIfNotExist()
+        ..writeAsStringSync(encrypted);
+    } catch (e, stk) {
+      throw DownloadManager.exceptionHandler(e, stk);
+    }
   }
 
   Future<void> downloadItemm(DownloadItem downloadItem) async {

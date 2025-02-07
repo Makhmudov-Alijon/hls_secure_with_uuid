@@ -152,6 +152,7 @@ class HlsService {
       size += audioPlaylist.audioTrack.size;
       for (final segment in audioPlaylist.segments) {
         final downloadLink = segment.downloadLink;
+        print(downloadLink);
         downloadItems.add(
           DownloadItem(
             url: downloadLink,
