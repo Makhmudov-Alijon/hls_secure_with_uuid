@@ -1,6 +1,5 @@
 import 'dart:io';
 
-
 import 'package:path_provider/path_provider.dart';
 
 class HlsDirectoryHelper {
@@ -19,6 +18,9 @@ class HlsDirectoryHelper {
   }
 
   Future<void> initialize() async {
-    _appDir = await getApplicationDocumentsDirectory();
+    final path = (await getApplicationDocumentsDirectory()).path;
+    _appDir = Directory(
+      Platform.isLinux ? path.substring(0, path.length - 1) : path,
+    );
   }
 }

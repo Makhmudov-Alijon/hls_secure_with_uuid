@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:encrypt/encrypt.dart';
@@ -8,7 +9,11 @@ import '../../download_manager.dart';
 
 final class HlsEncrypterHeaders {
   HlsEncrypterHeaders._();
-  static const xHeader = 'X-Key';
+  static final xHeader = Platform.isLinux ? 'Cookie' : 'X-Key';
+
+  static const tizenHeader = 'Cookie';
+
+  static const androidHeader = 'X-Key';
 }
 
 final class HlsEncrypter {
