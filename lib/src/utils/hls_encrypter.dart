@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../../download_manager.dart';
@@ -19,7 +20,15 @@ final class HlsEncrypterHeaders {
 final class HlsEncrypter {
   HlsEncrypter._();
 
-  static bool useEncrypt = true;
+  static bool _useEncrypt = true;
+
+  static set useEncrypt(bool encrypt) {
+    if (kDebugMode) {
+      _useEncrypt = encrypt;
+    }
+  }
+
+  static bool get useEncrypt => _useEncrypt;
 
   static const randomKey = 'irKpwxm49X810zMBMvKXRXIaqIzsJ73S';
 

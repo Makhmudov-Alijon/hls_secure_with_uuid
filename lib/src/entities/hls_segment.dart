@@ -31,8 +31,6 @@ class HlsSegment extends Equatable {
 
   final double duration;
 
-  String get downloadLink => link.split('?').first;
-
   Map<String, String> get queryParams {
     final temp = link.split('?');
     final queries = <String, String>{};

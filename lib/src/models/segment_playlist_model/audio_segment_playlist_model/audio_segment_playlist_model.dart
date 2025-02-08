@@ -59,7 +59,6 @@ class AudioSegmentPlaylistModel {
           item.hlsValueParameters[HlsParamConstants.empty]!.value,
         );
         final url = item.url!;
-        print(url);
         totalDuration += duration;
         final saveFile = pathManager.fileFromAudio(
           url: url,
