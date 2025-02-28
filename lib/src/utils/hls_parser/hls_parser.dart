@@ -18,83 +18,87 @@ class HlsParser {
     HlsEncryptionKey? encKey;
     String? iv;
 
-    for (var i = 0; i < playlistLines.length; i++) {
-      var line = playlistLines[i];
+    HlsKey? hlsKey;
+    var valueParameters = <HlsParam?, HlsParamValue>{};
+
+    for (var line in playlistLines) {
       if (line.endsWith(',')) {
         line = line.substring(0, line.length - 2);
       }
 
-      final valueParameters = <HlsParam?, HlsParamValue>{};
-      String lineKey;
       if (line.isEmpty) {
         continue;
-      }
-      if (line.startsWith('#')) {
-        final temp = line.splitWithExclude(pattern: ':', excludePattern: '"');
+      } else {
+        if (line.startsWith('#')) {
+          if (hlsKey != null) {
+            playlistItems.add(
+              HlsPlaylistItem(
+                hlsKey: hlsKey,
+                hlsValueParameters: {...valueParameters},
+              ),
+            );
+            valueParameters = {};
+            hlsKey = null;
+          }
 
-        lineKey = temp.first;
+          final temp = line.splitWithExclude(pattern: ':', excludePattern: '"');
 
-        if (temp.length > 1) {
-          final parametersLine = temp.last;
-          final valueParametersStr = parametersLine.splitWithExclude(
-            pattern: ',',
-            excludePattern: '"',
-          );
-          for (final parameter in valueParametersStr) {
-            final temp =
-                parameter.splitWithExclude(pattern: '=', excludePattern: '"');
+          hlsKey = HlsKey(key: temp.first);
 
-            if (temp.length == 1) {
-              /// ONLY VALUE PARAMETER
-              valueParameters[null] = HlsParamValue(value: temp.first);
-            } else {
-              /// NAMED PARAMETER WITH VALUE
-              final key = HlsParam(parameter: temp.first);
-              final value = HlsParamValue(value: temp.last);
+          if (temp.length > 1) {
+            final parametersLine = temp.last;
+            final valueParametersStr = parametersLine.splitWithExclude(
+              pattern: ',',
+              excludePattern: '"',
+            );
 
-              if (key == HlsParamConstants.uri &&
-                  value.value.contains('enc.key')) {
-                encKey = HlsEncryptionKey(url: value.value.escapeQuotes);
+            for (final parameter in valueParametersStr) {
+              final temp =
+                  parameter.splitWithExclude(pattern: '=', excludePattern: '"');
+
+              if (temp.length == 1) {
+                /// ONLY VALUE PARAMETER
+                valueParameters[null] = HlsParamValue(value: temp.first);
+              } else {
+                /// NAMED PARAMETER WITH VALUE
+                final key = HlsParam(parameter: temp.first);
+                final value = HlsParamValue(value: temp.last);
+
+                if (key == HlsParamConstants.uri &&
+                    value.value.contains('enc.key')) {
+                  encKey = HlsEncryptionKey(url: value.value.escapeQuotes);
+                }
+                if (key == HlsParamConstants.iv) {
+                  iv = value.value;
+                }
+
+                valueParameters[key] = value;
               }
-              if (key == HlsParamConstants.iv) {
-                iv = value.value;
-              }
-
-              valueParameters[key] = value;
             }
           }
-        }
-        if (playlistLines.hasItem(i + 1) &&
-            playlistLines[i + 1].startsWith('#')) {
-          /// NO URL FOUND
-          playlistItems.add(
-            HlsPlaylistItem(
-              hlsKey: HlsKey(key: lineKey),
-              hlsValueParameters: valueParameters,
-            ),
-          );
         } else {
-          /// URL FOUND
-          final nextLine = playlistLines[i + 1];
-          if (nextLine.isNotEmpty) {
+          if (hlsKey != null) {
             playlistItems.add(
               HlsPlaylistItem(
-                hlsKey: HlsKey(key: lineKey),
-                hlsValueParameters: valueParameters,
-                url: swapper?.call(nextLine) ?? nextLine,
+                hlsKey: hlsKey,
+                hlsValueParameters: {...valueParameters},
+                url: swapper?.call(line) ?? line,
               ),
             );
-          } else {
-            playlistItems.add(
-              HlsPlaylistItem(
-                hlsKey: HlsKey(key: lineKey),
-                hlsValueParameters: valueParameters,
-              ),
-            );
+            hlsKey = null;
+            valueParameters = {};
           }
-          i += 1;
         }
       }
+    }
+
+    if (hlsKey != null) {
+      playlistItems.add(
+        HlsPlaylistItem(
+          hlsKey: hlsKey,
+          hlsValueParameters: {...valueParameters},
+        ),
+      );
     }
 
     return HlsPlaylistData(

@@ -12,6 +12,7 @@ class HlsParamConstants {
   static const method = HlsParam(parameter: 'METHOD');
   static const iv = HlsParam(parameter: 'IV');
   static const name = HlsParam(parameter: 'NAME');
+  static const defaultOption = HlsParam(parameter: 'DEFAULT');
   static const empty = null;
 }
 
@@ -25,4 +26,5 @@ class HlsKeyConstants {
   static const extInf = HlsKey(key: '#EXTINF');
   static const extXKey = HlsKey(key: '#EXT-X-KEY');
   static const extXMedia = HlsKey(key: '#EXT-X-MEDIA');
+  static const extXStreamInf = HlsKey(key: '#EXT-X-STREAM-INF');
 }
