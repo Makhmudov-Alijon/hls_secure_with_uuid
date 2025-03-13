@@ -12,6 +12,7 @@ export 'package:download_manager/src/entities/hls_watch_link.dart';
 export 'package:download_manager/src/entities/local_hls_group_model.dart';
 export 'package:download_manager/src/entities/local_hls_state.dart';
 export 'package:download_manager/src/entities/locale_hls_status/local_hls_status.dart';
+export 'package:download_manager/src/entities/thumbs_playlist_type.dart';
 export 'package:download_manager/src/models/download_task_model/download_task_model.dart';
 export 'package:download_manager/src/models/download_task_model/task_item/download_item_model.dart';
 export 'package:download_manager/src/models/hls_full_non_parsed_model/hls_full_non_parsed_model.dart';
@@ -26,6 +27,7 @@ export 'package:download_manager/src/models/locale_hls/locale_hls_obj/locale_hls
 export 'package:download_manager/src/models/master_playlist_model/master_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/audio_segment_playlist_model/audio_segment_playlist_model.dart';
 export 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
+export 'package:download_manager/src/models/thumbs_parsed_playlist_model/thumbs_parsed_playlist_model.dart';
 export 'package:download_manager/src/providers/client_provider.dart';
 export 'package:download_manager/src/providers/disk_space_info/disk_space_info_provider.dart';
 export 'package:download_manager/src/providers/download/downloader/hls_downloader_provider.dart';

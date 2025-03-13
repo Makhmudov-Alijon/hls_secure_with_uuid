@@ -1,16 +1,30 @@
+// ignore_for_file: avoid_unused_constructor_parameters
+
 import 'package:download_manager/src/models/thumbs_parsed_playlist_model/vtt_duration.dart';
 import 'package:download_manager/src/models/thumbs_parsed_playlist_model/vtt_image.dart';
 import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ThumbsParsedPlaylistModel extends Equatable {
-  const ThumbsParsedPlaylistModel({required this.data});
 
   factory ThumbsParsedPlaylistModel.fromPlaylistDetails({
     required ThumbsPlaylistDetailsModel details,
     required String baseUrl,
   }) {
-    final playlistStrLines = details.data.split('\n');
+    return ThumbsParsedPlaylistModel._parse(
+      playlistString: details.data,
+      playlistBaseUrl: details.baseUrl,
+      baseUrl: baseUrl,
+    );
+  }
+  const ThumbsParsedPlaylistModel({required this.data});
+
+  factory ThumbsParsedPlaylistModel._parse({
+    required String playlistString,
+    required String? playlistBaseUrl,
+    required String? baseUrl,
+  }) {
+    final playlistStrLines = playlistString.split('\n');
     VTTImage? tempImage;
     VTTDurationRange? tempRange;
     final data = <VTTDurationRange, VTTImage>{};
@@ -23,11 +37,15 @@ class ThumbsParsedPlaylistModel extends Equatable {
         if (tempRange == null) {
           tempRange = VTTDurationRange.fromString(line);
         } else {
-          tempImage = VTTImage.fromStringWithRelativeUrl(
-            string: line,
-            playlistBaseUrl: details.baseUrl,
-            baseUrl: baseUrl,
-          );
+          tempImage = baseUrl != null && playlistBaseUrl != null
+              ? VTTImage.fromStringWithRelativeUrl(
+                  string: line,
+                  playlistBaseUrl: playlistBaseUrl,
+                  baseUrl: baseUrl,
+                )
+              : VTTImage.fromString(
+                  string: line,
+                );
           data[tempRange] = tempImage;
           tempRange = null;
           tempImage = null;
@@ -35,6 +53,22 @@ class ThumbsParsedPlaylistModel extends Equatable {
       }
     }
     return ThumbsParsedPlaylistModel(data: data);
+  }
+
+  factory ThumbsParsedPlaylistModel.parseString(String playlist) {
+    return ThumbsParsedPlaylistModel._parse(
+      playlistString: playlist,
+      playlistBaseUrl: null,
+      baseUrl: null,
+    );
+  }
+
+  static ThumbsParsedPlaylistModel? tryParseString(String playlist) {
+    try {
+      return ThumbsParsedPlaylistModel.parseString(playlist);
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
