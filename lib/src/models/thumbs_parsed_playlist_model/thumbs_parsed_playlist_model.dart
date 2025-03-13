@@ -1,11 +1,15 @@
-// ignore_for_file: avoid_unused_constructor_parameters
-
 import 'package:download_manager/src/models/thumbs_parsed_playlist_model/vtt_duration.dart';
 import 'package:download_manager/src/models/thumbs_parsed_playlist_model/vtt_image.dart';
 import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ThumbsParsedPlaylistModel extends Equatable {
+  const ThumbsParsedPlaylistModel({
+    required this.data,
+    required this.imagesPerRow,
+    required this.rowsLength,
+    required this.secondsImages,
+  });
 
   factory ThumbsParsedPlaylistModel.fromPlaylistDetails({
     required ThumbsPlaylistDetailsModel details,
@@ -17,7 +21,6 @@ class ThumbsParsedPlaylistModel extends Equatable {
       baseUrl: baseUrl,
     );
   }
-  const ThumbsParsedPlaylistModel({required this.data});
 
   factory ThumbsParsedPlaylistModel._parse({
     required String playlistString,
@@ -27,6 +30,10 @@ class ThumbsParsedPlaylistModel extends Equatable {
     final playlistStrLines = playlistString.split('\n');
     VTTImage? tempImage;
     VTTDurationRange? tempRange;
+    var imagesPerRow = 0;
+    var rowsLength = 0;
+    String? firstImageUrl;
+    final secondsImages = <int, VTTImage>{};
     final data = <VTTDurationRange, VTTImage>{};
     for (final line in playlistStrLines) {
       if (line.isEmpty) {
@@ -46,13 +53,38 @@ class ThumbsParsedPlaylistModel extends Equatable {
               : VTTImage.fromString(
                   string: line,
                 );
+          firstImageUrl ??= tempImage.imageUrl;
+
+          if (firstImageUrl == tempImage.imageUrl) {
+            final box = tempImage.box;
+            if (box.y == 0) {
+              imagesPerRow++;
+            }
+            if (box.x == 0) {
+              rowsLength++;
+            }
+          }
+          final startSeconds = tempRange.startDuration.duration.inSeconds;
+          final endSeconds = tempRange.endDuration.duration.inSeconds;
+
+          if (startSeconds < endSeconds) {
+            for (var second = startSeconds; second < endSeconds; second++) {
+              secondsImages[second] = tempImage;
+            }
+          }
+
           data[tempRange] = tempImage;
           tempRange = null;
           tempImage = null;
         }
       }
     }
-    return ThumbsParsedPlaylistModel(data: data);
+    return ThumbsParsedPlaylistModel(
+      data: data,
+      secondsImages: secondsImages,
+      imagesPerRow: imagesPerRow,
+      rowsLength: rowsLength,
+    );
   }
 
   factory ThumbsParsedPlaylistModel.parseString(String playlist) {
@@ -86,8 +118,15 @@ class ThumbsParsedPlaylistModel extends Equatable {
     return stringBuffer.toString();
   }
 
+  VTTImage? thumbnailByPosition(Duration position) {
+    return secondsImages[position.inSeconds];
+  }
+
   final Map<VTTDurationRange, VTTImage> data;
+  final Map<int, VTTImage> secondsImages;
+  final int rowsLength;
+  final int imagesPerRow;
 
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [data, rowsLength, imagesPerRow];
 }

@@ -59,10 +59,10 @@ class VTTImageBox extends Equatable {
       final splitted = temp.split(',');
 
       return VTTImageBox(
-        x: int.parse(splitted[0]),
-        y: int.parse(splitted[1]),
-        w: int.parse(splitted[2]),
-        h: int.parse(splitted[3]),
+        x: double.parse(splitted[0]),
+        y: double.parse(splitted[1]),
+        w: double.parse(splitted[2]),
+        h: double.parse(splitted[3]),
       );
     } catch (e) {
       throw const FormatException(
@@ -76,10 +76,10 @@ class VTTImageBox extends Equatable {
     return 'xywh=$x,$y,$w,$h';
   }
 
-  final int x;
-  final int y;
-  final int w;
-  final int h;
+  final double x;
+  final double y;
+  final double w;
+  final double h;
 
   @override
   List<Object?> get props => [x, y, w, h];
