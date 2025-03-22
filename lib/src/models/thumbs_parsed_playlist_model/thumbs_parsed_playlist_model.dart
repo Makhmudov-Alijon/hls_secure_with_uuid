@@ -9,6 +9,7 @@ class ThumbsParsedPlaylistModel extends Equatable {
     required this.imagesPerRow,
     required this.rowsLength,
     required this.secondsImages,
+    required this.spriteUrls,
   });
 
   factory ThumbsParsedPlaylistModel.fromPlaylistDetails({
@@ -35,6 +36,7 @@ class ThumbsParsedPlaylistModel extends Equatable {
     String? firstImageUrl;
     final secondsImages = <int, VTTImage>{};
     final data = <VTTDurationRange, VTTImage>{};
+    final spriteUrls = <String>{};
     for (final line in playlistStrLines) {
       if (line.isEmpty) {
         continue;
@@ -72,7 +74,10 @@ class ThumbsParsedPlaylistModel extends Equatable {
               secondsImages[second] = tempImage;
             }
           }
-
+          final spriteUrl = tempImage.imageUrl;
+          if (!spriteUrls.contains(spriteUrl)) {
+            spriteUrls.add(spriteUrl);
+          }
           data[tempRange] = tempImage;
           tempRange = null;
           tempImage = null;
@@ -81,6 +86,7 @@ class ThumbsParsedPlaylistModel extends Equatable {
     }
     return ThumbsParsedPlaylistModel(
       data: data,
+      spriteUrls: spriteUrls.toList(),
       secondsImages: secondsImages,
       imagesPerRow: imagesPerRow,
       rowsLength: rowsLength,
@@ -124,6 +130,7 @@ class ThumbsParsedPlaylistModel extends Equatable {
 
   final Map<VTTDurationRange, VTTImage> data;
   final Map<int, VTTImage> secondsImages;
+  final List<String> spriteUrls;
   final int rowsLength;
   final int imagesPerRow;
 
