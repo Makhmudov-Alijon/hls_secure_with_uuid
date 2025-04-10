@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:isar/isar.dart';
 
 part 'hls_resolution.g.dart';
 

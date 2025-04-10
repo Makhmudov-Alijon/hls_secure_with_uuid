@@ -171,7 +171,6 @@ class HlsService {
     for (final segment in videoPlaylist.segments) {
       final resolutionType = videoPlaylist.resolution.resolution;
       final downloadLink = segment.link;
-      print(downloadLink);
       downloadItems.add(
         DownloadItem(
           url: downloadLink,
