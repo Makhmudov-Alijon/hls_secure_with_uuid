@@ -181,8 +181,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: a08c428f1a4e54d5e3622a29f2a64716c7bdc82b
+      ref: updated_config
+      resolved-ref: "54ffe1d7ab38ac72fb9f5279d6fdb3512626f7e0"
       url: "https://github.com/radiants-uz/disk_space.git"
     source: git
     version: "0.2.1"

@@ -16,6 +16,7 @@ dependencies:
   disk_space:
     git:
       url: https://github.com/radiants-uz/disk_space.git
+      ref: updated_config
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0
