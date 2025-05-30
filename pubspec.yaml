@@ -8,15 +8,17 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: '>=3.3.0'
 isar_version: &isar_version ^3.1.0+1
+
 dependencies:
   dio: ^5.4.3+1
   encrypt: ^5.0.3
   equatable: ^2.0.5
   shared_preferences: ^2.3.5
-  disk_space:
-    git:
-      url: https://github.com/radiants-uz/disk_space.git
-      ref: updated_config
+  # disk_space:
+  #   git:
+  #     url: https://github.com/radiants-uz/disk_space.git
+  #     ref: updated_config
+  
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0
@@ -34,6 +36,7 @@ dependencies:
   isar_flutter_libs: *isar_version
   internet_connection_checker: ^1.0.0+1
   dart_jsonwebtoken: ^2.7.1
+  disk_space_plus: ^0.2.4
 
 #  watcher: ^1.1.0
 

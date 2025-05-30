@@ -16,9 +16,9 @@ public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
     try {
-      flutterEngine.getPlugins().add(new de.appgewaltig.disk_space.DiskSpacePlugin());
+      flutterEngine.getPlugins().add(new com.piccmaq.disk_space_plus.DiskSpacePlusPlugin());
     } catch (Exception e) {
-      Log.e(TAG, "Error registering plugin disk_space, de.appgewaltig.disk_space.DiskSpacePlugin", e);
+      Log.e(TAG, "Error registering plugin disk_space_plus, com.piccmaq.disk_space_plus.DiskSpacePlusPlugin", e);
     }
     try {
       flutterEngine.getPlugins().add(new dev.isar.isar_flutter_libs.IsarFlutterLibsPlugin());
