@@ -32,9 +32,11 @@ dependencies:
   isar_flutter_libs: *isar_version
   internet_connection_checker: ^1.0.0+1
   dart_jsonwebtoken: ^2.7.1
-  disk_space_plus: ^0.2.4
-
-#  watcher: ^1.1.0
+  disk_space:
+    git: 
+      url: https://github.com/radiants-uz/disk_space
+      ref: updating
+  
 
 dev_dependencies:
   flutter_test:
