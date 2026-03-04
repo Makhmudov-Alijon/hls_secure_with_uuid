@@ -56,7 +56,7 @@ export 'package:download_manager/src/utils/hls_parser/hls_path_constants.dart';
 export 'package:download_manager/src/utils/hls_parser/hls_path_manager.dart';
 export 'package:download_manager/src/utils/hls_parser/hls_utils.dart';
 export 'package:download_manager/src/utils/prefs/prefs.dart';
-export 'package:isar/isar.dart';
+export 'package:isar_community/isar.dart';
 
 export 'src/models/isar_models/local_hls_stat_models/hls_downloaded_stat_model/hls_downloaded_stat_model.dart';
 

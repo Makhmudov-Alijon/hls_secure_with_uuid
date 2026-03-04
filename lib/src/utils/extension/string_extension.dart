@@ -7,8 +7,10 @@ extension StringExtension on String {
     developerLog.log(this);
   }
 
-  List<String> splitWithExclude(
-      {required String pattern, required String excludePattern}) {
+  List<String> splitWithExclude({
+    required String pattern,
+    required String excludePattern,
+  }) {
     final result = <String>[];
     final buffer = StringBuffer();
     var isInQuotes = false;

@@ -43,7 +43,7 @@ extension MapEntryExtension on MapEntry<String, String> {
   String get filePath => key;
 
   String get tempFile {
-    final result = '${filePath.substring(0,filePath.length - 3)}temp.ts';
+    final result = '${filePath.substring(0, filePath.length - 3)}temp.ts';
 
     return result;
   }

@@ -1,4 +1,5 @@
 import 'package:download_manager/download_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'locale_hls_store_repository.dart';
@@ -65,7 +66,7 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
       () async {
         try {
           await isar.downloadTasks.delete(hls.id);
-        } catch (e) {}
+        } catch (_) {}
 
         await isar.localHlsModelIsars.delete(hls.id);
       },
@@ -129,7 +130,9 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
 
           return all;
         } catch (e) {
-          print('<>< ><> get all exception : ${e}');
+          if (kDebugMode) {
+            print('<>< ><> get all exception : $e');
+          }
           return [];
         }
       },

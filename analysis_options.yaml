@@ -11,3 +11,11 @@ analyzer:
     invalid_annotation_target: ignore
     prefer_relative_imports: true
     always_use_package_imports: false
+    lines_longer_than_80_chars: ignore
+    avoid_redundant_argument_values: ignore
+    use_setters_to_change_properties: ignore
+    avoid_positional_boolean_parameters: ignore
+    library_prefixes: ignore
+    avoid_js_rounded_ints: ignore
+    use_late_for_private_fields_and_variables: ignore
+    sort_pub_dependencies: ignore

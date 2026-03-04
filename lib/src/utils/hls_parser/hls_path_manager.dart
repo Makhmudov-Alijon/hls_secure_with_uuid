@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:download_manager/download_manager.dart';
 
-import '../../entities/thumbs_playlist_type.dart';
-
 extension FileSystemEntityExtension on FileSystemEntity {
   String get fileName => path.split('?').first.split('/').last;
 }

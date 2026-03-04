@@ -1,6 +1,4 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/entities/thumbs_playlist_type.dart';
-import 'package:download_manager/src/models/thumbs_parsed_playlist_model/thumbs_parsed_playlist_model.dart';
 import 'package:download_manager/src/models/thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 import 'package:riverpod/riverpod.dart';
 

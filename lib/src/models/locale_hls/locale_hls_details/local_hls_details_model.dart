@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../../entities/hls_audio/hls_audio.dart';
 import '../../../entities/hls_resolution/hls_resolution.dart';
@@ -20,6 +20,27 @@ class LocalHlsDetailsModel extends Equatable {
     this.seasonNum = -1,
     this.audioTracks = const [],
   });
+
+  factory LocalHlsDetailsModel.fromJson(String source) =>
+      LocalHlsDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);
+      
+  factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
+    final audioTracks =
+        List<Map<String, dynamic>>.from(map['audioTracks'] as List<dynamic>);
+    final serialized = audioTracks.map(HlsAudioTrack.fromMap).toSet().toList();
+    final model = LocalHlsDetailsModel(
+      title: map['title'] as String,
+      isSerial: map['isSerial'] as bool,
+      episodeNum: map['episodeNum'] != null ? map['episodeNum'] as int : null,
+      seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
+      localHlsId: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
+      resolution:
+          HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
+      audioTracks: serialized,
+    );
+
+    return model;
+  }
 
   final String title;
   final bool isSerial;
@@ -68,28 +89,7 @@ class LocalHlsDetailsModel extends Equatable {
     };
   }
 
-  factory LocalHlsDetailsModel.fromMap(Map<String, dynamic> map) {
-    final audioTracks =
-        List<Map<String, dynamic>>.from(map['audioTracks'] as List<dynamic>);
-    final serialized = audioTracks.map(HlsAudioTrack.fromMap).toSet().toList();
-    final model = LocalHlsDetailsModel(
-      title: map['title'] as String,
-      isSerial: map['isSerial'] as bool,
-      episodeNum: map['episodeNum'] != null ? map['episodeNum'] as int : null,
-      seasonNum: map['seasonNum'] != null ? map['seasonNum'] as int : null,
-      localHlsId: LocalHlsId.fromMap(map['id'] as Map<String, dynamic>),
-      resolution:
-          HlsResolution.fromMap(map['resolution'] as Map<String, dynamic>),
-      audioTracks: serialized,
-    );
-
-    return model;
-  }
-
   String toJson() => json.encode(toMap());
-
-  factory LocalHlsDetailsModel.fromJson(String source) =>
-      LocalHlsDetailsModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   @ignore

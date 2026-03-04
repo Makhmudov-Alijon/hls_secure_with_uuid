@@ -9,6 +9,7 @@ import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls
 import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -44,7 +45,6 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     final loading = Prefs.getWaitingForNetworkDownloadingHlsId();
 
     for (final hls in total) {
-
       final localeState = hls.localHlsState();
       if (localeState is LocalHlsDeletedState || !hls.validate()) {
         await hlsIsarRepo.delete(hls);
@@ -76,9 +76,10 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
           continue;
         }
         final updatedHls = await hlsIsarRepo.updateDownloadStatus(
-            hlsId: hls.id,
-            status: LocalHlsInQueueState().toLocalHlsStatus(),
-            where: 'local_hls_movies_provider.dart 65');
+          hlsId: hls.id,
+          status: LocalHlsInQueueState().toLocalHlsStatus(),
+          where: 'local_hls_movies_provider.dart 65',
+        );
         if (updatedHls != null) {
           movieController(hls.iD).refresh();
         }
@@ -103,9 +104,10 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       if (localeState is LocalHlsDownloadingState ||
           localeState is LocalHlsInQueueState) {
         final updatedHls = await hlsIsarRepo.updateDownloadStatus(
-            hlsId: hls.id,
-            status: LocalHlsWaitingForNetworkState().toLocalHlsStatus(),
-            where: 'local_hls_movies_provider.dart 65');
+          hlsId: hls.id,
+          status: LocalHlsWaitingForNetworkState().toLocalHlsStatus(),
+          where: 'local_hls_movies_provider.dart 65',
+        );
         if (localeState is LocalHlsDownloadingState) {
           await movieController(hls.iD).pauseDownload(isUpdate: false);
 
@@ -163,7 +165,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
         await deleteHls(hls: hls);
       }
     } catch (e) {
-      print('<>< ><>  deleteHlsByLocalHlsId exception : ${e}');
+      if (kDebugMode) {
+        print('<>< ><>  deleteHlsByLocalHlsId exception : $e');
+      }
     }
   }
 
@@ -187,7 +191,9 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     try {
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
     } catch (e) {
-      print('<>< ><> the delete hls directory exception : ${e}');
+      if (kDebugMode) {
+        print('<>< ><> the delete hls directory exception : $e');
+      }
     }
     movieController(hls.iD).refresh();
     if (isRefresh) {
@@ -246,9 +252,10 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
             localeState is LocalHlsDownloadingState ||
             localeState is LocalHlsWaitingForNetworkState) {
           final updatedHls = await hlsIsarRepo.updateDownloadStatus(
-              hlsId: hls.id,
-              status: LocalHlsPauseState().toLocalHlsStatus(),
-              where: 'local_hls_movies_provider.dart 180');
+            hlsId: hls.id,
+            status: LocalHlsPauseState().toLocalHlsStatus(),
+            where: 'local_hls_movies_provider.dart 180',
+          );
           if (updatedHls != null) {
             hls = updatedHls;
           } else {

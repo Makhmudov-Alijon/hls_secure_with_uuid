@@ -48,8 +48,9 @@ class RemoteStatRepositoryApi implements RemoteStatRepository {
   }
 
   @override
-  Future<void> sendDownloadedHlsStat(
-      {required HlsDownloadedStatModel downloadedHlsStat}) async {
+  Future<void> sendDownloadedHlsStat({
+    required HlsDownloadedStatModel downloadedHlsStat,
+  }) async {
     try {
       await client.post<dynamic>(
         endPoints.addDownloadedStat,

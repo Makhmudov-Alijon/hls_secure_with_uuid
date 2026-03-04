@@ -134,19 +134,19 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   String getStatusBy(LocalHlsState? hlsState) {
     switch (hlsState.runtimeType) {
-      case LocalHlsDownloadingState:
+      case LocalHlsDownloadingState _:
         return 'Загрузка';
-      case LocalHlsDeletedState:
+      case LocalHlsDeletedState _:
         return 'Удалено';
-      case LocalHlsCompleteState:
+      case LocalHlsCompleteState _:
         return 'Завершено';
-      case LocalHlsNotExistState:
+      case LocalHlsNotExistState _:
         return 'Отсутствует';
-      case LocalHlsInQueueState:
+      case LocalHlsInQueueState _:
         return 'В очереди';
-      case LocalHlsPauseState:
+      case LocalHlsPauseState _:
         return 'Приостановлен';
-      case LocalHlsErrorState:
+      case LocalHlsErrorState _:
         return 'Ошибка';
       default:
         return 'Неизвестно';

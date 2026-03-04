@@ -12,7 +12,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
   const limit = 10;
   var cancel = false;
   final mainReceivePort = ReceivePort();
-  int downloadedBytes = 0;
+  var downloadedBytes = 0;
   Stopwatch? stopwatch = Stopwatch()..start();
   Timer? progressTimer;
   void progress(timer) {
@@ -25,22 +25,21 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
       progressTimer?.cancel();
       progressTimer = null;
     }
-
   }
 
   progressTimer = Timer.periodic(
     const Duration(milliseconds: 1000),
     progress,
   );
-  Map<String, String> failedTasks = <String, String>{};
-  Map<String, String> missionn = full.tasks;
-  int missionLength = full.tasks.length;
+  var failedTasks = <String, String>{};
+  var missionn = full.tasks;
+  var missionLength = full.tasks.length;
 
   final clients = <String, http.Client>{};
   void closeClients() {
     for (final client in List<http.Client>.from(clients.values)) {
       try {
-         client.close();
+        client.close();
       } catch (e) {
         // print('<>< ><> close client exception : $e');
       }
@@ -55,10 +54,10 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
     closeClients();
   }
 
-  int _retry = 0;
+  var retry = 0;
   bool canRetry() {
-    _retry++;
-    return _retry <= 3;
+    retry++;
+    return retry <= 3;
   }
 
   Future<MapEntry<String, String>?> func(MapEntry<String, String> task) async {
@@ -100,7 +99,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
           onError: (e) async {
             await sink?.close();
             if (tempFile.existsSync()) {
-               await tempFile.delete(recursive: true);
+              await tempFile.delete(recursive: true);
             }
 
             completer.complete(task);
@@ -111,22 +110,20 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
         completer.complete(task);
       }
     } catch (error) {
-
       completer.complete(task);
     }
     final result = await completer.future;
     try {
       clients[task.key]?.close();
       clients.remove(task.key);
-    } catch (e) {}
-
+    } catch (_) {}
 
     return result;
   }
 
   void baraban() {
     final completer = Completer<void>();
-    int count = 0;
+    var count = 0;
 
     void processNextTask() {
       // Continue processing tasks while there are tasks and the limit is not exceeded
@@ -163,6 +160,7 @@ Future<void> downloadWithDioAndWatchTheProgress(DownloadFullTask2 full) async {
         return;
       }
     }
+
     // Start processing tasks
     for (var i = 0; i < limit; i++) {
       processNextTask();

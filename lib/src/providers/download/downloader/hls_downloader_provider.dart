@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:download_manager/download_manager.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../repository/isar/download_task/download_task_repository_impl.dart';
@@ -92,7 +93,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
     );
   }
 
-  void tryToDownload({
+  Future<void> tryToDownload({
     required LocalHlsModelIsar hls,
     required void Function(LocalHlsErrorState error)? onError,
     required Future<void> Function(LocalHlsModelIsar hls, Ref<Object?> ref)?
@@ -220,10 +221,10 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
         onDownloadComplete,
     required void Function(LocalHlsErrorState error)? onError,
   }) async {
-    DateTime startTime = DateTime.now();
-    _startDownloading(where: 'line 222 ${startTime}');
+    final startTime = DateTime.now();
+    _startDownloading(where: 'line 222 $startTime');
     _downloadingHls = hls.iD;
-    LocalHlsModelIsar? theTarget = await moviesController.updateHlsStatus(
+    var theTarget = await moviesController.updateHlsStatus(
       hls.id,
       LocalHlsDownloadingState(),
       where: 'start downloading 168 ',
@@ -301,7 +302,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
           }
         }
 
-        void _timer(Timer timer) {
+        void timer(Timer timer) {
           checkState();
           if (state.status != HlsDownloaderStatus.downloading) {
             timer.cancel();
@@ -312,7 +313,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
 
         progressUpdateTimer = Timer.periodic(
           const Duration(milliseconds: 300),
-          _timer,
+          timer,
         );
 
         theIsolate = await Isolate.spawn(
@@ -335,7 +336,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 } else {}
               } catch (e) {
-                print('<>< ><> complete exception doneFull : $e ');
+                if (kDebugMode) {
+                  print('<>< ><> complete exception doneFull : $e ');
+                }
               }
               return;
             }
@@ -350,7 +353,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 } else {}
               } catch (e) {
-                print('<>< ><> complete exception doneFull : $e ');
+                if (kDebugMode) {
+                  print('<>< ><> complete exception doneFull : $e ');
+                }
               }
               return;
             }
@@ -387,7 +392,9 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                         allTasksCompleted.complete();
                       }
                     } catch (e) {
-                      print('<>< ><> complete exception : $e');
+                      if (kDebugMode) {
+                        print('<>< ><> complete exception : $e');
+                      }
                     }
 
                     break;

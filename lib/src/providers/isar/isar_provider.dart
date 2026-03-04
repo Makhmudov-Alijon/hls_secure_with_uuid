@@ -12,9 +12,9 @@ final isarProviderr = NotifierProvider<IsarNotifier, Isar>(
 );
 
 class IsarNotifier extends Notifier<Isar> {
-  final Isar _isar;
-
   IsarNotifier({required Isar isar}) : _isar = isar;
+  
+  final Isar _isar;
 
   @override
   Isar build() {
@@ -30,7 +30,7 @@ class IsarNotifier extends Notifier<Isar> {
       networkConnectionProvider,
       (previous, next) {
         next.whenData((value) {
-          log("Network connection status: $value");
+          log('Network connection status: $value');
           if (Prefs.initialized) {
             check(value);
           } else {
@@ -41,8 +41,6 @@ class IsarNotifier extends Notifier<Isar> {
           if (value == InternetConnectionStatus.connected) {
             ref.read(remoteStatRepositoryProvider).checkHlsStats();
           }
-
-
         });
       },
     );

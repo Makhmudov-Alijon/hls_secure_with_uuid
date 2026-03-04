@@ -2,7 +2,6 @@ import 'package:download_manager/download_manager.dart';
 import 'package:download_manager/src/utils/serializers/thumbs_serializer.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../entities/thumbs_playlist_type.dart';
 import '../thumbs_playlist_details_model/thumbs_playlist_details_model.dart';
 
 part 'hls_full_non_parsed_model.freezed.dart';

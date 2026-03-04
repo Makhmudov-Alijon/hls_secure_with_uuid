@@ -7,16 +7,15 @@ publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: '>=3.3.0'
-isar_version: &isar_version ^3.1.0+1
+isar_version: &isar_version ^3.3.0
 
 dependencies:
+  flutter:
+    sdk: flutter
   dio: ^5.4.3+1
   encrypt: ^5.0.3
   equatable: ^2.0.5
   shared_preferences: ^2.3.5
-  
-  flutter:
-    sdk: flutter
   flutter_dotenv: ^5.1.0
   freezed_annotation: '>=2.0.0 <4.0.0'
   json_annotation: '>=4.0.0 <5.0.0'
@@ -27,8 +26,8 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   riverpod: ^2.5.1
   hive: ^2.2.3
-  isar: *isar_version
-  isar_flutter_libs: *isar_version
+  isar_community: *isar_version
+  isar_community_flutter_libs: *isar_version
   internet_connection_checker: ^1.0.0+1
   dart_jsonwebtoken: ^2.7.1
   # disk_space:
@@ -47,7 +46,7 @@ dev_dependencies:
   very_good_analysis: ^5.1.0
   build_runner: '>=2.3.3 <3.0.0'
   json_serializable: '>=6.8.0 <7.0.0'
-  isar_generator: *isar_version
+  isar_community_generator: *isar_version
   freezed: '>=2.3.2 <4.0.0'
 
 # For information on the generic Dart part of this file, see the

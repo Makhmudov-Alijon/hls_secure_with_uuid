@@ -10,9 +10,9 @@ part 'locale_hls_isar.g.dart';
 // ignore: must_be_immutable TODO:
 class LocalHlsModelIsar extends Equatable {
   LocalHlsModelIsar({
+    required this.hlsDetails,
     this.totalSegments = 0,
     this.iv = '',
-    required this.hlsDetails,
     this.downloadStatus,
   });
 

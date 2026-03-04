@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 part 'download_item_model.g.dart';
 
@@ -15,6 +15,18 @@ class DownloadItem extends Equatable {
     this.fileName = '',
     this.groupId = '',
   });
+  
+  factory DownloadItem.fromMap(Map<String, dynamic> map) {
+    return DownloadItem(
+      url: map['url'] as String,
+      // groupId: map['groupId'] != null ? map['groupId'] as String : '-1',
+      saveDirPath: map['saveDir'] as String,
+      fileName: map['fileName'] as String,
+    );
+  }
+
+  factory DownloadItem.fromJson(String source) =>
+      DownloadItem.fromMap(json.decode(source) as Map<String, dynamic>);
 
   String url;
   String groupId;
@@ -31,7 +43,6 @@ class DownloadItem extends Equatable {
 
   @ignore
   bool get isDownloaded {
-
     return File(absolutePath).existsSync();
   }
 
@@ -46,15 +57,6 @@ class DownloadItem extends Equatable {
       'saveDir': saveDirPath,
       'fileName': fileName,
     };
-  }
-
-  factory DownloadItem.fromMap(Map<String, dynamic> map) {
-    return DownloadItem(
-      url: map['url'] as String,
-      // groupId: map['groupId'] != null ? map['groupId'] as String : '-1',
-      saveDirPath: map['saveDir'] as String,
-      fileName: map['fileName'] as String,
-    );
   }
 
   String toJson() => json.encode(toMap());
@@ -73,7 +75,4 @@ class DownloadItem extends Equatable {
         absolutePath,
         url,
       );
-
-  factory DownloadItem.fromJson(String source) =>
-      DownloadItem.fromMap(json.decode(source) as Map<String, dynamic>);
 }

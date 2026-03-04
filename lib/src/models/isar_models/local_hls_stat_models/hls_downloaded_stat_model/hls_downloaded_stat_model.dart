@@ -7,6 +7,19 @@ part 'hls_downloaded_stat_model.g.dart';
 
 @Collection(inheritance: false)
 class HlsDownloadedStatModel extends Equatable {
+  const HlsDownloadedStatModel({
+    required this.contentId,
+    required this.episodeId,
+    required this.id,
+  });
+  
+  factory HlsDownloadedStatModel.fromHlsId({required LocalHlsId id}) {
+    return HlsDownloadedStatModel(
+      contentId: id.contentId,
+      episodeId: id.episodeId,
+      id: id.toStringId(),
+    );
+  }
   final String id;
 
   Id get isarId => fastHash(id);
@@ -17,24 +30,10 @@ class HlsDownloadedStatModel extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      "content_id": contentId,
-      if (episodeId != null) "episode_id": episodeId,
+      'content_id': contentId,
+      if (episodeId != null) 'episode_id': episodeId,
     };
   }
-
-  factory HlsDownloadedStatModel.fromHlsId({required LocalHlsId id}) {
-    return HlsDownloadedStatModel(
-      contentId: id.contentId,
-      episodeId: id.episodeId,
-      id: id.toStringId(),
-    );
-  }
-
-  const HlsDownloadedStatModel({
-    required this.contentId,
-    required this.episodeId,
-    required this.id,
-  });
 
   @override
   @ignore
