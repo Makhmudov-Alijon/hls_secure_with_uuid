@@ -336,9 +336,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 } else {}
               } catch (e) {
-                if (kDebugMode) {
-                  print('<>< ><> complete exception doneFull : $e ');
-                }
+                if (kDebugMode) {}
               }
               return;
             }
@@ -353,9 +351,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                   allTasksCompleted.complete();
                 } else {}
               } catch (e) {
-                if (kDebugMode) {
-                  print('<>< ><> complete exception doneFull : $e ');
-                }
+                if (kDebugMode) {}
               }
               return;
             }
@@ -392,9 +388,7 @@ class HlsDownloaderNotifier extends Notifier<HlsDownloaderState> {
                         allTasksCompleted.complete();
                       }
                     } catch (e) {
-                      if (kDebugMode) {
-                        print('<>< ><> complete exception : $e');
-                      }
+                      if (kDebugMode) {}
                     }
 
                     break;

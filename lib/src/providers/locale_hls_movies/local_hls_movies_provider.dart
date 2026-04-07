@@ -9,7 +9,6 @@ import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls
 import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -164,11 +163,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
       if (hls != null) {
         await deleteHls(hls: hls);
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('<>< ><>  deleteHlsByLocalHlsId exception : $e');
-      }
-    }
+    } catch (_) {}
   }
 
   void deleteGroupOfHls({
@@ -190,11 +185,7 @@ class LocalHlsMoviesNotifier extends Notifier<LocaleHlsMoviesState> {
     await ref.read(localeHlsIsarProvider).delete(hls);
     try {
       ref.read(hlsLocalRepositoryProvider).deleteHlsDirectory(hls);
-    } catch (e) {
-      if (kDebugMode) {
-        print('<>< ><> the delete hls directory exception : $e');
-      }
-    }
+    } catch (_) {}
     movieController(hls.iD).refresh();
     if (isRefresh) {
       await refreshMovies();

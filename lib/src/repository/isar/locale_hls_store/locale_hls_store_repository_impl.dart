@@ -1,5 +1,4 @@
 import 'package:download_manager/download_manager.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'locale_hls_store_repository.dart';
@@ -130,9 +129,6 @@ class LocalHlsStoreRepositoryImpl implements LocaleHlsStoreRepository {
 
           return all;
         } catch (e) {
-          if (kDebugMode) {
-            print('<>< ><> get all exception : $e');
-          }
           return [];
         }
       },

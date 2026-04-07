@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:download_manager/src/entities/local_hls_state.dart';
 import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
@@ -22,7 +21,8 @@ class HlsLocalRepository {
 
   final LocaleHlsStoreRepository localeHlsStorage;
 
-  Future<LocalHlsModelIsar?> updateHlsStatus(Id hlsId,
+  Future<LocalHlsModelIsar?> updateHlsStatus(
+    Id hlsId,
     LocalHlsState state, {
     required String where,
   }) async {
@@ -43,13 +43,7 @@ class HlsLocalRepository {
     if (hls.masterDir.existsSync()) {
       try {
         hls.masterDir.delete(recursive: true);
-      } catch (e) {
-        if (kDebugMode) {
-          print('<>< ><>  delete hls directory : ${hls.iD}');
-        }
-      }
+      } catch (_) {}
     }
   }
-
-
 }
