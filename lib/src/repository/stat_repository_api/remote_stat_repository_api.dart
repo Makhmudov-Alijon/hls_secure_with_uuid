@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -66,11 +64,8 @@ class RemoteStatRepositoryApi implements RemoteStatRepository {
 
   @override
   Future<void> checkHlsStats() async {
-    log('checking hls stats');
     final downloaded = await localRepository.getAllDownloadedHls();
-    log('downloaded: $downloaded');
     final deleted = await localRepository.getAllDeletedHls();
-    log('deleted: $deleted');
 
     for (final item in downloaded) {
       await sendDownloadedHlsStat(downloadedHlsStat: item);

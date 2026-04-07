@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -30,7 +28,6 @@ class IsarNotifier extends Notifier<Isar> {
       DownloadManagerProviders.networkConnectionProvider,
       (previous, next) {
         next.whenData((value) {
-          log('Network connection status: $value');
           if (Prefs.initialized) {
             check(value);
           } else {
