@@ -19,21 +19,17 @@ dependencies:
   flutter_dotenv: ^5.1.0
   freezed_annotation: '>=2.0.0 <4.0.0'
   json_annotation: '>=4.0.0 <5.0.0'
-  hooks_riverpod: ^2.5.1
-  http: ^1.2.2
-  path: ^1.8.0
-  path_provider: ^2.1.3
-  plugin_platform_interface: ^2.0.2
-  riverpod: ^2.5.1
-  hive: ^2.2.3
+  hooks_riverpod: ">=2.0.0 <3.0.0"
+  riverpod: ">=2.0.0 <3.0.0"
+  http: ">=1.0.0 <2.0.0"
+  path: ">=1.0.0 <2.0.0"
+  path_provider: ">2.0.0 <3.0.0"
+  plugin_platform_interface: ">2.0.0 <3.0.0"
+  hive: ">=2.0.0 <3.0.0"
   isar_community: *isar_version
   isar_community_flutter_libs: *isar_version
-  internet_connection_checker: ^1.0.0+1
-  dart_jsonwebtoken: ^2.7.1
-  # disk_space:
-  #   git: 
-  #     url: https://github.com/radiants-uz/disk_space
-  #     ref: updating
+  internet_connection_checker: ">=3.0.0 <4.0.0"
+  dart_jsonwebtoken: ">=2.0.0 <3.0.0"
   disk_space_plugin:
     git:
       url: 'https://github.com/radiants-uz/disk_space_plugin'
@@ -43,7 +39,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  very_good_analysis: ^5.1.0
   build_runner: '>=2.3.3 <3.0.0'
   json_serializable: '>=6.8.0 <7.0.0'
   isar_community_generator: *isar_version

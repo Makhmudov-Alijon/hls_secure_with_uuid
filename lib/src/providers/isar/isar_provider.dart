@@ -13,7 +13,7 @@ final isarProviderr = NotifierProvider<IsarNotifier, Isar>(
 
 class IsarNotifier extends Notifier<Isar> {
   IsarNotifier({required Isar isar}) : _isar = isar;
-  
+
   final Isar _isar;
 
   @override
@@ -27,7 +27,7 @@ class IsarNotifier extends Notifier<Isar> {
     }
 
     ref.listen(
-      networkConnectionProvider,
+      DownloadManagerProviders.networkConnectionProvider,
       (previous, next) {
         next.whenData((value) {
           log('Network connection status: $value');
