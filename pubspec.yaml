@@ -28,7 +28,9 @@ dependencies:
   hive: ">=2.0.0 <3.0.0"
   isar_community: *isar_version
   isar_community_flutter_libs: *isar_version
-  internet_connection_checker: ">=3.0.0 <4.0.0"
+  flexible_internet_checker:
+    git:
+      url: https://github.com/oldHarvester/flexible_internet_checker.git
   dart_jsonwebtoken: ">=2.0.0 <3.0.0"
   disk_space_plugin:
     git:

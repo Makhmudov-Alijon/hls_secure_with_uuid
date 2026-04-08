@@ -77,10 +77,10 @@ packages:
     dependency: transitive
     description:
       name: connectivity_plus
-      sha256: b5e72753cf63becce2c61fd04dfe0f1c430cc5278b53a1342dc5ad839eab29ec
+      sha256: b8fe52979ff12432ecf8f0abf6ff70410b1bb734be1c9e4f2f86807ad7166c79
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.5"
+    version: "7.1.0"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -225,11 +225,28 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  flexible_internet_checker:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "42714b371c1c48966f75e23ef632c90b1836c08d"
+      url: "https://github.com/oldHarvester/flexible_internet_checker.git"
+    source: git
+    version: "0.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_animate:
+    dependency: transitive
+    description:
+      name: flutter_animate
+      sha256: "7befe2d3252728afb77aecaaea1dec88a89d35b9b1d2eea6d04479e8af9117b5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.2"
   flutter_dotenv:
     dependency: transitive
     description:
@@ -267,11 +284,28 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.6.1"
+  flutter_shaders:
+    dependency: transitive
+    description:
+      name: flutter_shaders
+      sha256: "34794acadd8275d971e02df03afee3dee0f98dbfb8c4837082ad0034f612a3e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_toolkit:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "99cbcbd1e7049b67be9186256575f7ffda878b4f"
+      url: "https://github.com/oldHarvester/flutter_toolkit.git"
+    source: git
+    version: "0.0.3+3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -351,14 +385,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  internet_connection_checker:
-    dependency: transitive
-    description:
-      name: internet_connection_checker
-      sha256: ee08f13d8b13b978affe226e9274ca3ba7a9bed07c9479e8ae245f785b7a488a
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   intl:
     dependency: "direct overridden"
     description:

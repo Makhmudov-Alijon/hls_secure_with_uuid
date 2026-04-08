@@ -1,19 +1,19 @@
+import 'package:flexible_internet_checker/flexible_internet_checker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 abstract class DownloadManagerProviders {
-  static final dmConnectionCheckerProvider = Provider<InternetConnectionChecker>(
+  static final internetChecker = Provider<FlexibleInternetChecker>(
     (ref) {
-      return InternetConnectionChecker.createInstance(
-        checkInterval: const Duration(seconds: 2),
+      return FlexibleInternetChecker.createInstance(
+        interval: const Duration(seconds: 2),
       );
     },
   );
 
-  static final networkConnectionProvider = StreamProvider<InternetConnectionStatus>(
+  static final connectionStream = StreamProvider<InternetStatus>(
     (ref) {
-      final connectionChecker = ref.read(dmConnectionCheckerProvider);
-      return connectionChecker.onStatusChange;
+      final connectionChecker = ref.read(internetChecker);
+      return connectionChecker.status;
     },
   );
 }

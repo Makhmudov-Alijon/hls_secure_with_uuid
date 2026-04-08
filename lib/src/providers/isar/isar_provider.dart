@@ -1,5 +1,5 @@
+import 'package:flexible_internet_checker/flexible_internet_checker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../../download_manager.dart';
 
@@ -16,8 +16,8 @@ class IsarNotifier extends Notifier<Isar> {
 
   @override
   Isar build() {
-    void check(InternetConnectionStatus status) {
-      if (status == InternetConnectionStatus.connected) {
+    void check(InternetStatus status) {
+      if (status == InternetStatus.connected) {
         ref.read(localHlsMoviesProvider.notifier).checkWaitingForNetworkQueue();
       } else {
         ref.read(localHlsMoviesProvider.notifier).setNoNetworkQueuee();
@@ -25,7 +25,7 @@ class IsarNotifier extends Notifier<Isar> {
     }
 
     ref.listen(
-      DownloadManagerProviders.networkConnectionProvider,
+      DownloadManagerProviders.connectionStream,
       (previous, next) {
         next.whenData((value) {
           if (Prefs.initialized) {
@@ -35,7 +35,7 @@ class IsarNotifier extends Notifier<Isar> {
               check(value);
             });
           }
-          if (value == InternetConnectionStatus.connected) {
+          if (value == InternetStatus.connected) {
             ref.read(remoteStatRepositoryProvider).checkHlsStats();
           }
         });
