@@ -35,11 +35,10 @@ export 'package:download_manager/src/providers/download_button_safety_provider.d
 export 'package:download_manager/src/providers/isar/isar_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movie/local_hls_movie_provider.dart';
 export 'package:download_manager/src/providers/locale_hls_movies/local_hls_movies_provider.dart';
-export 'package:download_manager/src/providers/network_connection/network_connection_provider.dart';
+export 'package:download_manager/src/providers/download_manager_providers.dart';
 export 'package:download_manager/src/repository/hls_repository.dart';
 export 'package:download_manager/src/repository/hls_service.dart';
 export 'package:download_manager/src/repository/stat_repository_api/remote_stat_repository_api.dart';
-export 'package:download_manager/src/repository/stat_repository_api/the_endpoints/the_end_point_provider.dart';
 export 'package:download_manager/src/utils/app_constants.dart';
 export 'package:download_manager/src/utils/extension/int_extension.dart';
 export 'package:download_manager/src/utils/extension/list_extension.dart';

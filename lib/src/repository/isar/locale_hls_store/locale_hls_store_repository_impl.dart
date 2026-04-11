@@ -5,7 +5,7 @@ import 'locale_hls_store_repository.dart';
 
 final localeHlsIsarProvider = Provider<LocaleHlsStoreRepository>(
   (ref) => LocalHlsStoreRepositoryImpl(
-    isar: ref.read(isarProviderr),
+    isar: ref.read(DownloadManagerProviders.isar),
   ),
 );
 

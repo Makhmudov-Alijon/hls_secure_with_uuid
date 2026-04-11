@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:download_manager/download_manager.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flexible_internet_checker/flexible_internet_checker.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -21,7 +23,7 @@ abstract class DownloadManagerProviders {
     },
   );
 
-  static final client = Provider(
+  static final client = Provider<Dio>(
     (ref) {
       final dio = Dio(
         BaseOptions(
@@ -39,4 +41,32 @@ abstract class DownloadManagerProviders {
       return dio;
     },
   );
+
+  static final endpoints = Provider<DownloadManagerEndPoints>(
+    (ref) {
+      return DownloadManagerEndPoints(
+        addDownloadedStat: '',
+        removeDownloadedHlsState: '',
+      );
+    },
+  );
+
+  static final isar = NotifierProvider<IsarNotifier, Isar>(
+    () {
+      throw UnimplementedError();
+    },
+  );
+}
+
+class DownloadManagerEndPoints with EquatableMixin {
+  const DownloadManagerEndPoints({
+    required this.addDownloadedStat,
+    required this.removeDownloadedHlsState,
+  });
+
+  final String addDownloadedStat;
+  final String removeDownloadedHlsState;
+
+  @override
+  List<Object?> get props => [addDownloadedStat, removeDownloadedHlsState];
 }

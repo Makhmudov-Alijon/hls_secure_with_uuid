@@ -3,12 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../download_manager.dart';
 
-final isarProviderr = NotifierProvider<IsarNotifier, Isar>(
-  () {
-    throw UnimplementedError();
-  },
-);
-
 class IsarNotifier extends Notifier<Isar> {
   IsarNotifier({required Isar isar}) : _isar = isar;
 

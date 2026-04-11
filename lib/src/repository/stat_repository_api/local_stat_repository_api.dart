@@ -5,7 +5,7 @@ import '../stat_repository/local_stat_repository.dart';
 
 final localStatRepositoryProvider = Provider<LocalStatRepository>(
   (ref) => LocalStatRepositoryApi(
-    isar: ref.read(isarProviderr),
+    isar: ref.read(DownloadManagerProviders.isar),
   ),
 );
 

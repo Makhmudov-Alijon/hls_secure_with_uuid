@@ -9,7 +9,7 @@ import 'local_stat_repository_api.dart';
 final remoteStatRepositoryProvider = Provider<RemoteStatRepository>(
   (ref) {
     return RemoteStatRepositoryApi(
-      endPoints: ref.read(theEndPointsProvider),
+      endPoints: ref.read(DownloadManagerProviders.endpoints),
       client: ref.read(DownloadManagerProviders.client),
       localRepository: ref.read(localStatRepositoryProvider),
     );
@@ -24,7 +24,7 @@ class RemoteStatRepositoryApi implements RemoteStatRepository {
   });
 
   final Dio client;
-  final TheEndPoints endPoints;
+  final DownloadManagerEndPoints endPoints;
 
   final LocalStatRepository localRepository;
 
