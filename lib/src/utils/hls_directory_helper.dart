@@ -9,6 +9,8 @@ class HlsDirectoryHelper {
 
   Directory? _appDir;
 
+  bool _initialized = false;
+
   Directory get appDir {
     try {
       return _appDir!;
@@ -18,6 +20,8 @@ class HlsDirectoryHelper {
   }
 
   Future<void> initialize() async {
+    if (_initialized) return;
+    _initialized = true;
     final path = (await getApplicationDocumentsDirectory()).path;
     _appDir = Directory(
       Platform.isLinux ? path.substring(0, path.length - 1) : path,
