@@ -66,7 +66,7 @@ class DownloadManager {
   bool _initialized = false;
 
   Future<void> initialize() async {
-    if (!_initialized) return;
+    if (_initialized) return;
     _initialized = true;
     await HlsDirectoryHelper.instance.initialize();
   }
