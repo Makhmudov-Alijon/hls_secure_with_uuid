@@ -1,6 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'dart:io';
 
-import 'download_manager.dart';
+import 'package:flutter/widgets.dart';
+import 'package:path_provider/path_provider.dart';
 
 export 'package:download_manager/src/entities/hls_audio/hls_audio.dart';
 export 'package:download_manager/src/entities/hls_enctyption_key.dart';
@@ -43,7 +44,6 @@ export 'package:download_manager/src/utils/app_constants.dart';
 export 'package:download_manager/src/utils/extension/int_extension.dart';
 export 'package:download_manager/src/utils/extension/list_extension.dart';
 export 'package:download_manager/src/utils/extension/string_extension.dart';
-export 'package:download_manager/src/utils/hls_directory_helper.dart';
 export 'package:download_manager/src/utils/hls_encrypter.dart';
 export 'package:download_manager/src/utils/hls_link_excluder/hls_link_excluder.dart';
 export 'package:download_manager/src/utils/hls_link_swapper/hls_link_swapper.dart';
@@ -65,10 +65,19 @@ class DownloadManager {
 
   bool _initialized = false;
 
+  late final Directory appDir;
+
   Future<void> initialize() async {
     if (_initialized) return;
     _initialized = true;
-    await HlsDirectoryHelper.instance.initialize();
+    await _initializeDir();
+  }
+
+  Future<void> _initializeDir() async {
+    final path = (await getApplicationDocumentsDirectory()).path;
+    appDir = Directory(
+      Platform.isLinux ? path.substring(0, path.length - 1) : path,
+    );
   }
 
   static Exception Function(Object error, StackTrace stackTrace)

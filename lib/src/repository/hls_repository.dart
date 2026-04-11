@@ -57,7 +57,7 @@ class HlsRepository {
         data: response.data!,
       );
 
-      final baseDir = HlsDirectoryHelper.instance.appDir;
+      final baseDir = DownloadManager.instance.appDir;
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
@@ -83,7 +83,7 @@ class HlsRepository {
     required String? posterLink,
   }) async {
     try {
-      final baseDir = HlsDirectoryHelper.instance.appDir;
+      final baseDir = DownloadManager.instance.appDir;
 
       const isForWatching = false;
 
@@ -163,7 +163,7 @@ class HlsRepository {
     Map<String, dynamic>? headers,
   }) async {
     try {
-      final baseDir = HlsDirectoryHelper.instance.appDir;
+      final baseDir = DownloadManager.instance.appDir;
 
       const isForWatching = true;
 

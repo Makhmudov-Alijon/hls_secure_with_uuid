@@ -188,7 +188,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              final dir = HlsDirectoryHelper.instance.appDir;
+              final dir = DownloadManager.instance.appDir;
               if (context.mounted) {
                 SystemFilesViewer.openDirectoryPage(
                   context: context,

@@ -26,7 +26,7 @@ class LocalHlsModelIsar extends Equatable {
 
   LocalHlsStatus? downloadStatus;
 
-  String get baseDirPath => HlsDirectoryHelper.instance.appDir.path;
+  String get baseDirPath => DownloadManager.instance.appDir.path;
 
   @ignore
   Directory get baseDir => Directory(baseDirPath);
@@ -54,7 +54,7 @@ class LocalHlsModelIsar extends Equatable {
   @ignore
   HlsPathManager get pathManager {
     return HlsPathManager(
-      baseDir: HlsDirectoryHelper.instance.appDir,
+      baseDir: DownloadManager.instance.appDir,
       localHlsId: iD,
       isRemote: false,
     );

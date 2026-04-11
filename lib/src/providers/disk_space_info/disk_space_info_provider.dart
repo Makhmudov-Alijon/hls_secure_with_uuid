@@ -26,12 +26,12 @@ class DiskSpaceInfoNotifier
     List<Directory> directories;
 
     if (Platform.isIOS) {
-      directories = [HlsDirectoryHelper.instance.appDir];
+      directories = [DownloadManager.instance.appDir];
     } else if (Platform.isAndroid) {
       directories =
           await getExternalStorageDirectories(type: StorageDirectory.movies)
               .then(
-        (list) async => list ?? [HlsDirectoryHelper.instance.appDir],
+        (list) async => list ?? [DownloadManager.instance.appDir],
       );
     } else {
       directories = [];
