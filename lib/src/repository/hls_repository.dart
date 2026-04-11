@@ -10,7 +10,7 @@ import 'isar/locale_hls_store/locale_hls_store_repository_impl.dart';
 
 final hlsRepositoryProvider = Provider(
   (ref) => HlsRepository(
-    dio: ref.read(DownloadManagerProviders.clientProvider),
+    dio: ref.read(DownloadManagerProviders.client),
     ref: ref,
     hlsService: ref.read(hlsServiceProvider),
   ),

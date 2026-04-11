@@ -21,7 +21,7 @@ abstract class DownloadManagerProviders {
     },
   );
 
-  static final clientProvider = Provider(
+  static final client = Provider(
     (ref) {
       final dio = Dio(
         BaseOptions(
