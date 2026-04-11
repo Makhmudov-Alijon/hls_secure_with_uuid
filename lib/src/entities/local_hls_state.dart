@@ -3,23 +3,23 @@ import 'package:download_manager/download_manager.dart';
 extension LocaleHlsStateExtension on LocalHlsState {
   int get getOrder {
     switch (runtimeType) {
-      case LocalHlsDownloadingState:
+      case LocalHlsDownloadingState _:
         {
           return 0;
         }
-      case LocalHlsWaitingForNetworkState:
+      case LocalHlsWaitingForNetworkState _:
         {
           return 1;
         }
-      case LocalHlsInQueueState:
+      case LocalHlsInQueueState _:
         {
           return 2;
         }
-      case LocalHlsPauseState:
+      case LocalHlsPauseState _:
         {
           return 3;
         }
-      case LocalHlsErrorState:
+      case LocalHlsErrorState _:
         {
           return 4;
         }
@@ -38,35 +38,35 @@ abstract class LocalHlsState {
 
   LocalHlsStatus toLocalHlsStatus() {
     switch (runtimeType) {
-      case LocalHlsDownloadingState:
+      case LocalHlsDownloadingState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.downloading,
         );
-      case LocalHlsPauseState:
+      case LocalHlsPauseState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.paused,
         );
-      case LocalHlsDeletedState:
+      case LocalHlsDeletedState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.deleted,
         );
-      case LocalHlsCompleteState:
+      case LocalHlsCompleteState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.complete,
         );
-      case LocalHlsInQueueState:
+      case LocalHlsInQueueState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.inQueue,
         );
-      case LocalHlsPreparedState:
+      case LocalHlsPreparedState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.prepared,
         );
-      case LocalHlsWaitingForNetworkState:
+      case LocalHlsWaitingForNetworkState _:
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.waitingForNetwork,
         );
-      case LocalHlsErrorState:
+      case LocalHlsErrorState _:
         final error = this as LocalHlsErrorState;
         return LocalHlsStatus(
           statusType: LocalHlsStatusType.error,

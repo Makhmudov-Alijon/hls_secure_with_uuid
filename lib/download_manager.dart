@@ -29,7 +29,6 @@ export 'package:download_manager/src/models/segment_playlist_model/audio_segment
 export 'package:download_manager/src/models/segment_playlist_model/video_segment_playlist_model/video_segment_playlist_model.dart';
 export 'package:download_manager/src/models/thumbs_parsed_playlist_model/thumbs_parsed_playlist_model.dart';
 export 'package:download_manager/src/models/thumbs_parsed_playlist_model/vtt_image.dart';
-export 'package:download_manager/src/providers/client_provider.dart';
 export 'package:download_manager/src/providers/disk_space_info/disk_space_info_provider.dart';
 export 'package:download_manager/src/providers/download/downloader/hls_downloader_provider.dart';
 export 'package:download_manager/src/providers/download_button_safety_provider.dart';

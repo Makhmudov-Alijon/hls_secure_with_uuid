@@ -10,7 +10,7 @@ final remoteStatRepositoryProvider = Provider<RemoteStatRepository>(
   (ref) {
     return RemoteStatRepositoryApi(
       endPoints: ref.read(theEndPointsProvider),
-      client: ref.read(managerClientProvider),
+      client: ref.read(DownloadManagerProviders.clientProvider),
       localRepository: ref.read(localStatRepositoryProvider),
     );
   },
