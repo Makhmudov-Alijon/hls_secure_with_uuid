@@ -52,6 +52,10 @@ class LocalHlsId extends HlsId {
   final int? seasonId;
   final int? episodeId;
 
+  bool get isSerial => episodeId != null;
+
+  int? get hlsDataVideoId => filmId ?? episodeId;
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'filmId': filmId,
