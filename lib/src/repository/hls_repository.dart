@@ -30,7 +30,7 @@ class HlsRepository {
   Future<MasterPlaylistModel> fetchMasterPlaylist({
     required String url,
     required String token,
-    required LocalHlsId hlsId,
+    required HlsId hlsId,
     required bool forWatching,
     Map<String, dynamic>? headers,
   }) async {
@@ -61,7 +61,7 @@ class HlsRepository {
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
-        localHlsId: hlsId,
+        id: hlsId,
         isRemote: forWatching,
       );
 
@@ -89,7 +89,7 @@ class HlsRepository {
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
-        localHlsId: hlsDetails.localHlsId,
+        id: hlsDetails.localHlsId,
         isRemote: isForWatching,
       );
 
@@ -159,7 +159,7 @@ class HlsRepository {
   Future<HlsWatchLink> prepareDataForWatching({
     required String url,
     required String token,
-    required LocalHlsId hlsId,
+    required HlsId hlsId,
     Map<String, dynamic>? headers,
   }) async {
     try {
@@ -169,7 +169,7 @@ class HlsRepository {
 
       final pathManager = HlsPathManager(
         baseDir: baseDir,
-        localHlsId: hlsId,
+        id: hlsId,
         isRemote: isForWatching,
       );
 
@@ -230,7 +230,7 @@ class HlsRepository {
         linkExcluder: fullPlaylist.masterLinkExcluder,
       );
       final encryptedPlaylist = HlsEncrypter.encryptData(
-        id: pathManager.localHlsId,
+        id: pathManager.id,
         data: playlistStr,
       );
       final masterFile = pathManager.masterFile..createIfNotExist();
@@ -259,7 +259,7 @@ class HlsRepository {
         );
 
         final encryptedPlaylistStr = HlsEncrypter.encryptData(
-          id: pathManager.localHlsId,
+          id: pathManager.id,
           data: playlistStr,
         );
 
@@ -281,7 +281,7 @@ class HlsRepository {
         );
 
         final encryptedPlaylist = HlsEncrypter.encryptData(
-          id: pathManager.localHlsId,
+          id: pathManager.id,
           data: playlistStr,
         );
 
@@ -301,7 +301,7 @@ class HlsRepository {
   }) async {
     try {
       final encrypted = HlsEncrypter.encryptEncKey(
-        id: pathManager.localHlsId,
+        id: pathManager.id,
         iv: iv,
         enc: enc,
       );

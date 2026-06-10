@@ -63,20 +63,28 @@ final class HlsEncrypter {
     return json;
   }
 
-  static String getJwt(LocalHlsId id) {
+  static String getJwt(HlsId id) {
     final signKey = getHlsEncryptionKey(id);
-    final jwt = JWT({
-      'contentId': id.contentId.toString(),
-      'seasonId': id.seasonId?.toString(),
-      'episodeId': id.episodeId?.toString(),
-      'filmId': id.filmId?.toString(),
-      'date': DateTime.now().millisecondsSinceEpoch.toString(),
+    final jwt = JWT(switch (id) {
+      LocalHlsId _ => {
+          'contentId': id.contentId.toString(),
+          'seasonId': id.seasonId?.toString(),
+          'episodeId': id.episodeId?.toString(),
+          'filmId': id.filmId?.toString(),
+          'date': DateTime.now().millisecondsSinceEpoch.toString(),
+        },
+      MiniDramaHlsId _ => {
+          'minidrama_id': id.minidramaId.toString(),
+          'season_id': id.seasonId.toString(),
+          'episode_id': id.episodeId.toString(),
+          'date': DateTime.now().millisecondsSinceEpoch.toString(),
+        },
     });
     final token = jwt.sign(SecretKey(signKey));
     return token;
   }
 
-  static bool verifyJwt(LocalHlsId id, String token) {
+  static bool verifyJwt(HlsId id, String token) {
     final signKey = getHlsEncryptionKey(id);
 
     final jwt = JWT.tryVerify(
@@ -86,19 +94,27 @@ final class HlsEncrypter {
     return jwt != null;
   }
 
-  static String getHlsEncryptionKey(LocalHlsId id) {
+  static String getHlsEncryptionKey(HlsId id) {
+    // TODO: ask Igor for enc
     final key = randomKey.substring(0, 16);
-    final hlsString = [
-      id.contentId.toString(),
-      if (id.filmId != null) id.filmId.toString(),
-      if (id.seasonId != null) id.seasonId.toString(),
-      if (id.episodeId != null) id.episodeId.toString(),
-    ].join();
+    final hlsString = switch (id) {
+      LocalHlsId _ => [
+          id.contentId,
+          if (id.filmId != null) id.filmId,
+          if (id.seasonId != null) id.seasonId,
+          if (id.episodeId != null) id.episodeId,
+        ].join(),
+      MiniDramaHlsId _ => [
+          id.minidramaId,
+          id.seasonId,
+          id.episodeId,
+        ].join(''),
+    };
     return (key + hlsString).substring(0, 16);
   }
 
   static String encryptData({
-    required LocalHlsId id,
+    required HlsId id,
     required String data,
   }) {
     if (!useEncrypt) {
@@ -116,7 +132,7 @@ final class HlsEncrypter {
   }
 
   static String decryptData({
-    required LocalHlsId id,
+    required HlsId id,
     required String base64String,
   }) {
     final key = getHlsEncryptionKey(id);
@@ -134,7 +150,7 @@ final class HlsEncrypter {
   }
 
   static String encryptEncKey({
-    required LocalHlsId id,
+    required HlsId id,
     required String iv,
     required String enc,
   }) {
@@ -154,7 +170,7 @@ final class HlsEncrypter {
   }
 
   static String decryptEnc({
-    required LocalHlsId id,
+    required HlsId id,
     required String encryptedEncKey,
     required String iv,
   }) {
@@ -172,7 +188,7 @@ final class HlsEncrypter {
   }
 
   static String? tryDecryptEnc({
-    required LocalHlsId id,
+    required HlsId id,
     required String encryptedEncKey,
     required String iv,
   }) {

@@ -38,12 +38,12 @@ extension HlsStringExtension on String {
 class HlsPathManager {
   const HlsPathManager({
     required this.baseDir,
-    required this.localHlsId,
+    required this.id,
     required this.isRemote,
   });
 
   /// This id identifies the path of movie folder
-  final LocalHlsId localHlsId;
+  final HlsId id;
 
   /// Base directory where files will be saved
   final Directory baseDir;
@@ -51,22 +51,27 @@ class HlsPathManager {
   /// Defines if hls should be paste inside remote folder
   final bool isRemote;
 
-  bool get isSerial =>
-      localHlsId.seasonId != null && localHlsId.episodeId != null;
-
   String get contentIdFolder {
-    final contentId = localHlsId.contentId;
-    final filmId = localHlsId.filmId;
-    final seasonId = localHlsId.seasonId;
-    final episodeId = localHlsId.episodeId;
+    switch (id) {
+      case LocalHlsId id:
+        final contentId = id.contentId;
+        final filmId = id.filmId;
+        final seasonId = id.seasonId;
+        final episodeId = id.episodeId;
 
-    if (filmId != null && seasonId == null && episodeId == null) {
-      return 'movies/${contentId}_$filmId';
-    } else if (filmId == null && seasonId != null && episodeId != null) {
-      return 'series/$contentId/season_$seasonId/episode_$episodeId';
+        if (filmId != null && seasonId == null && episodeId == null) {
+          return 'movies/${contentId}_$filmId';
+        } else if (filmId == null && seasonId != null && episodeId != null) {
+          return 'series/$contentId/season_$seasonId/episode_$episodeId';
+        }
+
+        throw UnimplementedError('Not specified required id');
+      case MiniDramaHlsId id:
+        final minidramaId = id.minidramaId;
+        final episodeId = id.episodeId;
+        final seasonId = id.seasonId;
+        return 'minidramas/$minidramaId/$seasonId/$episodeId';
     }
-
-    throw UnimplementedError('Not specified required id');
   }
 
   String _filenameFromUrl(String? url) {

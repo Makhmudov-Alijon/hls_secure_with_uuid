@@ -6,8 +6,40 @@ import 'package:isar_community/isar.dart';
 
 part 'local_hls_id.g.dart';
 
+sealed class HlsId with EquatableMixin {
+  const HlsId();
+
+  const factory HlsId.content({
+    int contentId,
+    int? filmId,
+    int? seasonId,
+    int? episodeId,
+  }) = LocalHlsId;
+
+  const factory HlsId.minidrama({
+    required int minidramaId,
+    required int seasonId,
+    required int episodeId,
+  }) = MiniDramaHlsId;
+}
+
+class MiniDramaHlsId extends HlsId {
+  const MiniDramaHlsId({
+    required this.minidramaId,
+    required this.seasonId,
+    required this.episodeId,
+  });
+
+  final int minidramaId;
+  final int seasonId;
+  final int episodeId;
+
+  @override
+  List<Object?> get props => [minidramaId, seasonId, episodeId];
+}
+
 @Embedded(inheritance: false)
-class LocalHlsId extends Equatable {
+class LocalHlsId extends HlsId {
   const LocalHlsId({
     this.contentId = -1,
     this.filmId,

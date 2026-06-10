@@ -55,7 +55,7 @@ class LocalHlsModelIsar extends Equatable {
   HlsPathManager get pathManager {
     return HlsPathManager(
       baseDir: DownloadManager.instance.appDir,
-      localHlsId: iD,
+      id: iD,
       isRemote: false,
     );
   }
@@ -64,7 +64,7 @@ class LocalHlsModelIsar extends Equatable {
   HlsPathManager pathManagerForIsolate(String appDir) {
     return HlsPathManager(
       baseDir: Directory(appDir),
-      localHlsId: iD,
+      id: iD,
       isRemote: false,
     );
   }
