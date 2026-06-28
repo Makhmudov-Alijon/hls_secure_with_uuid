@@ -1,6 +1,10 @@
 PODS:
   - Cache (6.0.0)
+  - disk_space (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
+  - flutter_downloader (0.0.1):
+    - Flutter
   - GCDWebServer (3.5.4):
     - GCDWebServer/Core (= 3.5.4)
   - GCDWebServer/Core (3.5.4)
@@ -8,6 +12,8 @@ PODS:
     - GCDWebServer (~> 3.5)
     - PINCache (>= 3.0.1-beta.3)
   - integration_test (0.0.1):
+    - Flutter
+  - isar_community_flutter_libs (1.0.0):
     - Flutter
   - media_kit_libs_ios_video (1.0.4):
     - Flutter
@@ -36,6 +42,9 @@ PODS:
     - PINCache
   - screen_brightness_ios (0.1.0):
     - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - video_player_avfoundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -45,8 +54,11 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - disk_space (from `.symlinks/plugins/disk_space/ios`)
   - Flutter (from `Flutter`)
+  - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - isar_community_flutter_libs (from `.symlinks/plugins/isar_community_flutter_libs/ios`)
   - media_kit_libs_ios_video (from `.symlinks/plugins/media_kit_libs_ios_video/ios`)
   - media_kit_native_event_loop (from `.symlinks/plugins/media_kit_native_event_loop/ios`)
   - media_kit_video (from `.symlinks/plugins/media_kit_video/ios`)
@@ -54,6 +66,7 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - river_player (from `.symlinks/plugins/river_player/ios`)
   - screen_brightness_ios (from `.symlinks/plugins/screen_brightness_ios/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/darwin`)
   - volume_controller (from `.symlinks/plugins/volume_controller/ios`)
   - wakelock_plus (from `.symlinks/plugins/wakelock_plus/ios`)
@@ -67,10 +80,16 @@ SPEC REPOS:
     - PINOperation
 
 EXTERNAL SOURCES:
+  disk_space:
+    :path: ".symlinks/plugins/disk_space/ios"
   Flutter:
     :path: Flutter
+  flutter_downloader:
+    :path: ".symlinks/plugins/flutter_downloader/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  isar_community_flutter_libs:
+    :path: ".symlinks/plugins/isar_community_flutter_libs/ios"
   media_kit_libs_ios_video:
     :path: ".symlinks/plugins/media_kit_libs_ios_video/ios"
   media_kit_native_event_loop:
@@ -85,6 +104,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/river_player/ios"
   screen_brightness_ios:
     :path: ".symlinks/plugins/screen_brightness_ios/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/darwin"
   volume_controller:
@@ -94,23 +115,27 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Cache: 4ca7e00363fca5455f26534e5607634c820ffc2d
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  disk_space: ccb69269e2be924154eca27eb36803f72d4772fb
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_downloader: 78da0da1084e709cbfd3b723c7ea349c71681f09
   GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   HLSCachingReverseProxyServer: 59935e1e0244ad7f3375d75b5ef46e8eb26ab181
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
-  media_kit_libs_ios_video: a5fe24bc7875ccd6378a0978c13185e1344651c1
-  media_kit_native_event_loop: e6b2ab20cf0746eb1c33be961fcf79667304fa2a
-  media_kit_video: 5da63f157170e5bf303bf85453b7ef6971218a2e
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  isar_community_flutter_libs: bede843185a61a05ff364a05c9b23209523f7e0d
+  media_kit_libs_ios_video: 5a18affdb97d1f5d466dc79988b13eff6c5e2854
+  media_kit_native_event_loop: 5fba1a849a6c87a34985f1e178a0de5bd444a0cf
+  media_kit_video: 1746e198cb697d1ffb734b1d05ec429d1fcd1474
+  package_info_plus: 566e1b7a2f3900e4b0020914ad3fc051dcc95596
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   PINCache: d9a87a0ff397acffe9e2f0db972ac14680441158
   PINOperation: fb563bcc9c32c26d6c78aaff967d405aa2ee74a7
-  river_player: ba880eae2d34deaff38fdf53a96b63edc654c9bf
-  screen_brightness_ios: 715ca807df953bf676d339f11464e438143ee625
-  video_player_avfoundation: 7c6c11d8470e1675df7397027218274b6d2360b3
-  volume_controller: 531ddf792994285c9b17f9d8a7e4dcdd29b3eae9
-  wakelock_plus: 8b09852c8876491e4b6d179e17dfe2a0b5f60d47
+  river_player: 16015cda3cd0de36d9fc4b162c4f2909d20b1bb6
+  screen_brightness_ios: 5ed898fa50fa82a26171c086ca5e28228f932576
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  video_player_avfoundation: 2cef49524dd1f16c5300b9cd6efd9611ce03639b
+  volume_controller: ca1cde542ee70fad77d388f82e9616488110942b
+  wakelock_plus: 8c239121a007daa1d6759c6acdc507860273dd2f
 
-PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+PODFILE CHECKSUM: 4f1c12611da7338d21589c0b2ecd6bd20b109694
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

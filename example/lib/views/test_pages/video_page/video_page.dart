@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:download_manager_example/views/test_pages/video_page/players/better_player.dart';
-import 'package:download_manager_example/views/test_pages/video_page/players/media_kit_player.dart';
+import 'package:hls_secure_with_uuid_example/views/test_pages/video_page/players/better_player.dart';
+import 'package:hls_secure_with_uuid_example/views/test_pages/video_page/players/media_kit_player.dart';
 import 'package:flutter/material.dart';
 
 class VideoPage extends StatefulWidget {

@@ -1,6 +1,6 @@
-# download_manager_example
+# hls_secure_with_uuid_example
 
-Demonstrates how to use the download_manager plugin.
+Demonstrates how to use the hls_secure_with_uuid plugin.
 
 ## Getting Started
 

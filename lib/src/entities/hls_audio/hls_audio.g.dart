@@ -18,11 +18,7 @@ const HlsAudioTrackSchema = Schema(
       name: r'filesCount',
       type: IsarType.long,
     ),
-    r'size': PropertySchema(
-      id: 1,
-      name: r'size',
-      type: IsarType.long,
-    ),
+    r'size': PropertySchema(id: 1, name: r'size', type: IsarType.long),
     r'trackName': PropertySchema(
       id: 2,
       name: r'trackName',
@@ -38,8 +34,9 @@ const HlsAudioTrackSchema = Schema(
       id: 4,
       name: r'trackUrl',
       type: IsarType.string,
-    )
+    ),
   },
+
   estimateSize: _hlsAudioTrackEstimateSize,
   serialize: _hlsAudioTrackSerialize,
   deserialize: _hlsAudioTrackDeserialize,
@@ -80,8 +77,10 @@ HlsAudioTrack _hlsAudioTrackDeserialize(
     filesCount: reader.readLongOrNull(offsets[0]) ?? 0,
     size: reader.readLongOrNull(offsets[1]) ?? 0,
     trackName: reader.readStringOrNull(offsets[2]) ?? '',
-    trackType: _HlsAudioTracktrackTypeValueEnumMap[
-            reader.readByteOrNull(offsets[3])] ??
+    trackType:
+        _HlsAudioTracktrackTypeValueEnumMap[reader.readByteOrNull(
+          offsets[3],
+        )] ??
         HlsAudioTrackType.defaultTrack,
     trackUrl: reader.readStringOrNull(offsets[4]) ?? '',
   );
@@ -102,9 +101,11 @@ P _hlsAudioTrackDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset) ?? '') as P;
     case 3:
-      return (_HlsAudioTracktrackTypeValueEnumMap[
-              reader.readByteOrNull(offset)] ??
-          HlsAudioTrackType.defaultTrack) as P;
+      return (_HlsAudioTracktrackTypeValueEnumMap[reader.readByteOrNull(
+                offset,
+              )] ??
+              HlsAudioTrackType.defaultTrack)
+          as P;
     case 4:
       return (reader.readStringOrNull(offset) ?? '') as P;
     default:
@@ -126,96 +127,93 @@ const _HlsAudioTracktrackTypeValueEnumMap = {
 extension HlsAudioTrackQueryFilter
     on QueryBuilder<HlsAudioTrack, HlsAudioTrack, QFilterCondition> {
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      filesCountEqualTo(int value) {
+  filesCountEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'filesCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'filesCount', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      filesCountGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  filesCountGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'filesCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'filesCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      filesCountLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  filesCountLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'filesCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'filesCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      filesCountBetween(
+  filesCountBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'filesCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'filesCount',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition> sizeEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'size',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'size', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      sizeGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  sizeGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'size',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'size',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      sizeLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  sizeLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'size',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'size',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -226,64 +224,69 @@ extension HlsAudioTrackQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'size',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'size',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackNameEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameLessThan(
+  trackNameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameBetween(
+  trackNameLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+  trackNameBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -291,191 +294,195 @@ extension HlsAudioTrackQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'trackName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'trackName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackNameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackNameEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameContains(String value, {bool caseSensitive = true}) {
+  trackNameContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'trackName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'trackName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameMatches(String pattern, {bool caseSensitive = true}) {
+  trackNameMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'trackName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'trackName',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameIsEmpty() {
+  trackNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trackName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'trackName', value: ''),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackNameIsNotEmpty() {
+  trackNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'trackName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'trackName', value: ''),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackTypeEqualTo(HlsAudioTrackType value) {
+  trackTypeEqualTo(HlsAudioTrackType value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trackType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'trackType', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackTypeGreaterThan(
-    HlsAudioTrackType value, {
-    bool include = false,
-  }) {
+  trackTypeGreaterThan(HlsAudioTrackType value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'trackType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'trackType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackTypeLessThan(
-    HlsAudioTrackType value, {
-    bool include = false,
-  }) {
+  trackTypeLessThan(HlsAudioTrackType value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'trackType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'trackType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackTypeBetween(
+  trackTypeBetween(
     HlsAudioTrackType lower,
     HlsAudioTrackType upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'trackType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'trackType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackUrlEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlLessThan(
+  trackUrlGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlBetween(
+  trackUrlLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
+  trackUrlBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -483,84 +490,86 @@ extension HlsAudioTrackQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'trackUrl',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'trackUrl',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackUrlStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  trackUrlEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlContains(String value, {bool caseSensitive = true}) {
+  trackUrlContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'trackUrl',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'trackUrl',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlMatches(String pattern, {bool caseSensitive = true}) {
+  trackUrlMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'trackUrl',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'trackUrl',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlIsEmpty() {
+  trackUrlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'trackUrl',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'trackUrl', value: ''),
+      );
     });
   }
 
   QueryBuilder<HlsAudioTrack, HlsAudioTrack, QAfterFilterCondition>
-      trackUrlIsNotEmpty() {
+  trackUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'trackUrl',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'trackUrl', value: ''),
+      );
     });
   }
 }

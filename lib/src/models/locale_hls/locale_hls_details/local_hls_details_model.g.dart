@@ -17,6 +17,7 @@ const LocalHlsDetailsModelSchema = Schema(
       id: 0,
       name: r'audioTracks',
       type: IsarType.objectList,
+
       target: r'HlsAudioTrack',
     ),
     r'episodeNum': PropertySchema(
@@ -24,21 +25,19 @@ const LocalHlsDetailsModelSchema = Schema(
       name: r'episodeNum',
       type: IsarType.long,
     ),
-    r'isSerial': PropertySchema(
-      id: 2,
-      name: r'isSerial',
-      type: IsarType.bool,
-    ),
+    r'isSerial': PropertySchema(id: 2, name: r'isSerial', type: IsarType.bool),
     r'localHlsId': PropertySchema(
       id: 3,
       name: r'localHlsId',
       type: IsarType.object,
+
       target: r'LocalHlsId',
     ),
     r'resolution': PropertySchema(
       id: 4,
       name: r'resolution',
       type: IsarType.object,
+
       target: r'HlsResolution',
     ),
     r'seasonNum': PropertySchema(
@@ -51,12 +50,9 @@ const LocalHlsDetailsModelSchema = Schema(
       name: r'sizeBytes',
       type: IsarType.long,
     ),
-    r'title': PropertySchema(
-      id: 7,
-      name: r'title',
-      type: IsarType.string,
-    )
+    r'title': PropertySchema(id: 7, name: r'title', type: IsarType.string),
   },
+
   estimateSize: _localHlsDetailsModelEstimateSize,
   serialize: _localHlsDetailsModelSerialize,
   deserialize: _localHlsDetailsModelDeserialize,
@@ -74,16 +70,27 @@ int _localHlsDetailsModelEstimateSize(
     final offsets = allOffsets[HlsAudioTrack]!;
     for (var i = 0; i < object.audioTracks.length; i++) {
       final value = object.audioTracks[i];
-      bytesCount +=
-          HlsAudioTrackSchema.estimateSize(value, offsets, allOffsets);
+      bytesCount += HlsAudioTrackSchema.estimateSize(
+        value,
+        offsets,
+        allOffsets,
+      );
     }
   }
-  bytesCount += 3 +
+  bytesCount +=
+      3 +
       LocalHlsIdSchema.estimateSize(
-          object.localHlsId, allOffsets[LocalHlsId]!, allOffsets);
-  bytesCount += 3 +
+        object.localHlsId,
+        allOffsets[LocalHlsId]!,
+        allOffsets,
+      );
+  bytesCount +=
+      3 +
       HlsResolutionSchema.estimateSize(
-          object.resolution, allOffsets[HlsResolution]!, allOffsets);
+        object.resolution,
+        allOffsets[HlsResolution]!,
+        allOffsets,
+      );
   bytesCount += 3 + object.title.length * 3;
   return bytesCount;
 }
@@ -126,7 +133,8 @@ LocalHlsDetailsModel _localHlsDetailsModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LocalHlsDetailsModel(
-    audioTracks: reader.readObjectList<HlsAudioTrack>(
+    audioTracks:
+        reader.readObjectList<HlsAudioTrack>(
           offsets[0],
           HlsAudioTrackSchema.deserialize,
           allOffsets,
@@ -135,13 +143,15 @@ LocalHlsDetailsModel _localHlsDetailsModelDeserialize(
         const [],
     episodeNum: reader.readLongOrNull(offsets[1]),
     isSerial: reader.readBoolOrNull(offsets[2]) ?? false,
-    localHlsId: reader.readObjectOrNull<LocalHlsId>(
+    localHlsId:
+        reader.readObjectOrNull<LocalHlsId>(
           offsets[3],
           LocalHlsIdSchema.deserialize,
           allOffsets,
         ) ??
         const LocalHlsId(),
-    resolution: reader.readObjectOrNull<HlsResolution>(
+    resolution:
+        reader.readObjectOrNull<HlsResolution>(
           offsets[4],
           HlsResolutionSchema.deserialize,
           allOffsets,
@@ -162,30 +172,33 @@ P _localHlsDetailsModelDeserializeProp<P>(
   switch (propertyId) {
     case 0:
       return (reader.readObjectList<HlsAudioTrack>(
-            offset,
-            HlsAudioTrackSchema.deserialize,
-            allOffsets,
-            HlsAudioTrack(),
-          ) ??
-          const []) as P;
+                offset,
+                HlsAudioTrackSchema.deserialize,
+                allOffsets,
+                HlsAudioTrack(),
+              ) ??
+              const [])
+          as P;
     case 1:
       return (reader.readLongOrNull(offset)) as P;
     case 2:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     case 3:
       return (reader.readObjectOrNull<LocalHlsId>(
-            offset,
-            LocalHlsIdSchema.deserialize,
-            allOffsets,
-          ) ??
-          const LocalHlsId()) as P;
+                offset,
+                LocalHlsIdSchema.deserialize,
+                allOffsets,
+              ) ??
+              const LocalHlsId())
+          as P;
     case 4:
       return (reader.readObjectOrNull<HlsResolution>(
-            offset,
-            HlsResolutionSchema.deserialize,
-            allOffsets,
-          ) ??
-          const HlsResolution()) as P;
+                offset,
+                HlsResolutionSchema.deserialize,
+                allOffsets,
+              ) ??
+              const HlsResolution())
+          as P;
     case 5:
       return (reader.readLongOrNull(offset)) as P;
     case 6:
@@ -197,81 +210,74 @@ P _localHlsDetailsModelDeserializeProp<P>(
   }
 }
 
-extension LocalHlsDetailsModelQueryFilter on QueryBuilder<LocalHlsDetailsModel,
-    LocalHlsDetailsModel, QFilterCondition> {
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksLengthEqualTo(int length) {
+extension LocalHlsDetailsModelQueryFilter
+    on
+        QueryBuilder<
+          LocalHlsDetailsModel,
+          LocalHlsDetailsModel,
+          QFilterCondition
+        > {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'audioTracks',
-        length,
-        true,
-        length,
-        true,
-      );
+      return query.listLength(r'audioTracks', length, true, length, true);
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksIsEmpty() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'audioTracks',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'audioTracks', 0, true, 0, true);
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksIsNotEmpty() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'audioTracks',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'audioTracks', 0, false, 999999, true);
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'audioTracks',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'audioTracks', 0, true, length, include);
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksLengthGreaterThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'audioTracks',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'audioTracks', length, include, 999999, true);
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksLengthBetween(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -288,268 +294,351 @@ extension LocalHlsDetailsModelQueryFilter on QueryBuilder<LocalHlsDetailsModel,
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumIsNull() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'episodeNum',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'episodeNum'),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumIsNotNull() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'episodeNum',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'episodeNum'),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumEqualTo(int? value) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'episodeNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'episodeNum', value: value),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'episodeNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'episodeNum',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'episodeNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'episodeNum',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> episodeNumBetween(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  episodeNumBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'episodeNum',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'episodeNum',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> isSerialEqualTo(bool value) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  isSerialEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isSerial',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isSerial', value: value),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumIsNull() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'seasonNum',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'seasonNum'),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumIsNotNull() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'seasonNum',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'seasonNum'),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumEqualTo(int? value) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'seasonNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'seasonNum', value: value),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'seasonNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'seasonNum',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'seasonNum',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'seasonNum',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> seasonNumBetween(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  seasonNumBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'seasonNum',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'seasonNum',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> sizeBytesEqualTo(int value) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  sizeBytesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sizeBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'sizeBytes', value: value),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> sizeBytesGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  sizeBytesGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'sizeBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'sizeBytes',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> sizeBytesLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  sizeBytesLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'sizeBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'sizeBytes',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> sizeBytesBetween(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  sizeBytesBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'sizeBytes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'sizeBytes',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleLessThan(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleBetween(
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -557,108 +646,149 @@ extension LocalHlsDetailsModelQueryFilter on QueryBuilder<LocalHlsDetailsModel,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'title',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'title',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-          QAfterFilterCondition>
-      titleContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'title',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-          QAfterFilterCondition>
-      titleMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'title',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'title',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleIsEmpty() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'title', value: ''),
+      );
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> titleIsNotEmpty() {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'title',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'title', value: ''),
+      );
     });
   }
 }
 
-extension LocalHlsDetailsModelQueryObject on QueryBuilder<LocalHlsDetailsModel,
-    LocalHlsDetailsModel, QFilterCondition> {
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> audioTracksElement(FilterQuery<HlsAudioTrack> q) {
+extension LocalHlsDetailsModelQueryObject
+    on
+        QueryBuilder<
+          LocalHlsDetailsModel,
+          LocalHlsDetailsModel,
+          QFilterCondition
+        > {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  audioTracksElement(FilterQuery<HlsAudioTrack> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'audioTracks');
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> localHlsId(FilterQuery<LocalHlsId> q) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  localHlsId(FilterQuery<LocalHlsId> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'localHlsId');
     });
   }
 
-  QueryBuilder<LocalHlsDetailsModel, LocalHlsDetailsModel,
-      QAfterFilterCondition> resolution(FilterQuery<HlsResolution> q) {
+  QueryBuilder<
+    LocalHlsDetailsModel,
+    LocalHlsDetailsModel,
+    QAfterFilterCondition
+  >
+  resolution(FilterQuery<HlsResolution> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'resolution');
     });

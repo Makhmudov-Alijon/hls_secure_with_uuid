@@ -1,7 +1,7 @@
-import 'package:download_manager/src/repository/isar/download_task/download_task_repository.dart';
+import 'package:hls_secure_with_uuid/src/repository/isar/download_task/download_task_repository.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../../../../download_manager.dart';
+import '../../../../hls_secure_with_uuid.dart';
 
 final downloadTaskIsarProvider = Provider<DownloadTaskIsarRepository>(
   (ref) => DownloadTaskIsarRepositoryImpl(

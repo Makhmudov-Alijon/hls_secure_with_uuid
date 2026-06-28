@@ -1,4 +1,4 @@
-group 'uz.radiants.download_manager'
+group 'uz.radiants.hls_secure_with_uuid'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'uz.radiants.download_manager'
+        namespace 'uz.radiants.hls_secure_with_uuid'
     }
 
     compileSdk 34

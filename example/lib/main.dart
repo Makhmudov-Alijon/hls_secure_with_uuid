@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:download_manager_example/home/home_page.dart';
+import 'package:hls_secure_with_uuid_example/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';

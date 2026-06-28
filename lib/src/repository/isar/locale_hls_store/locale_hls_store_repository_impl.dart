@@ -1,4 +1,4 @@
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'locale_hls_store_repository.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:disk_space/disk_space.dart';
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';

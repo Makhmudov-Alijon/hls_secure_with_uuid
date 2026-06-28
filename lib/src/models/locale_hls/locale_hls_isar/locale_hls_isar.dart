@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 
-import '../../../../download_manager.dart';
+import '../../../../hls_secure_with_uuid.dart';
 
 part 'locale_hls_isar.g.dart';
 

@@ -33,12 +33,9 @@ const HlsDeletedStatModelSchema = CollectionSchema(
       name: r'episodeId',
       type: IsarType.long,
     ),
-    r'id': PropertySchema(
-      id: 3,
-      name: r'id',
-      type: IsarType.string,
-    )
+    r'id': PropertySchema(id: 3, name: r'id', type: IsarType.string),
   },
+
   estimateSize: _hlsDeletedStatModelEstimateSize,
   serialize: _hlsDeletedStatModelSerialize,
   deserialize: _hlsDeletedStatModelDeserialize,
@@ -47,10 +44,11 @@ const HlsDeletedStatModelSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {},
+
   getId: _hlsDeletedStatModelGetId,
   getLinks: _hlsDeletedStatModelGetLinks,
   attach: _hlsDeletedStatModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _hlsDeletedStatModelEstimateSize(
@@ -115,17 +113,21 @@ Id _hlsDeletedStatModelGetId(HlsDeletedStatModel object) {
 }
 
 List<IsarLinkBase<dynamic>> _hlsDeletedStatModelGetLinks(
-    HlsDeletedStatModel object) {
+  HlsDeletedStatModel object,
+) {
   return [];
 }
 
 void _hlsDeletedStatModelAttach(
-    IsarCollection<dynamic> col, Id id, HlsDeletedStatModel object) {}
+  IsarCollection<dynamic> col,
+  Id id,
+  HlsDeletedStatModel object,
+) {}
 
 extension HlsDeletedStatModelQueryWhereSort
     on QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QWhere> {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhere>
-      anyIsarId() {
+  anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
@@ -135,17 +137,16 @@ extension HlsDeletedStatModelQueryWhereSort
 extension HlsDeletedStatModelQueryWhere
     on QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QWhereClause> {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhereClause>
-      isarIdEqualTo(Id isarId) {
+  isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: isarId,
-        upper: isarId,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(lower: isarId, upper: isarId),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhereClause>
-      isarIdNotEqualTo(Id isarId) {
+  isarIdNotEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -168,7 +169,7 @@ extension HlsDeletedStatModelQueryWhere
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhereClause>
-      isarIdGreaterThan(Id isarId, {bool include = false}) {
+  isarIdGreaterThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: isarId, includeLower: include),
@@ -177,7 +178,7 @@ extension HlsDeletedStatModelQueryWhere
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhereClause>
-      isarIdLessThan(Id isarId, {bool include = false}) {
+  isarIdLessThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: isarId, includeUpper: include),
@@ -186,213 +187,216 @@ extension HlsDeletedStatModelQueryWhere
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterWhereClause>
-      isarIdBetween(
+  isarIdBetween(
     Id lowerIsarId,
     Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerIsarId,
-        includeLower: includeLower,
-        upper: upperIsarId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerIsarId,
+          includeLower: includeLower,
+          upper: upperIsarId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
 
-extension HlsDeletedStatModelQueryFilter on QueryBuilder<HlsDeletedStatModel,
-    HlsDeletedStatModel, QFilterCondition> {
+extension HlsDeletedStatModelQueryFilter
+    on
+        QueryBuilder<
+          HlsDeletedStatModel,
+          HlsDeletedStatModel,
+          QFilterCondition
+        > {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      contentIdEqualTo(int value) {
+  contentIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'contentId', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      contentIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  contentIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      contentIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  contentIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      contentIdBetween(
+  contentIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'contentId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'contentId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      entireContentEqualTo(bool value) {
+  entireContentEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'entireContent',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'entireContent', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdIsNull() {
+  episodeIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'episodeId'),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdIsNotNull() {
+  episodeIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'episodeId'),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdEqualTo(int? value) {
+  episodeIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'episodeId', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  episodeIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  episodeIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      episodeIdBetween(
+  episodeIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'episodeId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'episodeId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  idEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idLessThan(
+  idGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idBetween(
+  idLessThan(String value, {bool include = false, bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
+  idBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -400,203 +404,214 @@ extension HlsDeletedStatModelQueryFilter on QueryBuilder<HlsDeletedStatModel,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  idStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  idEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idContains(String value, {bool caseSensitive = true}) {
+  idContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idMatches(String pattern, {bool caseSensitive = true}) {
+  idMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'id',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'id',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idIsEmpty() {
+  idIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: ''),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      idIsNotEmpty() {
+  idIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'id',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'id', value: ''),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      isarIdEqualTo(Id value) {
+  isarIdEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isarId', value: value),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      isarIdGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  isarIdGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      isarIdLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  isarIdLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterFilterCondition>
-      isarIdBetween(
+  isarIdBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'isarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'isarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
 
-extension HlsDeletedStatModelQueryObject on QueryBuilder<HlsDeletedStatModel,
-    HlsDeletedStatModel, QFilterCondition> {}
+extension HlsDeletedStatModelQueryObject
+    on
+        QueryBuilder<
+          HlsDeletedStatModel,
+          HlsDeletedStatModel,
+          QFilterCondition
+        > {}
 
-extension HlsDeletedStatModelQueryLinks on QueryBuilder<HlsDeletedStatModel,
-    HlsDeletedStatModel, QFilterCondition> {}
+extension HlsDeletedStatModelQueryLinks
+    on
+        QueryBuilder<
+          HlsDeletedStatModel,
+          HlsDeletedStatModel,
+          QFilterCondition
+        > {}
 
 extension HlsDeletedStatModelQuerySortBy
     on QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QSortBy> {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByContentId() {
+  sortByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByContentIdDesc() {
+  sortByContentIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByEntireContent() {
+  sortByEntireContent() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'entireContent', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByEntireContentDesc() {
+  sortByEntireContentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'entireContent', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByEpisodeId() {
+  sortByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByEpisodeIdDesc() {
+  sortByEpisodeIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortById() {
+  sortById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      sortByIdDesc() {
+  sortByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
@@ -606,70 +621,70 @@ extension HlsDeletedStatModelQuerySortBy
 extension HlsDeletedStatModelQuerySortThenBy
     on QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QSortThenBy> {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByContentId() {
+  thenByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByContentIdDesc() {
+  thenByContentIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByEntireContent() {
+  thenByEntireContent() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'entireContent', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByEntireContentDesc() {
+  thenByEntireContentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'entireContent', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByEpisodeId() {
+  thenByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByEpisodeIdDesc() {
+  thenByEpisodeIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenById() {
+  thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByIsarId() {
+  thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QAfterSortBy>
-      thenByIsarIdDesc() {
+  thenByIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.desc);
     });
@@ -679,28 +694,28 @@ extension HlsDeletedStatModelQuerySortThenBy
 extension HlsDeletedStatModelQueryWhereDistinct
     on QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QDistinct> {
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QDistinct>
-      distinctByContentId() {
+  distinctByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'contentId');
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QDistinct>
-      distinctByEntireContent() {
+  distinctByEntireContent() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'entireContent');
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QDistinct>
-      distinctByEpisodeId() {
+  distinctByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'episodeId');
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, HlsDeletedStatModel, QDistinct>
-      distinctById({bool caseSensitive = true}) {
+  distinctById({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
     });
@@ -722,14 +737,14 @@ extension HlsDeletedStatModelQueryProperty
   }
 
   QueryBuilder<HlsDeletedStatModel, bool, QQueryOperations>
-      entireContentProperty() {
+  entireContentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'entireContent');
     });
   }
 
   QueryBuilder<HlsDeletedStatModel, int?, QQueryOperations>
-      episodeIdProperty() {
+  episodeIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'episodeId');
     });

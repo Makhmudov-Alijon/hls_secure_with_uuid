@@ -1,4 +1,4 @@
-package uz.radiants.download_manager
+package uz.radiants.hls_secure_with_uuid
 
 import androidx.annotation.NonNull
 
@@ -8,8 +8,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-/** DownloadManagerPlugin */
-class DownloadManagerPlugin: FlutterPlugin, MethodCallHandler {
+/** HlsSecureWithUuidPlugin */
+class HlsSecureWithUuidPlugin: FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
@@ -17,7 +17,7 @@ class DownloadManagerPlugin: FlutterPlugin, MethodCallHandler {
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "download_manager")
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "hls_secure_with_uuid")
     channel.setMethodCallHandler(this)
   }
 

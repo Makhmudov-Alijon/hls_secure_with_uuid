@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../download_manager.dart';
+import '../../../hls_secure_with_uuid.dart';
 import '../stat_repository/local_stat_repository.dart';
 import '../stat_repository/remote_stat_repository.dart';
 import 'local_stat_repository_api.dart';

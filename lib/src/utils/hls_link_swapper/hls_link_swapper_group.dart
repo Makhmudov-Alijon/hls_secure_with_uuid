@@ -1,4 +1,4 @@
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 
 class HlsLinkSwapperGroup {
   HlsLinkSwapperGroup({required this.swappers});

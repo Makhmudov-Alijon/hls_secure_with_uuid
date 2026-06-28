@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 import XCTest
 
-@testable import download_manager
+@testable import hls_secure_with_uuid
 
 // This demonstrates a simple unit test of the Swift portion of this plugin's implementation.
 //
@@ -11,7 +11,7 @@ import XCTest
 class RunnerTests: XCTestCase {
 
   func testGetPlatformVersion() {
-    let plugin = DownloadManagerPlugin()
+    let plugin = HlsSecureWithUuidPlugin()
 
     let call = FlutterMethodCall(methodName: "getPlatformVersion", arguments: [])
 

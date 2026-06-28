@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../../entities/hls_audio/hls_audio.dart';
 import '../../../entities/hls_resolution/hls_resolution.dart';

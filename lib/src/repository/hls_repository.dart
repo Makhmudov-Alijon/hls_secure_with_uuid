@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/repository/isar/download_task/download_task_repository_impl.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
+import 'package:hls_secure_with_uuid/src/repository/isar/download_task/download_task_repository_impl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod/riverpod.dart';
 

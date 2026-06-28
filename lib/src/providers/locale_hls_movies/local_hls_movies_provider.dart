@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/providers/locale_hls_movies/sort_extensions.dart';
-import 'package:download_manager/src/repository/hls_local_repository.dart';
-import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository.dart';
-import 'package:download_manager/src/repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
-import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
+import 'package:hls_secure_with_uuid/src/providers/locale_hls_movies/sort_extensions.dart';
+import 'package:hls_secure_with_uuid/src/repository/hls_local_repository.dart';
+import 'package:hls_secure_with_uuid/src/repository/isar/locale_hls_store/locale_hls_store_repository.dart';
+import 'package:hls_secure_with_uuid/src/repository/isar/locale_hls_store/locale_hls_store_repository_impl.dart';
+import 'package:hls_secure_with_uuid/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

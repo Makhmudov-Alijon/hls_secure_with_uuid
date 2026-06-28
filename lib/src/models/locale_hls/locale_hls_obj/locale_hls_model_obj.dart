@@ -4,7 +4,7 @@
 // import 'package:equatable/equatable.dart';
 //
 //
-// import '../../../../download_manager.dart';
+// import '../../../../hls_secure_with_uuid.dart';
 // import '../local_hls_model/local_hls_details_model.dart';
 // import '../local_hls_model/local_hls_id.dart';
 //

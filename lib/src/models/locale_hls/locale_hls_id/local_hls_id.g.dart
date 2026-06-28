@@ -23,17 +23,10 @@ const LocalHlsIdSchema = Schema(
       name: r'episodeId',
       type: IsarType.long,
     ),
-    r'seasonId': PropertySchema(
-      id: 2,
-      name: r'seasonId',
-      type: IsarType.long,
-    ),
-    r'uuid': PropertySchema(
-      id: 3,
-      name: r'uuid',
-      type: IsarType.string,
-    )
+    r'seasonId': PropertySchema(id: 2, name: r'seasonId', type: IsarType.long),
+    r'uuid': PropertySchema(id: 3, name: r'uuid', type: IsarType.string),
   },
+
   estimateSize: _localHlsIdEstimateSize,
   serialize: _localHlsIdSerialize,
   deserialize: _localHlsIdDeserialize,
@@ -105,26 +98,25 @@ P _localHlsIdDeserializeProp<P>(
 extension LocalHlsIdQueryFilter
     on QueryBuilder<LocalHlsId, LocalHlsId, QFilterCondition> {
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> contentIdEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'contentId', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      contentIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  contentIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -133,11 +125,13 @@ extension LocalHlsIdQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -148,55 +142,56 @@ extension LocalHlsIdQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'contentId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'contentId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      episodeIdIsNull() {
+  episodeIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'episodeId'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      episodeIdIsNotNull() {
+  episodeIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'episodeId'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> episodeIdEqualTo(
-      int? value) {
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'episodeId', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      episodeIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  episodeIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -205,11 +200,13 @@ extension LocalHlsIdQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -220,54 +217,55 @@ extension LocalHlsIdQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'episodeId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'episodeId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> seasonIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'seasonId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'seasonId'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      seasonIdIsNotNull() {
+  seasonIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'seasonId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'seasonId'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> seasonIdEqualTo(
-      int? value) {
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'seasonId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'seasonId', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
-      seasonIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  seasonIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'seasonId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'seasonId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -276,11 +274,13 @@ extension LocalHlsIdQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'seasonId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'seasonId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -291,29 +291,31 @@ extension LocalHlsIdQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'seasonId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'seasonId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'uuid',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'uuid'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'uuid',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'uuid'),
+      );
     });
   }
 
@@ -322,11 +324,13 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -336,12 +340,14 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -351,12 +357,14 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -368,14 +376,16 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'uuid',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'uuid',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -384,11 +394,13 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -397,53 +409,59 @@ extension LocalHlsIdQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'uuid',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'uuid',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'uuid',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'uuid',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'uuid',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'uuid', value: ''),
+      );
     });
   }
 
   QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> uuidIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'uuid',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'uuid', value: ''),
+      );
     });
   }
 }

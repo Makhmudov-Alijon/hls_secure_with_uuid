@@ -1,6 +1,6 @@
-import 'package:download_manager/download_manager.dart';
-import 'package:download_manager_example/utils/widget_extension.dart';
-import 'package:download_manager_example/views/test_pages/video_page/video_page.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
+import 'package:hls_secure_with_uuid_example/utils/widget_extension.dart';
+import 'package:hls_secure_with_uuid_example/views/test_pages/video_page/video_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:path_provider/path_provider.dart';

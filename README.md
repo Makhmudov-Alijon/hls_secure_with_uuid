@@ -1,4 +1,4 @@
-# download_manager
+# hls_secure_with_uuid
 
 A new Flutter plugin project.
 

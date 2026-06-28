@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../repository/isar/download_task/download_task_repository_impl.dart';

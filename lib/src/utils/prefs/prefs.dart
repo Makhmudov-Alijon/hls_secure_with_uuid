@@ -1,4 +1,4 @@
-import 'package:download_manager/src/utils/prefs/pref_keys.dart';
+import 'package:hls_secure_with_uuid/src/utils/prefs/pref_keys.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 

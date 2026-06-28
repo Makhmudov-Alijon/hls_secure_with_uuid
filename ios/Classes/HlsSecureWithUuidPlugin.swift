@@ -1,10 +1,10 @@
 import Flutter
 import UIKit
 
-public class DownloadManagerPlugin: NSObject, FlutterPlugin {
+public class HlsSecureWithUuidPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "download_manager", binaryMessenger: registrar.messenger())
-    let instance = DownloadManagerPlugin()
+    let channel = FlutterMethodChannel(name: "hls_secure_with_uuid", binaryMessenger: registrar.messenger())
+    let instance = HlsSecureWithUuidPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

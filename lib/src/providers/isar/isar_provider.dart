@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-import '../../../download_manager.dart';
+import '../../../hls_secure_with_uuid.dart';
 
 final isarProviderr = NotifierProvider<IsarNotifier, Isar>(
   () {

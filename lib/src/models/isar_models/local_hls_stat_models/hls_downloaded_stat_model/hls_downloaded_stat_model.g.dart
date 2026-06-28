@@ -28,12 +28,9 @@ const HlsDownloadedStatModelSchema = CollectionSchema(
       name: r'episodeId',
       type: IsarType.long,
     ),
-    r'id': PropertySchema(
-      id: 2,
-      name: r'id',
-      type: IsarType.string,
-    )
+    r'id': PropertySchema(id: 2, name: r'id', type: IsarType.string),
   },
+
   estimateSize: _hlsDownloadedStatModelEstimateSize,
   serialize: _hlsDownloadedStatModelSerialize,
   deserialize: _hlsDownloadedStatModelDeserialize,
@@ -42,10 +39,11 @@ const HlsDownloadedStatModelSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {},
+
   getId: _hlsDownloadedStatModelGetId,
   getLinks: _hlsDownloadedStatModelGetLinks,
   attach: _hlsDownloadedStatModelAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _hlsDownloadedStatModelEstimateSize(
@@ -106,37 +104,53 @@ Id _hlsDownloadedStatModelGetId(HlsDownloadedStatModel object) {
 }
 
 List<IsarLinkBase<dynamic>> _hlsDownloadedStatModelGetLinks(
-    HlsDownloadedStatModel object) {
+  HlsDownloadedStatModel object,
+) {
   return [];
 }
 
 void _hlsDownloadedStatModelAttach(
-    IsarCollection<dynamic> col, Id id, HlsDownloadedStatModel object) {}
+  IsarCollection<dynamic> col,
+  Id id,
+  HlsDownloadedStatModel object,
+) {}
 
 extension HlsDownloadedStatModelQueryWhereSort
     on QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QWhere> {
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterWhere>
-      anyIsarId() {
+  anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension HlsDownloadedStatModelQueryWhere on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QWhereClause> {
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterWhereClause> isarIdEqualTo(Id isarId) {
+extension HlsDownloadedStatModelQueryWhere
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QWhereClause
+        > {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterWhereClause
+  >
+  isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: isarId,
-        upper: isarId,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(lower: isarId, upper: isarId),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterWhereClause> isarIdNotEqualTo(Id isarId) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterWhereClause
+  >
+  isarIdNotEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -158,8 +172,12 @@ extension HlsDownloadedStatModelQueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterWhereClause> isarIdGreaterThan(Id isarId, {bool include = false}) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterWhereClause
+  >
+  isarIdGreaterThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: isarId, includeLower: include),
@@ -167,8 +185,12 @@ extension HlsDownloadedStatModelQueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterWhereClause> isarIdLessThan(Id isarId, {bool include = false}) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterWhereClause
+  >
+  isarIdLessThan(Id isarId, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: isarId, includeUpper: include),
@@ -176,204 +198,268 @@ extension HlsDownloadedStatModelQueryWhere on QueryBuilder<
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterWhereClause> isarIdBetween(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterWhereClause
+  >
+  isarIdBetween(
     Id lowerIsarId,
     Id upperIsarId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerIsarId,
-        includeLower: includeLower,
-        upper: upperIsarId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerIsarId,
+          includeLower: includeLower,
+          upper: upperIsarId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
 
-extension HlsDownloadedStatModelQueryFilter on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QFilterCondition> {
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> contentIdEqualTo(int value) {
+extension HlsDownloadedStatModelQueryFilter
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QFilterCondition
+        > {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  contentIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'contentId', value: value),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> contentIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  contentIdGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> contentIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  contentIdLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'contentId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'contentId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> contentIdBetween(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  contentIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'contentId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'contentId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdIsNull() {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'episodeId'),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdIsNotNull() {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'episodeId',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'episodeId'),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdEqualTo(int? value) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'episodeId', value: value),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'episodeId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'episodeId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> episodeIdBetween(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  episodeIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'episodeId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'episodeId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idLessThan(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idBetween(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idLessThan(String value, {bool include = false, bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -381,250 +467,304 @@ extension HlsDownloadedStatModelQueryFilter on QueryBuilder<
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-          QAfterFilterCondition>
-      idContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'id',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'id',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-          QAfterFilterCondition>
-      idMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'id',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'id',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idIsEmpty() {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: ''),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> idIsNotEmpty() {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  idIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'id',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'id', value: ''),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> isarIdEqualTo(Id value) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  isarIdEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isarId', value: value),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> isarIdGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  isarIdGreaterThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> isarIdLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  isarIdLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
-  QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel,
-      QAfterFilterCondition> isarIdBetween(
+  QueryBuilder<
+    HlsDownloadedStatModel,
+    HlsDownloadedStatModel,
+    QAfterFilterCondition
+  >
+  isarIdBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'isarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'isarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
 
-extension HlsDownloadedStatModelQueryObject on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QFilterCondition> {}
+extension HlsDownloadedStatModelQueryObject
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QFilterCondition
+        > {}
 
-extension HlsDownloadedStatModelQueryLinks on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QFilterCondition> {}
+extension HlsDownloadedStatModelQueryLinks
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QFilterCondition
+        > {}
 
 extension HlsDownloadedStatModelQuerySortBy
     on QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QSortBy> {
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortByContentId() {
+  sortByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortByContentIdDesc() {
+  sortByContentIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortByEpisodeId() {
+  sortByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortByEpisodeIdDesc() {
+  sortByEpisodeIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortById() {
+  sortById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      sortByIdDesc() {
+  sortByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 }
 
-extension HlsDownloadedStatModelQuerySortThenBy on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QSortThenBy> {
+extension HlsDownloadedStatModelQuerySortThenBy
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QSortThenBy
+        > {
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByContentId() {
+  thenByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByContentIdDesc() {
+  thenByContentIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'contentId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByEpisodeId() {
+  thenByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByEpisodeIdDesc() {
+  thenByEpisodeIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'episodeId', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenById() {
+  thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByIdDesc() {
+  thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByIsarId() {
+  thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.asc);
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QAfterSortBy>
-      thenByIsarIdDesc() {
+  thenByIsarIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isarId', Sort.desc);
     });
@@ -634,29 +774,34 @@ extension HlsDownloadedStatModelQuerySortThenBy on QueryBuilder<
 extension HlsDownloadedStatModelQueryWhereDistinct
     on QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QDistinct> {
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QDistinct>
-      distinctByContentId() {
+  distinctByContentId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'contentId');
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QDistinct>
-      distinctByEpisodeId() {
+  distinctByEpisodeId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'episodeId');
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, HlsDownloadedStatModel, QDistinct>
-      distinctById({bool caseSensitive = true}) {
+  distinctById({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension HlsDownloadedStatModelQueryProperty on QueryBuilder<
-    HlsDownloadedStatModel, HlsDownloadedStatModel, QQueryProperty> {
+extension HlsDownloadedStatModelQueryProperty
+    on
+        QueryBuilder<
+          HlsDownloadedStatModel,
+          HlsDownloadedStatModel,
+          QQueryProperty
+        > {
   QueryBuilder<HlsDownloadedStatModel, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
@@ -664,14 +809,14 @@ extension HlsDownloadedStatModelQueryProperty on QueryBuilder<
   }
 
   QueryBuilder<HlsDownloadedStatModel, int, QQueryOperations>
-      contentIdProperty() {
+  contentIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'contentId');
     });
   }
 
   QueryBuilder<HlsDownloadedStatModel, int?, QQueryOperations>
-      episodeIdProperty() {
+  episodeIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'episodeId');
     });

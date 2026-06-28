@@ -26,14 +26,16 @@ const DownloadTaskSchema = CollectionSchema(
       id: 1,
       name: r'items',
       type: IsarType.objectList,
+
       target: r'DownloadItem',
     ),
     r'totalBytes': PropertySchema(
       id: 2,
       name: r'totalBytes',
       type: IsarType.long,
-    )
+    ),
   },
+
   estimateSize: _downloadTaskEstimateSize,
   serialize: _downloadTaskSerialize,
   deserialize: _downloadTaskDeserialize,
@@ -42,10 +44,11 @@ const DownloadTaskSchema = CollectionSchema(
   indexes: {},
   links: {},
   embeddedSchemas: {r'DownloadItem': DownloadItemSchema},
+
   getId: _downloadTaskGetId,
   getLinks: _downloadTaskGetLinks,
   attach: _downloadTaskAttach,
-  version: '3.1.0+1',
+  version: '3.3.2',
 );
 
 int _downloadTaskEstimateSize(
@@ -90,7 +93,8 @@ DownloadTask _downloadTaskDeserialize(
   final object = DownloadTask(
     downloadedBytes: reader.readLongOrNull(offsets[0]) ?? 0,
     id: id,
-    items: reader.readObjectList<DownloadItem>(
+    items:
+        reader.readObjectList<DownloadItem>(
           offsets[1],
           DownloadItemSchema.deserialize,
           allOffsets,
@@ -113,12 +117,13 @@ P _downloadTaskDeserializeProp<P>(
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
       return (reader.readObjectList<DownloadItem>(
-            offset,
-            DownloadItemSchema.deserialize,
-            allOffsets,
-            DownloadItem(),
-          ) ??
-          const []) as P;
+                offset,
+                DownloadItemSchema.deserialize,
+                allOffsets,
+                DownloadItem(),
+              ) ??
+              const [])
+          as P;
     case 2:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
@@ -135,7 +140,10 @@ List<IsarLinkBase<dynamic>> _downloadTaskGetLinks(DownloadTask object) {
 }
 
 void _downloadTaskAttach(
-    IsarCollection<dynamic> col, Id id, DownloadTask object) {
+  IsarCollection<dynamic> col,
+  Id id,
+  DownloadTask object,
+) {
   object.id = id;
 }
 
@@ -152,15 +160,13 @@ extension DownloadTaskQueryWhere
     on QueryBuilder<DownloadTask, DownloadTask, QWhereClause> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterWhereClause> idNotEqualTo(
-      Id id) {
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -183,8 +189,9 @@ extension DownloadTaskQueryWhere
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterWhereClause> idGreaterThan(
-      Id id,
-      {bool include = false}) {
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -192,8 +199,10 @@ extension DownloadTaskQueryWhere
     });
   }
 
-  QueryBuilder<DownloadTask, DownloadTask, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<DownloadTask, DownloadTask, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -208,12 +217,14 @@ extension DownloadTaskQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -221,68 +232,67 @@ extension DownloadTaskQueryWhere
 extension DownloadTaskQueryFilter
     on QueryBuilder<DownloadTask, DownloadTask, QFilterCondition> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      downloadedBytesEqualTo(int value) {
+  downloadedBytesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'downloadedBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'downloadedBytes', value: value),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      downloadedBytesGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  downloadedBytesGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'downloadedBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'downloadedBytes',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      downloadedBytesLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  downloadedBytesLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'downloadedBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'downloadedBytes',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      downloadedBytesBetween(
+  downloadedBytesBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'downloadedBytes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'downloadedBytes',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -291,11 +301,13 @@ extension DownloadTaskQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -304,11 +316,13 @@ extension DownloadTaskQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -319,89 +333,55 @@ extension DownloadTaskQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'items',
-        length,
-        true,
-        length,
-        true,
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsIsEmpty() {
+  itemsLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'items',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'items', length, true, length, true);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsIsNotEmpty() {
+  itemsIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'items',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'items', 0, true, 0, true);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+  itemsIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'items',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'items', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  itemsLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'items',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'items', 0, true, length, include);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      itemsLengthBetween(
+  itemsLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'items', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
+  itemsLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -419,58 +399,57 @@ extension DownloadTaskQueryFilter
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      totalBytesEqualTo(int value) {
+  totalBytesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'totalBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'totalBytes', value: value),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      totalBytesGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  totalBytesGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'totalBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'totalBytes',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      totalBytesLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  totalBytesLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'totalBytes',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'totalBytes',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition>
-      totalBytesBetween(
+  totalBytesBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'totalBytes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'totalBytes',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -478,7 +457,8 @@ extension DownloadTaskQueryFilter
 extension DownloadTaskQueryObject
     on QueryBuilder<DownloadTask, DownloadTask, QFilterCondition> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterFilterCondition> itemsElement(
-      FilterQuery<DownloadItem> q) {
+    FilterQuery<DownloadItem> q,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'items');
     });
@@ -491,14 +471,14 @@ extension DownloadTaskQueryLinks
 extension DownloadTaskQuerySortBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortBy> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByDownloadedBytes() {
+  sortByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'downloadedBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByDownloadedBytesDesc() {
+  sortByDownloadedBytesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'downloadedBytes', Sort.desc);
     });
@@ -511,7 +491,7 @@ extension DownloadTaskQuerySortBy
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      sortByTotalBytesDesc() {
+  sortByTotalBytesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalBytes', Sort.desc);
     });
@@ -521,14 +501,14 @@ extension DownloadTaskQuerySortBy
 extension DownloadTaskQuerySortThenBy
     on QueryBuilder<DownloadTask, DownloadTask, QSortThenBy> {
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByDownloadedBytes() {
+  thenByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'downloadedBytes', Sort.asc);
     });
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByDownloadedBytesDesc() {
+  thenByDownloadedBytesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'downloadedBytes', Sort.desc);
     });
@@ -553,7 +533,7 @@ extension DownloadTaskQuerySortThenBy
   }
 
   QueryBuilder<DownloadTask, DownloadTask, QAfterSortBy>
-      thenByTotalBytesDesc() {
+  thenByTotalBytesDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'totalBytes', Sort.desc);
     });
@@ -563,7 +543,7 @@ extension DownloadTaskQuerySortThenBy
 extension DownloadTaskQueryWhereDistinct
     on QueryBuilder<DownloadTask, DownloadTask, QDistinct> {
   QueryBuilder<DownloadTask, DownloadTask, QDistinct>
-      distinctByDownloadedBytes() {
+  distinctByDownloadedBytes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'downloadedBytes');
     });
@@ -591,7 +571,7 @@ extension DownloadTaskQueryProperty
   }
 
   QueryBuilder<DownloadTask, List<DownloadItem>, QQueryOperations>
-      itemsProperty() {
+  itemsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'items');
     });

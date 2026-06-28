@@ -1,7 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:encrypt/encrypt.dart';
 
-import '../../download_manager.dart';
+import '../../hls_secure_with_uuid.dart';
 
 final class HlsEncrypterHeaders {
   HlsEncrypterHeaders._();

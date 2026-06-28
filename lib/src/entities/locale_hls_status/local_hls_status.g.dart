@@ -23,11 +23,7 @@ const LocalHlsStatusSchema = Schema(
       name: r'getCreationDate',
       type: IsarType.dateTime,
     ),
-    r'message': PropertySchema(
-      id: 2,
-      name: r'message',
-      type: IsarType.string,
-    ),
+    r'message': PropertySchema(id: 2, name: r'message', type: IsarType.string),
     r'statusCode': PropertySchema(
       id: 3,
       name: r'statusCode',
@@ -38,8 +34,9 @@ const LocalHlsStatusSchema = Schema(
       name: r'statusType',
       type: IsarType.byte,
       enumMap: _LocalHlsStatusstatusTypeEnumValueMap,
-    )
+    ),
   },
+
   estimateSize: _localHlsStatusEstimateSize,
   serialize: _localHlsStatusSerialize,
   deserialize: _localHlsStatusDeserialize,
@@ -84,8 +81,10 @@ LocalHlsStatus _localHlsStatusDeserialize(
     creationDate: reader.readLongOrNull(offsets[0]) ?? -1,
     message: reader.readStringOrNull(offsets[2]),
     statusCode: reader.readLongOrNull(offsets[3]),
-    statusType: _LocalHlsStatusstatusTypeValueEnumMap[
-            reader.readByteOrNull(offsets[4])] ??
+    statusType:
+        _LocalHlsStatusstatusTypeValueEnumMap[reader.readByteOrNull(
+          offsets[4],
+        )] ??
         LocalHlsStatusType.notExist,
   );
   return object;
@@ -107,9 +106,11 @@ P _localHlsStatusDeserializeProp<P>(
     case 3:
       return (reader.readLongOrNull(offset)) as P;
     case 4:
-      return (_LocalHlsStatusstatusTypeValueEnumMap[
-              reader.readByteOrNull(offset)] ??
-          LocalHlsStatusType.notExist) as P;
+      return (_LocalHlsStatusstatusTypeValueEnumMap[reader.readByteOrNull(
+                offset,
+              )] ??
+              LocalHlsStatusType.notExist)
+          as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -141,183 +142,184 @@ const _LocalHlsStatusstatusTypeValueEnumMap = {
 extension LocalHlsStatusQueryFilter
     on QueryBuilder<LocalHlsStatus, LocalHlsStatus, QFilterCondition> {
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      creationDateEqualTo(int value) {
+  creationDateEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'creationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'creationDate', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      creationDateGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  creationDateGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'creationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'creationDate',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      creationDateLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  creationDateLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'creationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'creationDate',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      creationDateBetween(
+  creationDateBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'creationDate',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'creationDate',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      getCreationDateEqualTo(DateTime value) {
+  getCreationDateEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'getCreationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'getCreationDate', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      getCreationDateGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  getCreationDateGreaterThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'getCreationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'getCreationDate',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      getCreationDateLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
+  getCreationDateLessThan(DateTime value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'getCreationDate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'getCreationDate',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      getCreationDateBetween(
+  getCreationDateBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'getCreationDate',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'getCreationDate',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageIsNull() {
+  messageIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'message',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'message'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageIsNotNull() {
+  messageIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'message',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'message'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  messageEqualTo(String? value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageLessThan(
+  messageGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageBetween(
+  messageLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
+  messageBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -325,214 +327,214 @@ extension LocalHlsStatusQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'message',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'message',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  messageStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  messageEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageContains(String value, {bool caseSensitive = true}) {
+  messageContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'message',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'message',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageMatches(String pattern, {bool caseSensitive = true}) {
+  messageMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'message',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'message',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageIsEmpty() {
+  messageIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'message',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'message', value: ''),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      messageIsNotEmpty() {
+  messageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'message',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'message', value: ''),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeIsNull() {
+  statusCodeIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'statusCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'statusCode'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeIsNotNull() {
+  statusCodeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'statusCode',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'statusCode'),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeEqualTo(int? value) {
+  statusCodeEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'statusCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'statusCode', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
+  statusCodeGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'statusCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'statusCode',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeLessThan(
-    int? value, {
-    bool include = false,
-  }) {
+  statusCodeLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'statusCode',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'statusCode',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusCodeBetween(
+  statusCodeBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'statusCode',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'statusCode',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusTypeEqualTo(LocalHlsStatusType value) {
+  statusTypeEqualTo(LocalHlsStatusType value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'statusType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'statusType', value: value),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusTypeGreaterThan(
-    LocalHlsStatusType value, {
-    bool include = false,
-  }) {
+  statusTypeGreaterThan(LocalHlsStatusType value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'statusType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'statusType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusTypeLessThan(
-    LocalHlsStatusType value, {
-    bool include = false,
-  }) {
+  statusTypeLessThan(LocalHlsStatusType value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'statusType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'statusType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<LocalHlsStatus, LocalHlsStatus, QAfterFilterCondition>
-      statusTypeBetween(
+  statusTypeBetween(
     LocalHlsStatusType lower,
     LocalHlsStatusType upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'statusType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'statusType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }

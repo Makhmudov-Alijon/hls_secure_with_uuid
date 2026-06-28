@@ -1,5 +1,5 @@
-import 'package:download_manager/download_manager.dart';
-import 'package:download_manager/src/utils/app_debouncer/app_debouncer.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
+import 'package:hls_secure_with_uuid/src/utils/app_debouncer/app_debouncer.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 final downloadButtonSafetyProvider =
     NotifierProvider<DownloadButtonSafetyNotifier, LocalHlsId?>(() {

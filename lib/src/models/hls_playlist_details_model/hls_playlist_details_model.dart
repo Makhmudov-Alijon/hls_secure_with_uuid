@@ -4,7 +4,7 @@ part 'hls_playlist_details_model.freezed.dart';
 part 'hls_playlist_details_model.g.dart';
 
 @freezed
-class HlsPlaylistDetailsModel with _$HlsPlaylistDetailsModel {
+abstract class HlsPlaylistDetailsModel with _$HlsPlaylistDetailsModel {
   factory HlsPlaylistDetailsModel({
     required String path,
     required String data,

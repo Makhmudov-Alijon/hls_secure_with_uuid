@@ -1,4 +1,4 @@
-import 'package:download_manager/download_manager.dart';
+import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:riverpod/riverpod.dart';
 
 import '../models/thumbs_non_parsed_playlist/thumbs_non_parsed_playlist.dart';

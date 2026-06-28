@@ -1,13 +1,13 @@
-name: download_manager
+name: hls_secure_with_uuid
 description: "A new Flutter plugin project."
 version: 0.0.1
-homepage: https://github.com/radiants-uz/download_manager.git
+homepage: https://github.com/radiants-uz/hls_secure_with_uuid.git
 publish_to: none
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
   flutter: '>=3.3.0'
-isar_version: &isar_version ^3.1.0+1
+isar_version: &isar_version ^3.3.2
 dependencies:
   dio: ^5.4.3+1
   encrypt: ^5.0.3
@@ -19,8 +19,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0
-  freezed: ^2.5.2
-  freezed_annotation: ^2.4.1
+  freezed: ^3.0.0
+  freezed_annotation: ^3.1.0
   hooks_riverpod: ^2.5.1
   http: ^1.2.2
   json_annotation: ^4.9.0
@@ -29,8 +29,8 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   riverpod: ^2.5.1
   hive: ^2.2.3
-  isar: *isar_version
-  isar_flutter_libs: *isar_version
+  isar_community: *isar_version
+  isar_community_flutter_libs: *isar_version
   flutter_downloader: ^1.11.8
   internet_connection_checker: ^1.0.0+1
   dart_jsonwebtoken: ^2.7.1
@@ -44,7 +44,7 @@ dev_dependencies:
   very_good_analysis: ^5.1.0
   build_runner: ^2.4.9
   json_serializable: ^6.8.0
-  isar_generator: *isar_version
+  isar_community_generator: *isar_version
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -64,10 +64,10 @@ flutter:
   # plugin:
   #   platforms:
   #     android:
-  #       package: uz.radiants.download_manager
-  #       pluginClass: DownloadManagerPlugin
+  #       package: uz.radiants.hls_secure_with_uuid
+  #       pluginClass: HlsSecureWithUuidPlugin
   #     ios:
-  #       pluginClass: DownloadManagerPlugin
+  #       pluginClass: HlsSecureWithUuidPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

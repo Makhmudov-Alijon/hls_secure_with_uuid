@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:download_manager/src/entities/local_hls_state.dart';
-import 'package:download_manager/src/utils/extension/int_extension.dart';
+import 'package:hls_secure_with_uuid/src/entities/local_hls_state.dart';
+import 'package:hls_secure_with_uuid/src/utils/extension/int_extension.dart';
 import 'package:http/http.dart' as http;
 
 import '../datas/datas.dart';
