@@ -6,9 +6,9 @@ part of 'hls_full_non_parsed_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$HlsFullNonParsedModelImpl _$$HlsFullNonParsedModelImplFromJson(
+_HlsFullNonParsedModel _$HlsFullNonParsedModelFromJson(
         Map<String, dynamic> json) =>
-    _$HlsFullNonParsedModelImpl(
+    _HlsFullNonParsedModel(
       master: json['master'] as String,
       baseUrl: json['base_url'] as String,
       videoPlaylists: (json['video_playlists'] as List<dynamic>)
@@ -25,8 +25,8 @@ _$HlsFullNonParsedModelImpl _$$HlsFullNonParsedModelImplFromJson(
       token: json['token'] as String?,
     );
 
-Map<String, dynamic> _$$HlsFullNonParsedModelImplToJson(
-        _$HlsFullNonParsedModelImpl instance) =>
+Map<String, dynamic> _$HlsFullNonParsedModelToJson(
+        _HlsFullNonParsedModel instance) =>
     <String, dynamic>{
       'master': instance.master,
       'base_url': instance.baseUrl,

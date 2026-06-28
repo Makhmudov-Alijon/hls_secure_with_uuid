@@ -50,7 +50,7 @@ const HlsDeletedStatModelSchema = CollectionSchema(
   getId: _hlsDeletedStatModelGetId,
   getLinks: _hlsDeletedStatModelGetLinks,
   attach: _hlsDeletedStatModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _hlsDeletedStatModelEstimateSize(

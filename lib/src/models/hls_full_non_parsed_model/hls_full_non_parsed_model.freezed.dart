@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,116 +9,71 @@ part of 'hls_full_non_parsed_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-HlsFullNonParsedModel _$HlsFullNonParsedModelFromJson(
-    Map<String, dynamic> json) {
-  return _HlsFullNonParsedModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$HlsFullNonParsedModel {
-  String get master => throw _privateConstructorUsedError;
-  String get baseUrl => throw _privateConstructorUsedError;
-  List<HlsPlaylistDetailsModel> get videoPlaylists =>
-      throw _privateConstructorUsedError;
-  List<HlsPlaylistDetailsModel> get audioPlaylists =>
-      throw _privateConstructorUsedError;
+  String get master;
+  String get baseUrl;
+  List<HlsPlaylistDetailsModel> get videoPlaylists;
+  List<HlsPlaylistDetailsModel> get audioPlaylists;
   @ThumbsSerializer()
-  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists =>
-      throw _privateConstructorUsedError;
-  String get enc => throw _privateConstructorUsedError;
-  String? get token => throw _privateConstructorUsedError;
+  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists;
+  String get enc;
+  String? get token;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $HlsFullNonParsedModelCopyWith<HlsFullNonParsedModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $HlsFullNonParsedModelCopyWith<$Res> {
-  factory $HlsFullNonParsedModelCopyWith(HlsFullNonParsedModel value,
-          $Res Function(HlsFullNonParsedModel) then) =
-      _$HlsFullNonParsedModelCopyWithImpl<$Res, HlsFullNonParsedModel>;
-  @useResult
-  $Res call(
-      {String master,
-      String baseUrl,
-      List<HlsPlaylistDetailsModel> videoPlaylists,
-      List<HlsPlaylistDetailsModel> audioPlaylists,
-      @ThumbsSerializer()
-      Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
-      String enc,
-      String? token});
-}
-
-/// @nodoc
-class _$HlsFullNonParsedModelCopyWithImpl<$Res,
-        $Val extends HlsFullNonParsedModel>
-    implements $HlsFullNonParsedModelCopyWith<$Res> {
-  _$HlsFullNonParsedModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of HlsFullNonParsedModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $HlsFullNonParsedModelCopyWith<HlsFullNonParsedModel> get copyWith =>
+      _$HlsFullNonParsedModelCopyWithImpl<HlsFullNonParsedModel>(
+          this as HlsFullNonParsedModel, _$identity);
+
+  /// Serializes this HlsFullNonParsedModel to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? master = null,
-    Object? baseUrl = null,
-    Object? videoPlaylists = null,
-    Object? audioPlaylists = null,
-    Object? thumbsPlaylists = null,
-    Object? enc = null,
-    Object? token = freezed,
-  }) {
-    return _then(_value.copyWith(
-      master: null == master
-          ? _value.master
-          : master // ignore: cast_nullable_to_non_nullable
-              as String,
-      baseUrl: null == baseUrl
-          ? _value.baseUrl
-          : baseUrl // ignore: cast_nullable_to_non_nullable
-              as String,
-      videoPlaylists: null == videoPlaylists
-          ? _value.videoPlaylists
-          : videoPlaylists // ignore: cast_nullable_to_non_nullable
-              as List<HlsPlaylistDetailsModel>,
-      audioPlaylists: null == audioPlaylists
-          ? _value.audioPlaylists
-          : audioPlaylists // ignore: cast_nullable_to_non_nullable
-              as List<HlsPlaylistDetailsModel>,
-      thumbsPlaylists: null == thumbsPlaylists
-          ? _value.thumbsPlaylists
-          : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
-              as Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>,
-      enc: null == enc
-          ? _value.enc
-          : enc // ignore: cast_nullable_to_non_nullable
-              as String,
-      token: freezed == token
-          ? _value.token
-          : token // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is HlsFullNonParsedModel &&
+            (identical(other.master, master) || other.master == master) &&
+            (identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl) &&
+            const DeepCollectionEquality()
+                .equals(other.videoPlaylists, videoPlaylists) &&
+            const DeepCollectionEquality()
+                .equals(other.audioPlaylists, audioPlaylists) &&
+            const DeepCollectionEquality()
+                .equals(other.thumbsPlaylists, thumbsPlaylists) &&
+            (identical(other.enc, enc) || other.enc == enc) &&
+            (identical(other.token, token) || other.token == token));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      master,
+      baseUrl,
+      const DeepCollectionEquality().hash(videoPlaylists),
+      const DeepCollectionEquality().hash(audioPlaylists),
+      const DeepCollectionEquality().hash(thumbsPlaylists),
+      enc,
+      token);
+
+  @override
+  String toString() {
+    return 'HlsFullNonParsedModel(master: $master, baseUrl: $baseUrl, videoPlaylists: $videoPlaylists, audioPlaylists: $audioPlaylists, thumbsPlaylists: $thumbsPlaylists, enc: $enc, token: $token)';
   }
 }
 
 /// @nodoc
-abstract class _$$HlsFullNonParsedModelImplCopyWith<$Res>
-    implements $HlsFullNonParsedModelCopyWith<$Res> {
-  factory _$$HlsFullNonParsedModelImplCopyWith(
-          _$HlsFullNonParsedModelImpl value,
-          $Res Function(_$HlsFullNonParsedModelImpl) then) =
-      __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $HlsFullNonParsedModelCopyWith<$Res> {
+  factory $HlsFullNonParsedModelCopyWith(HlsFullNonParsedModel value,
+          $Res Function(HlsFullNonParsedModel) _then) =
+      _$HlsFullNonParsedModelCopyWithImpl;
   @useResult
   $Res call(
       {String master,
@@ -132,14 +87,15 @@ abstract class _$$HlsFullNonParsedModelImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
-    extends _$HlsFullNonParsedModelCopyWithImpl<$Res,
-        _$HlsFullNonParsedModelImpl>
-    implements _$$HlsFullNonParsedModelImplCopyWith<$Res> {
-  __$$HlsFullNonParsedModelImplCopyWithImpl(_$HlsFullNonParsedModelImpl _value,
-      $Res Function(_$HlsFullNonParsedModelImpl) _then)
-      : super(_value, _then);
+class _$HlsFullNonParsedModelCopyWithImpl<$Res>
+    implements $HlsFullNonParsedModelCopyWith<$Res> {
+  _$HlsFullNonParsedModelCopyWithImpl(this._self, this._then);
 
+  final HlsFullNonParsedModel _self;
+  final $Res Function(HlsFullNonParsedModel) _then;
+
+  /// Create a copy of HlsFullNonParsedModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -151,43 +107,248 @@ class __$$HlsFullNonParsedModelImplCopyWithImpl<$Res>
     Object? enc = null,
     Object? token = freezed,
   }) {
-    return _then(_$HlsFullNonParsedModelImpl(
+    return _then(_self.copyWith(
       master: null == master
-          ? _value.master
+          ? _self.master
           : master // ignore: cast_nullable_to_non_nullable
               as String,
       baseUrl: null == baseUrl
-          ? _value.baseUrl
+          ? _self.baseUrl
           : baseUrl // ignore: cast_nullable_to_non_nullable
               as String,
       videoPlaylists: null == videoPlaylists
-          ? _value._videoPlaylists
+          ? _self.videoPlaylists
           : videoPlaylists // ignore: cast_nullable_to_non_nullable
               as List<HlsPlaylistDetailsModel>,
       audioPlaylists: null == audioPlaylists
-          ? _value._audioPlaylists
+          ? _self.audioPlaylists
           : audioPlaylists // ignore: cast_nullable_to_non_nullable
               as List<HlsPlaylistDetailsModel>,
       thumbsPlaylists: null == thumbsPlaylists
-          ? _value._thumbsPlaylists
+          ? _self.thumbsPlaylists
           : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
               as Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>,
       enc: null == enc
-          ? _value.enc
+          ? _self.enc
           : enc // ignore: cast_nullable_to_non_nullable
               as String,
       token: freezed == token
-          ? _value.token
+          ? _self.token
           : token // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [HlsFullNonParsedModel].
+extension HlsFullNonParsedModelPatterns on HlsFullNonParsedModel {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_HlsFullNonParsedModel value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_HlsFullNonParsedModel value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_HlsFullNonParsedModel value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            String master,
+            String baseUrl,
+            List<HlsPlaylistDetailsModel> videoPlaylists,
+            List<HlsPlaylistDetailsModel> audioPlaylists,
+            @ThumbsSerializer()
+            Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+            String enc,
+            String? token)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel() when $default != null:
+        return $default(
+            _that.master,
+            _that.baseUrl,
+            _that.videoPlaylists,
+            _that.audioPlaylists,
+            _that.thumbsPlaylists,
+            _that.enc,
+            _that.token);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            String master,
+            String baseUrl,
+            List<HlsPlaylistDetailsModel> videoPlaylists,
+            List<HlsPlaylistDetailsModel> audioPlaylists,
+            @ThumbsSerializer()
+            Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+            String enc,
+            String? token)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel():
+        return $default(
+            _that.master,
+            _that.baseUrl,
+            _that.videoPlaylists,
+            _that.audioPlaylists,
+            _that.thumbsPlaylists,
+            _that.enc,
+            _that.token);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            String master,
+            String baseUrl,
+            List<HlsPlaylistDetailsModel> videoPlaylists,
+            List<HlsPlaylistDetailsModel> audioPlaylists,
+            @ThumbsSerializer()
+            Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+            String enc,
+            String? token)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _HlsFullNonParsedModel() when $default != null:
+        return $default(
+            _that.master,
+            _that.baseUrl,
+            _that.videoPlaylists,
+            _that.audioPlaylists,
+            _that.thumbsPlaylists,
+            _that.enc,
+            _that.token);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
-  _$HlsFullNonParsedModelImpl(
+class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
+  _HlsFullNonParsedModel(
       {required this.master,
       required this.baseUrl,
       required final List<HlsPlaylistDetailsModel> videoPlaylists,
@@ -200,9 +361,8 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
       : _videoPlaylists = videoPlaylists,
         _audioPlaylists = audioPlaylists,
         _thumbsPlaylists = thumbsPlaylists;
-
-  factory _$HlsFullNonParsedModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$HlsFullNonParsedModelImplFromJson(json);
+  factory _HlsFullNonParsedModel.fromJson(Map<String, dynamic> json) =>
+      _$HlsFullNonParsedModelFromJson(json);
 
   @override
   final String master;
@@ -238,16 +398,27 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
   @override
   final String? token;
 
+  /// Create a copy of HlsFullNonParsedModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'HlsFullNonParsedModel(master: $master, baseUrl: $baseUrl, videoPlaylists: $videoPlaylists, audioPlaylists: $audioPlaylists, thumbsPlaylists: $thumbsPlaylists, enc: $enc, token: $token)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$HlsFullNonParsedModelCopyWith<_HlsFullNonParsedModel> get copyWith =>
+      __$HlsFullNonParsedModelCopyWithImpl<_HlsFullNonParsedModel>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$HlsFullNonParsedModelToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HlsFullNonParsedModelImpl &&
+            other is _HlsFullNonParsedModel &&
             (identical(other.master, master) || other.master == master) &&
             (identical(other.baseUrl, baseUrl) || other.baseUrl == baseUrl) &&
             const DeepCollectionEquality()
@@ -260,7 +431,7 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
             (identical(other.token, token) || other.token == token));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -272,53 +443,83 @@ class _$HlsFullNonParsedModelImpl implements _HlsFullNonParsedModel {
       enc,
       token);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>
-      get copyWith => __$$HlsFullNonParsedModelImplCopyWithImpl<
-          _$HlsFullNonParsedModelImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$HlsFullNonParsedModelImplToJson(
-      this,
-    );
+  String toString() {
+    return 'HlsFullNonParsedModel(master: $master, baseUrl: $baseUrl, videoPlaylists: $videoPlaylists, audioPlaylists: $audioPlaylists, thumbsPlaylists: $thumbsPlaylists, enc: $enc, token: $token)';
   }
 }
 
-abstract class _HlsFullNonParsedModel implements HlsFullNonParsedModel {
-  factory _HlsFullNonParsedModel(
-      {required final String master,
-      required final String baseUrl,
-      required final List<HlsPlaylistDetailsModel> videoPlaylists,
-      required final List<HlsPlaylistDetailsModel> audioPlaylists,
+/// @nodoc
+abstract mixin class _$HlsFullNonParsedModelCopyWith<$Res>
+    implements $HlsFullNonParsedModelCopyWith<$Res> {
+  factory _$HlsFullNonParsedModelCopyWith(_HlsFullNonParsedModel value,
+          $Res Function(_HlsFullNonParsedModel) _then) =
+      __$HlsFullNonParsedModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {String master,
+      String baseUrl,
+      List<HlsPlaylistDetailsModel> videoPlaylists,
+      List<HlsPlaylistDetailsModel> audioPlaylists,
       @ThumbsSerializer()
-      required final Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>
-          thumbsPlaylists,
-      required final String enc,
-      final String? token}) = _$HlsFullNonParsedModelImpl;
-
-  factory _HlsFullNonParsedModel.fromJson(Map<String, dynamic> json) =
-      _$HlsFullNonParsedModelImpl.fromJson;
-
-  @override
-  String get master;
-  @override
-  String get baseUrl;
-  @override
-  List<HlsPlaylistDetailsModel> get videoPlaylists;
-  @override
-  List<HlsPlaylistDetailsModel> get audioPlaylists;
-  @override
-  @ThumbsSerializer()
-  Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> get thumbsPlaylists;
-  @override
-  String get enc;
-  @override
-  String? get token;
-  @override
-  @JsonKey(ignore: true)
-  _$$HlsFullNonParsedModelImplCopyWith<_$HlsFullNonParsedModelImpl>
-      get copyWith => throw _privateConstructorUsedError;
+      Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel> thumbsPlaylists,
+      String enc,
+      String? token});
 }
+
+/// @nodoc
+class __$HlsFullNonParsedModelCopyWithImpl<$Res>
+    implements _$HlsFullNonParsedModelCopyWith<$Res> {
+  __$HlsFullNonParsedModelCopyWithImpl(this._self, this._then);
+
+  final _HlsFullNonParsedModel _self;
+  final $Res Function(_HlsFullNonParsedModel) _then;
+
+  /// Create a copy of HlsFullNonParsedModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? master = null,
+    Object? baseUrl = null,
+    Object? videoPlaylists = null,
+    Object? audioPlaylists = null,
+    Object? thumbsPlaylists = null,
+    Object? enc = null,
+    Object? token = freezed,
+  }) {
+    return _then(_HlsFullNonParsedModel(
+      master: null == master
+          ? _self.master
+          : master // ignore: cast_nullable_to_non_nullable
+              as String,
+      baseUrl: null == baseUrl
+          ? _self.baseUrl
+          : baseUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      videoPlaylists: null == videoPlaylists
+          ? _self._videoPlaylists
+          : videoPlaylists // ignore: cast_nullable_to_non_nullable
+              as List<HlsPlaylistDetailsModel>,
+      audioPlaylists: null == audioPlaylists
+          ? _self._audioPlaylists
+          : audioPlaylists // ignore: cast_nullable_to_non_nullable
+              as List<HlsPlaylistDetailsModel>,
+      thumbsPlaylists: null == thumbsPlaylists
+          ? _self._thumbsPlaylists
+          : thumbsPlaylists // ignore: cast_nullable_to_non_nullable
+              as Map<ThumbsPlaylistType, ThumbsPlaylistDetailsModel>,
+      enc: null == enc
+          ? _self.enc
+          : enc // ignore: cast_nullable_to_non_nullable
+              as String,
+      token: freezed == token
+          ? _self.token
+          : token // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+// dart format on

@@ -73,7 +73,7 @@ const LocalHlsModelIsarSchema = CollectionSchema(
   getId: _localHlsModelIsarGetId,
   getLinks: _localHlsModelIsarGetLinks,
   attach: _localHlsModelIsarAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _localHlsModelIsarEstimateSize(

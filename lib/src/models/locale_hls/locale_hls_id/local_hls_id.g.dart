@@ -28,8 +28,18 @@ const LocalHlsIdSchema = Schema(
       name: r'filmId',
       type: IsarType.long,
     ),
-    r'seasonId': PropertySchema(
+    r'hlsDataVideoId': PropertySchema(
       id: 3,
+      name: r'hlsDataVideoId',
+      type: IsarType.long,
+    ),
+    r'isSerial': PropertySchema(
+      id: 4,
+      name: r'isSerial',
+      type: IsarType.bool,
+    ),
+    r'seasonId': PropertySchema(
+      id: 5,
       name: r'seasonId',
       type: IsarType.long,
     )
@@ -58,7 +68,9 @@ void _localHlsIdSerialize(
   writer.writeLong(offsets[0], object.contentId);
   writer.writeLong(offsets[1], object.episodeId);
   writer.writeLong(offsets[2], object.filmId);
-  writer.writeLong(offsets[3], object.seasonId);
+  writer.writeLong(offsets[3], object.hlsDataVideoId);
+  writer.writeBool(offsets[4], object.isSerial);
+  writer.writeLong(offsets[5], object.seasonId);
 }
 
 LocalHlsId _localHlsIdDeserialize(
@@ -71,7 +83,7 @@ LocalHlsId _localHlsIdDeserialize(
     contentId: reader.readLongOrNull(offsets[0]) ?? -1,
     episodeId: reader.readLongOrNull(offsets[1]),
     filmId: reader.readLongOrNull(offsets[2]),
-    seasonId: reader.readLongOrNull(offsets[3]),
+    seasonId: reader.readLongOrNull(offsets[5]),
   );
   return object;
 }
@@ -90,6 +102,10 @@ P _localHlsIdDeserializeProp<P>(
     case 2:
       return (reader.readLongOrNull(offset)) as P;
     case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
       return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -290,6 +306,90 @@ extension LocalHlsIdQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'hlsDataVideoId',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'hlsDataVideoId',
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hlsDataVideoId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hlsDataVideoId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hlsDataVideoId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition>
+      hlsDataVideoIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hlsDataVideoId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LocalHlsId, LocalHlsId, QAfterFilterCondition> isSerialEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isSerial',
+        value: value,
       ));
     });
   }

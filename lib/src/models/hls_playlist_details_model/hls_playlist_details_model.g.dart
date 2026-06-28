@@ -6,9 +6,9 @@ part of 'hls_playlist_details_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$HlsPlaylistDetailsModelImpl _$$HlsPlaylistDetailsModelImplFromJson(
+_HlsPlaylistDetailsModel _$HlsPlaylistDetailsModelFromJson(
         Map<String, dynamic> json) =>
-    _$HlsPlaylistDetailsModelImpl(
+    _HlsPlaylistDetailsModel(
       baseUrl: json['base_url'] as String,
       uri: json['uri'] as String,
       data: json['data'] as String,
@@ -16,8 +16,8 @@ _$HlsPlaylistDetailsModelImpl _$$HlsPlaylistDetailsModelImplFromJson(
       filesCount: (json['files_count'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$HlsPlaylistDetailsModelImplToJson(
-        _$HlsPlaylistDetailsModelImpl instance) =>
+Map<String, dynamic> _$HlsPlaylistDetailsModelToJson(
+        _HlsPlaylistDetailsModel instance) =>
     <String, dynamic>{
       'base_url': instance.baseUrl,
       'uri': instance.uri,

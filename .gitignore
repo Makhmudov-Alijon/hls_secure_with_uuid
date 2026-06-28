@@ -28,3 +28,6 @@ migrate_working_dir/
 .dart_tool/
 build/
 /locale_packages/*
+
+# FVM Version Cache
+.fvm/

@@ -45,7 +45,7 @@ const HlsDownloadedStatModelSchema = CollectionSchema(
   getId: _hlsDownloadedStatModelGetId,
   getLinks: _hlsDownloadedStatModelGetLinks,
   attach: _hlsDownloadedStatModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _hlsDownloadedStatModelEstimateSize(

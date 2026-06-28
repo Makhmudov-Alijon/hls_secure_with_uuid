@@ -4,7 +4,7 @@ part 'thumbs_playlist_details_model.freezed.dart';
 part 'thumbs_playlist_details_model.g.dart';
 
 @freezed
-class ThumbsPlaylistDetailsModel with _$ThumbsPlaylistDetailsModel {
+abstract class ThumbsPlaylistDetailsModel with _$ThumbsPlaylistDetailsModel {
   factory ThumbsPlaylistDetailsModel({
     required String uri,
     required String baseUrl,
