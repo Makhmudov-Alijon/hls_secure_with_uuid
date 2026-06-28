@@ -177,15 +177,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.4.3+1"
-  disk_space:
+  disk_space_plugin:
     dependency: transitive
     description:
       path: "."
       ref: HEAD
-      resolved-ref: a08c428f1a4e54d5e3622a29f2a64716c7bdc82b
-      url: "https://github.com/radiants-uz/disk_space.git"
+      resolved-ref: efccd69f738c2e1c848b7764ed47bb79641890c8
+      url: "https://github.com/radiants-uz/disk_space_plugin"
     source: git
-    version: "0.2.1"
+    version: "0.0.2"
   ed25519_edwards:
     dependency: transitive
     description:

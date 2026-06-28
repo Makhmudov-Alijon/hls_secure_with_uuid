@@ -13,9 +13,9 @@ dependencies:
   encrypt: ^5.0.3
   equatable: ^2.0.5
   shared_preferences: ^2.3.5
-  disk_space:
+  disk_space_plugin:
     git:
-      url: https://github.com/radiants-uz/disk_space.git
+      url: 'https://github.com/radiants-uz/disk_space_plugin'
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0

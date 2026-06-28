@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:disk_space/disk_space.dart';
+import 'package:disk_space_plugin/disk_space_plugin.dart';
 import 'package:hls_secure_with_uuid/hls_secure_with_uuid.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -21,7 +21,7 @@ class DiskSpaceInfoNotifier
   Future<DiskSpaceInfoState> checkState() async {
     double? totalDiskSpace;
 
-    totalDiskSpace = await DiskSpace.getTotalDiskSpace;
+    totalDiskSpace = await DiskSpacePlugin.getTotalDiskSpace();
 
     List<Directory> directories;
 
@@ -39,7 +39,7 @@ class DiskSpaceInfoNotifier
     double free = 0;
 
     for (var directory in directories) {
-      var space = await DiskSpace.getFreeDiskSpaceForPath(directory.path);
+      var space = await DiskSpacePlugin.getFreeDiskSpaceForPath(directory.path);
       if (space != null) {
         free += space;
       }
